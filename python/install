@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+# Copyright 2015 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+APP_VENV=/home/application/.app_env
+
+SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/rc/config
+
+apt-get install python-virtualenv python-pip python-dev -y
+
+virtualenv $APP_VENV
+echo "export PATH=${APP_VENV}/bin:\${PATH}" | tee -a ${HOME}/.profile /etc/profile >/dev/null
+echo "Defaults secure_path=\"${APP_VENV}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"" > /etc/sudoers.d/venv
+chown -R ${USER}:${USER} ${APP_VENV}
