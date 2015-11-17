@@ -1,0 +1,7 @@
+Package: *
+Pin: release n=vivid*
+Pin-Priority: 990
+
+Package: *php5*
+Pin: release n=vivid*
+Pin-Priority: 1000
