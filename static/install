@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+# Copyright 2015 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+
+${SOURCE_DIR}/base/install
+
+apt-get install nginx -y
+
+rm -rf /var/log/nginx /var/lib/nginx
+mkdir -p /var/log/nginx /var/lib/nginx
+
+chown -R ubuntu:ubuntu /var/lib/nginx /var/log/nginx
+cp ${SOURCE_DIR}/static/Procfile ${SOURCE_DIR}/default/Procfile
+cp ${SOURCE_DIR}/static/etc/nginx.conf /etc/nginx/nginx.conf
+echo "sudo chmod 777 /dev/stdout" >> /etc/profile

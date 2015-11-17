@@ -1,0 +1,14 @@
+#!/bin/bash -el
+
+# Copyright 2015 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+
+source ${SOURCE_DIR}/base/rc/config
+source ${SOURCE_DIR}/base/deploy
+
+set +e
+test -e ${APP_DIR}/nginx.conf && sudo cp ${APP_DIR}/nginx.conf /etc/nginx/nginx.conf
+set -e
