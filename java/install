@@ -6,5 +6,15 @@
 
 SOURCE_DIR=/var/lib/tsuru
 
+source ${SOURCE_DIR}/base/rc/config
+
 apt-get update
-apt-get install -y openjdk-7-jdk maven
+apt-get install -y openjdk-7-jdk maven tomcat7
+
+cp $SOURCE_DIR/java/Procfile $SOURCE_DIR/default/Procfile
+
+rm -rf /var/lib/tomcat7/webapps
+ln -s ${CURRENT_DIR} /var/lib/tomcat7/webapps
+mkdir -p /usr/share/tomcat7/common/classes /usr/share/tomcat7/server/classes /usr/share/tomcat7/shared/classes
+chown -R ${USER}:${USER} /etc/tomcat7 /var/lib/tomcat7 /var/cache/tomcat7 /var/log/tomcat7 /usr/share/tomcat7
+sed -i 's/8080/8888/' /etc/tomcat7/server.xml
