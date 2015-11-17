@@ -5,14 +5,15 @@
 # license that can be found in the LICENSE file.
 
 SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/rc/config
 
 apt-get update
 apt-get install nginx -y
 
 rm -rf /var/log/nginx /var/lib/nginx
 mkdir -p /var/log/nginx /var/lib/nginx
+chown -R ${USER}:${USER} /var/lib/nginx /var/log/nginx
 
-chown -R ubuntu:ubuntu /var/lib/nginx /var/log/nginx
 cp ${SOURCE_DIR}/static/Procfile ${SOURCE_DIR}/default/Procfile
 cp ${SOURCE_DIR}/static/etc/nginx.conf /etc/nginx/nginx.conf
 echo "sudo chmod 777 /dev/stdout" >> /etc/profile
