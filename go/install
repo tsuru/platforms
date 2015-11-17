@@ -1,0 +1,19 @@
+#!/bin/bash -el
+
+# Copyright 2015 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+
+source ${SOURCE_DIR}/base/rc/config
+
+curl -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme -o /usr/bin/gimme
+chmod +x /usr/bin/gimme
+apt-get install bzr mercurial git bzr -y
+cp ${SOURCE_DIR}/go/Procfile ${SOURCE_DIR}/default/Procfile
+echo "GOPATH=${APP_DIR}" >> ${HOME}/.profile
+echo 'PATH=$GOPATH:$PATH' >> ${HOME}/.profile
+echo 'export PATH GOPATH' >> ${HOME}/.profile
+echo 'export GIMME_SILENT_ENV=1' >> ${HOME}/.profile
+echo '[ -f ${HOME}/.gimme/envs/latest.env ] && source ${HOME}/.gimme/envs/latest.env' >> ${HOME}/.profile

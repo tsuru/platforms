@@ -1,0 +1,28 @@
+#!/bin/bash -el
+
+# Copyright 2015 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/deploy
+source ${SOURCE_DIR}/base/rc/config
+
+GO_VERSION=$(test -f /tmp/app_envs && source /tmp/app_envs && echo $GO_VERSION)
+GO_VERSION=${GO_VERSION:-1.5}
+echo "Installing Go ${GO_VERSION}..."
+eval "$(gimme ${GO_VERSION})"
+
+pushd ${CURRENT_DIR} >/dev/null 2>&1
+
+# do not fail if the application is not go gettable
+set +e
+go get -d ./...
+set -e
+
+if [ -f ${APP_DIR}/.default_procfile ]
+then
+	go build -o tsuru-app
+fi
+
+popd >/dev/null 2>&1
