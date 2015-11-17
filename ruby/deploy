@@ -1,0 +1,50 @@
+#!/bin/bash -e
+
+# Copyright 2015 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/deploy
+source ${SOURCE_DIR}/base/rc/config
+
+if [ -f ${CURRENT_DIR}/Gemfile ]; then
+    RUBY_VERSION=$(/usr/bin/ruby /var/lib/tsuru/ruby/ruby_version_eval.rb ${CURRENT_DIR}/Gemfile 2>/dev/null || echo "")
+fi
+
+if [ -f ${CURRENT_DIR}/.ruby-version -a "${RUBY_VERSION}" == "" ]; then
+    RUBY_VERSION=$(cat ${CURRENT_DIR}/.ruby-version)
+    if [[ "${RUBY_VERSION}" =~ ([0-9\.]+).* ]]; then
+        RUBY_VERSION=${BASH_REMATCH[1]}
+    fi
+fi
+
+if [[ ${RUBY_VERSION} =~ ([0-9]\.[0-9])[0-9\.]* ]]; then
+    RUBY_VERSION=${BASH_REMATCH[1]}
+fi
+
+TSURU_RUBY_VERSION=${RUBY_VERSION-2.2}
+
+case $TSURU_RUBY_VERSION in
+    1.9)
+        ruby_to_use=1.9.1
+        ;;
+    2.0|2.1|2.2)
+        ruby_to_use="${TSURU_RUBY_VERSION}"
+        ;;
+    *)
+        echo "WARNING: Invalid ruby version, please use 1.9.1, 1.9.3, 2.0, 2.1 or 2.2. Using ruby 2.2 as fallback."
+        ruby_to_use="2.2"
+        ;;
+esac
+
+echo "-- Using ruby version: ${TSURU_RUBY_VERSION} --"
+
+sudo update-alternatives --set ruby /usr/bin/ruby${ruby_to_use} > /dev/null
+sudo update-alternatives --set gem /usr/bin/gem${ruby_to_use} > /dev/null
+sudo gem install bundler
+
+if [ -f ${CURRENT_DIR}/Gemfile ]; then
+    pushd $CURRENT_DIR && bundle install --deployment --path ${CURRENT_DIR}/../vendor/bundle --without ${BUNDLE_WITHOUT-development:test}
+    popd
+fi
