@@ -14,7 +14,7 @@ apt-get install unzip -y
 echo "Downloading activator..."
 
 cd /tmp
-curl -LO http://downloads.typesafe.com/typesafe-activator/${ACTIVATOR_VERSION}/typesafe-activator-${ACTIVATOR_VERSION}.zip
+curl -sLO http://downloads.typesafe.com/typesafe-activator/${ACTIVATOR_VERSION}/typesafe-activator-${ACTIVATOR_VERSION}.zip
 unzip typesafe-activator-${ACTIVATOR_VERSION}.zip
 rm typesafe-activator-${ACTIVATOR_VERSION}.zip
 mv activator-${ACTIVATOR_VERSION} /var/lib/activator
