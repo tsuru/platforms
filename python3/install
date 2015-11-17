@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+# Copyright 2015 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+
+source ${SOURCE_DIR}/base/rc/config
+
+add_repository ppa:fkrull/deadsnakes
+apt-get update
+apt-get install python3.5 python3.5-dev -y
+rm -f /usr/bin/python3
+ln -s /usr/bin/python3.5 /usr/bin/python3
+ln -s /usr/bin/python3.5 /usr/bin/python
+curl -sL https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python3
