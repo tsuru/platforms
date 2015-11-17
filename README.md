@@ -5,18 +5,18 @@ Source for official Docker images of tsuru platforms.
 
 All platforms are available in Docker Hub:
 
-	* tsuru/buildpack: https://hub.docker.com/r/tsuru/buildpack/
-	* tsuru/cordova: https://hub.docker.com/r/tsuru/cordova/
-	* tsuru/elixir: https://hub.docker.com/r/tsuru/elixir/
-	* tsuru/go: https://hub.docker.com/r/tsuru/go/
-	* tsuru/java: https://hub.docker.com/r/tsuru/java/
-	* tsuru/nodejs: https://hub.docker.com/r/tsuru/nodejs/
-	* tsuru/php: https://hub.docker.com/r/tsuru/php/
-	* tsuru/play: https://hub.docker.com/r/tsuru/play/
-	* tsuru/python: https://hub.docker.com/r/tsuru/python/
-	* tsuru/python3: https://hub.docker.com/r/tsuru/python3/
-	* tsuru/ruby: https://hub.docker.com/r/tsuru/ruby/
-	* tsuru/static: https://hub.docker.com/r/tsuru/static/
+* tsuru/buildpack: https://hub.docker.com/r/tsuru/buildpack/
+* tsuru/cordova: https://hub.docker.com/r/tsuru/cordova/
+* tsuru/elixir: https://hub.docker.com/r/tsuru/elixir/
+* tsuru/go: https://hub.docker.com/r/tsuru/go/
+* tsuru/java: https://hub.docker.com/r/tsuru/java/
+* tsuru/nodejs: https://hub.docker.com/r/tsuru/nodejs/
+* tsuru/php: https://hub.docker.com/r/tsuru/php/
+* tsuru/play: https://hub.docker.com/r/tsuru/play/
+* tsuru/python: https://hub.docker.com/r/tsuru/python/
+* tsuru/python3: https://hub.docker.com/r/tsuru/python3/
+* tsuru/ruby: https://hub.docker.com/r/tsuru/ruby/
+* tsuru/static: https://hub.docker.com/r/tsuru/static/
 
 Installing platforms
 --------------------
