@@ -10,5 +10,5 @@ source ${SOURCE_DIR}/base/rc/config
 source ${SOURCE_DIR}/base/deploy
 
 set +e
-test -e ${APP_DIR}/nginx.conf && sudo cp ${APP_DIR}/nginx.conf /etc/nginx/nginx.conf
+test -e ${CURRENT_DIR}/nginx.conf && sudo cp ${CURRENT_DIR}/nginx.conf /etc/nginx/nginx.conf
 set -e
