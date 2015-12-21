@@ -10,7 +10,7 @@ source ${SOURCE_DIR}/base/rc/config
 
 add_repository ppa:fkrull/deadsnakes
 apt-get update
-apt-get install python3.5 python3.5-dev -y
+apt-get install python3.5 python3.5-dev git -y
 rm -f /usr/bin/python3
 ln -s /usr/bin/python3.5 /usr/bin/python3
 ln -s /usr/bin/python3.5 /usr/bin/python
