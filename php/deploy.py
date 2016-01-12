@@ -42,13 +42,23 @@ class Manager(object):
             packages_php_extensions = self.interpretor.get_packages_extensions()
 
         print('Installing system packages...')
-        if os.system("apt-get install -y --force-yes %s" % (' '.join(packages))) != 0:
-            raise InstallationException('An error appeared while installing needed packages')
+        try:
+            if os.system("apt-get install -y --force-yes %s" % (' '.join(packages))) != 0:
+                raise InstallationException('An error appeared while installing needed packages')
+        except InstallationException:
+            os.system("apt-get update")
+            if os.system("apt-get install -y --force-yes %s" % (' '.join(packages))) != 0:
+                raise InstallationException('An error appeared while installing needed packages')
 
         if packages_php_extensions:
             print('Installing php extensions..')
-            if os.system("apt-get install -y --force-yes %s" % (' '.join(packages_php_extensions))) != 0:
-                raise InstallationException('An error appeared while installing needed packages')
+            try:
+                if os.system("apt-get install -y --force-yes %s" % (' '.join(packages_php_extensions))) != 0:
+                    raise InstallationException('An error appeared while installing needed packages')
+            except InstallationException:
+                os.system("apt-get update")
+                if os.system("apt-get install -y --force-yes %s" % (' '.join(packages_php_extensions))) != 0:
+                    raise InstallationException('An error appeared while installing needed packages')
             for package in packages_php_extensions:
                 module_name = package.split("php5-")[1]
                 if os.system("php5enmod %s" % module_name) != 0:
