@@ -9,5 +9,5 @@ source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
 if [ -f ${CURRENT_DIR}/requirements.txt ]; then
-    sudo pip_pypy install -r ${CURRENT_DIR}/requirements.txt
+    sudo pip install -r ${CURRENT_DIR}/requirements.txt
 fi
