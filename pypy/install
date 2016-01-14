@@ -11,4 +11,6 @@ source ${SOURCE_DIR}/base/rc/config
 add_repository ppa:pypy/ppa
 apt-get update
 apt-get install pypy pypy-dev git -y
+rm -f /usr/bin/python
 ln -s /usr/bin/pypy /usr/bin/python
+curl -sL https://raw.github.com/pypa/pip/master/contrib/get-pip.py | pypy
