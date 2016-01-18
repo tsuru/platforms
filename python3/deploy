@@ -10,4 +10,6 @@ source ${SOURCE_DIR}/base/rc/config
 
 if [ -f ${CURRENT_DIR}/requirements.txt ]; then
     sudo pip3 install -r ${CURRENT_DIR}/requirements.txt
+elif [ -f ${CURRENT_DIR}/setup.py ]; then
+    sudo pip install -e ${CURRENT_DIR}/
 fi
