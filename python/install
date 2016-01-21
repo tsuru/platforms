@@ -9,6 +9,7 @@ APP_VENV=/home/application/.app_env
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
+add_repository ppa:fkrull/deadsnakes-python2.7
 apt-get update
 apt-get install python-virtualenv python-pip python-dev git -y
 
