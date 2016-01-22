@@ -13,4 +13,4 @@ apt-get update
 apt-get install pypy pypy-dev git -y
 rm -f /usr/bin/python
 ln -s /usr/bin/pypy /usr/bin/python
-curl -sL https://raw.github.com/pypa/pip/master/contrib/get-pip.py | pypy
+curl -sL https://bootstrap.pypa.io/get-pip.py | pypy
