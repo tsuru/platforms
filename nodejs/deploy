@@ -15,8 +15,16 @@ source ${SOURCE_DIR}/base/deploy
 
 NODE_VERSION=stable
 
-if [ -f ${CURRENT_DIR}/.node-version ]; then
-    NODE_VERSION=$(cat ${CURRENT_DIR}/.node-version)
+if [ -f ${CURRENT_DIR}/.nvmrc ]; then
+    TMP_VERSION=$(cat ${CURRENT_DIR}/.nvmrc)
+elif [ -f ${CURRENT_DIR}/package.json ]; then
+    TMP_VERSION=$(jq -r '.engines | .node | select(. != null)' ${CURRENT_DIR}/package.json)
+elif [ -f ${CURRENT_DIR}/.node-version ]; then
+    TMP_VERSION=$(cat ${CURRENT_DIR}/.node-version)
+fi
+
+if [ -n "$TMP_VERSION" ]; then
+    NODE_VERSION=${TMP_VERSION}
 fi
 
 export NVM_DIR=${HOME}/.nvm
