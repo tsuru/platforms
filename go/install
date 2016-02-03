@@ -10,10 +10,17 @@ source ${SOURCE_DIR}/base/rc/config
 
 curl -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme -o /usr/bin/gimme
 chmod +x /usr/bin/gimme
-apt-get install bzr mercurial git bzr -y
+apt-get update && apt-get install bzr mercurial git bzr -y
 cp ${SOURCE_DIR}/go/Procfile ${SOURCE_DIR}/default/Procfile
 echo "GOPATH=${APP_DIR}" >> ${HOME}/.profile
 echo 'PATH=$GOPATH:$PATH' >> ${HOME}/.profile
 echo 'export PATH GOPATH' >> ${HOME}/.profile
 echo 'export GIMME_SILENT_ENV=1' >> ${HOME}/.profile
 echo '[ -f ${HOME}/.gimme/envs/latest.env ] && source ${HOME}/.gimme/envs/latest.env' >> ${HOME}/.profile
+
+GO_VERSIONS="1.4 1.5"
+for GO_VERSION in ${GO_VERSIONS}
+do
+    echo "Installing Go ${GO_VERSION}..."
+    sudo -u ubuntu gimme ${GO_VERSION}
+done
