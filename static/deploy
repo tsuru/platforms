@@ -12,3 +12,5 @@ source ${SOURCE_DIR}/base/deploy
 set +e
 test -e ${CURRENT_DIR}/nginx.conf && sudo cp ${CURRENT_DIR}/nginx.conf /etc/nginx/nginx.conf
 set -e
+
+${SOURCE_DIR}/static/validate-nginx-conf /etc/nginx/nginx.conf
