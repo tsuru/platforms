@@ -14,35 +14,29 @@ fi
 
 if [ -f ${CURRENT_DIR}/.ruby-version -a "${RUBY_VERSION}" == "" ]; then
     RUBY_VERSION=$(cat ${CURRENT_DIR}/.ruby-version)
-    if [[ "${RUBY_VERSION}" =~ ([0-9\.]+).* ]]; then
-        RUBY_VERSION=${BASH_REMATCH[1]}
-    fi
 fi
 
-if [[ ${RUBY_VERSION} =~ ([0-9]\.[0-9])[0-9\.]* ]]; then
-    RUBY_VERSION=${BASH_REMATCH[1]}
-fi
+RUBY_VERSION=${RUBY_VERSION:-2.2.3}
 
-TSURU_RUBY_VERSION=${RUBY_VERSION-2.2}
+echo "-- Using ruby version: $RUBY_VERSION --"
 
-case $TSURU_RUBY_VERSION in
-    1.9)
-        ruby_to_use=1.9.1
-        ;;
-    2.0|2.1|2.2)
-        ruby_to_use="${TSURU_RUBY_VERSION}"
-        ;;
-    *)
-        echo "WARNING: Invalid ruby version, please use 1.9.1, 1.9.3, 2.0, 2.1 or 2.2. Using ruby 2.2 as fallback."
-        ruby_to_use="2.2"
-        ;;
-esac
+export GEM_PATH="/home/application/ruby/bundle/ruby/$RUBY_VERSION"
+export GEM_HOME="/home/application/ruby/bundle/ruby/$RUBY_VERSION"
+mkdir -p "/home/application/ruby/bundle/ruby/$RUBY_VERSION"
 
-echo "-- Using ruby version: ${TSURU_RUBY_VERSION} --"
+# Install Ruby
+mkdir -p "/home/application/ruby/ruby-$RUBY_VERSION"
+curl -s --retry 3 -L "https://heroku-buildpack-ruby.s3.amazonaws.com/cedar-14/ruby-$RUBY_VERSION.tgz" | tar xz -C "/home/application/ruby/ruby-$RUBY_VERSION"
+export PATH="/home/application/ruby/ruby-$RUBY_VERSION/bin:$PATH"
 
-sudo update-alternatives --set ruby /usr/bin/ruby${ruby_to_use} > /dev/null
-sudo update-alternatives --set gem /usr/bin/gem${ruby_to_use} > /dev/null
-sudo gem install bundler
+# Install Bundler
+gem install bundler
+export PATH="/home/application/ruby/bundle/ruby/$RUBY_VERSION/bin:$PATH"
+export BUNDLE_APP_CONFIG="/home/application/ruby/.bundle/config"
+
+echo "export PATH=\"$PATH\" GEM_PATH=\"$GEM_PATH\" GEM_HOME=\"$GEM_HOME\" BUNDLE_APP_CONFIG=\"$BUNDLE_APP_CONFIG\"" > /home/application/ruby.sh
+
+source /home/application/ruby.sh
 
 if [ -f ${CURRENT_DIR}/Gemfile ]; then
     pushd $CURRENT_DIR && bundle install --deployment --path ${CURRENT_DIR}/../vendor/bundle --without ${BUNDLE_WITHOUT-development:test}
