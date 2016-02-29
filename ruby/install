@@ -23,5 +23,4 @@ sqlite3 \
 libxml2-dev \
 libxslt1-dev \
 libcurl4-openssl-dev \
-python-software-properties \
 libffi-dev
