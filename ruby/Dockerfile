@@ -6,3 +6,4 @@ FROM	tsuru/base-platform
 ADD	. /var/lib/tsuru/ruby
 RUN	cp /var/lib/tsuru/ruby/deploy /var/lib/tsuru
 RUN	/var/lib/tsuru/ruby/install
+RUN	echo "source /home/application/ruby.sh" >> /etc/profile

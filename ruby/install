@@ -7,24 +7,20 @@
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
-add_repository ppa:brightbox/ruby-ng
-
-apt-get update
-apt-get install -y ruby1.9.3 ruby1.9.1-dev ruby2.0 ruby2.0-dev ruby2.1 ruby2.1-dev ruby2.2 ruby2.2-dev
-
-# Fix ruby2.0 update-alternatives
-update-alternatives --install /usr/bin/gem gem /usr/bin/gem2.0 181
-RUBYVER=2.0
-update-alternatives \
---install /usr/bin/ruby ruby /usr/bin/ruby${RUBYVER} 51 \
---slave /usr/bin/erb erb /usr/bin/erb${RUBYVER} \
---slave /usr/bin/testrb testrb /usr/bin/testrb${RUBYVER} \
---slave /usr/bin/rake rake /usr/bin/rake${RUBYVER} \
---slave /usr/bin/irb irb /usr/bin/irb${RUBYVER} \
---slave /usr/bin/rdoc rdoc /usr/bin/rdoc${RUBYVER} \
---slave /usr/bin/ri ri /usr/bin/ri${RUBYVER} \
---slave /usr/share/man/man1/ruby.1.gz ruby.1.gz /usr/share/man/man1/ruby${RUBYVER}.1.gz \
---slave /usr/share/man/man1/erb.1.gz erb.1.gz /usr/share/man/man1/erb${RUBYVER}.1.gz \
---slave /usr/share/man/man1/irb.1.gz irb.1.gz /usr/share/man/man1/irb${RUBYVER}.1.gz \
---slave /usr/share/man/man1/rake.1.gz rake.1.gz /usr/share/man/man1/rake${RUBYVER}.1.gz \
---slave /usr/share/man/man1/ri.1.gz ri.1.gz /usr/share/man/man1/ri${RUBYVER}.1.gz
+# Install Essential Packages
+apt-get update && apt-get install -y \
+nodejs \
+ruby \
+libgmp-dev \
+libgmp3-dev \
+zlib1g-dev \
+build-essential \
+libssl-dev \
+libreadline-dev \
+libyaml-dev \
+libsqlite3-dev \
+sqlite3 \
+libxml2-dev \
+libxslt1-dev \
+libcurl4-openssl-dev \
+libffi-dev
