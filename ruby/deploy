@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-# Copyright 2015 tsuru authors. All rights reserved.
+# Copyright 2016 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -20,25 +20,17 @@ RUBY_VERSION=${RUBY_VERSION:-2.2.3}
 
 echo "-- Using ruby version: $RUBY_VERSION --"
 
-export GEM_PATH="/home/application/ruby/bundle/ruby/$RUBY_VERSION"
-export GEM_HOME="/home/application/ruby/bundle/ruby/$RUBY_VERSION"
-mkdir -p "/home/application/ruby/bundle/ruby/$RUBY_VERSION"
-
 # Install Ruby
 mkdir -p "/home/application/ruby/ruby-$RUBY_VERSION"
 curl -s --retry 3 -L "https://heroku-buildpack-ruby.s3.amazonaws.com/cedar-14/ruby-$RUBY_VERSION.tgz" | tar xz -C "/home/application/ruby/ruby-$RUBY_VERSION"
-export PATH="/home/application/ruby/ruby-$RUBY_VERSION/bin:$PATH"
+
+sudo cp /home/application/ruby/ruby-$RUBY_VERSION/bin/* /usr/bin
 
 # Install Bundler
 gem install bundler
-export PATH="/home/application/ruby/bundle/ruby/$RUBY_VERSION/bin:$PATH"
-export BUNDLE_APP_CONFIG="/home/application/ruby/.bundle/config"
 
-echo "export PATH=\"$PATH\" GEM_PATH=\"$GEM_PATH\" GEM_HOME=\"$GEM_HOME\" BUNDLE_APP_CONFIG=\"$BUNDLE_APP_CONFIG\"" > /home/application/ruby.sh
-
-source /home/application/ruby.sh
 
 if [ -f ${CURRENT_DIR}/Gemfile ]; then
-    pushd $CURRENT_DIR && bundle install --deployment --path ${CURRENT_DIR}/../vendor/bundle --without ${BUNDLE_WITHOUT-development:test}
+    pushd $CURRENT_DIR && bundle install --deployment --without ${BUNDLE_WITHOUT-development:test}
     popd
 fi
