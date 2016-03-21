@@ -21,14 +21,11 @@ RUBY_VERSION=${RUBY_VERSION:-2.2.3}
 echo "-- Using ruby version: $RUBY_VERSION --"
 
 # Install Ruby
-mkdir -p "/home/application/ruby/ruby-$RUBY_VERSION"
-curl -s --retry 3 -L "https://heroku-buildpack-ruby.s3.amazonaws.com/cedar-14/ruby-$RUBY_VERSION.tgz" | tar xz -C "/home/application/ruby/ruby-$RUBY_VERSION"
-
-sudo cp /home/application/ruby/ruby-$RUBY_VERSION/bin/* /usr/bin
+mkdir -p "/home/application/ruby"
+curl -s --retry 3 -L "https://heroku-buildpack-ruby.s3.amazonaws.com/cedar-14/ruby-$RUBY_VERSION.tgz" | tar xz -C "/home/application/ruby"
 
 # Install Bundler
 gem install bundler
-
 
 if [ -f ${CURRENT_DIR}/Gemfile ]; then
     pushd $CURRENT_DIR && bundle install --deployment --without ${BUNDLE_WITHOUT-development:test}
