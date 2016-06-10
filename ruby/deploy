@@ -20,12 +20,22 @@ RUBY_VERSION=${RUBY_VERSION:-2.2.3}
 
 echo "-- Using ruby version: $RUBY_VERSION --"
 
+RUBY_REPO=${RUBY_REPO:-https://heroku-buildpack-ruby.s3.amazonaws.com/cedar-14}
+
+RUBY_TARGET="$RUBY_REPO/ruby-$RUBY_VERSION.tgz"
+
+echo "-- Fetching ruby from: $RUBY_TARGET --"
+
 # Install Ruby
 mkdir -p "/home/application/ruby"
-curl -s --retry 3 -L "https://heroku-buildpack-ruby.s3.amazonaws.com/cedar-14/ruby-$RUBY_VERSION.tgz" | tar xz -C "/home/application/ruby"
+curl -s --retry 3 -L "$RUBY_TARGET" | tar xz -C "/home/application/ruby"
 
-# Install Bundler
-gem install bundler
+if [ -z "$GEM_SOURCE" ]; then
+    gem install bundler
+else
+    echo "-- Using $GEM_SOURCE as remote gem source --"
+    gem install bundler --source=$GEM_SOURCE
+fi
 
 if [ -f ${CURRENT_DIR}/Gemfile ]; then
     pushd $CURRENT_DIR && bundle install --deployment --without ${BUNDLE_WITHOUT-development:test}
