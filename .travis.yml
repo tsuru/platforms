@@ -1,0 +1,12 @@
+sudo: required
+script:
+  - make test
+services:
+  - docker
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+  slack:
+    rooms:
+      secure: "V5JD2dpHWDyBitnE23zg8cP2sLZIJyztlR+ELFX1YlFvpHOkU0n1Ak2dlDa/Ka1CNWLB/vAexBtj8eRiqVU3HrGv8eYGcT76Su9znxNWmNxwLpaWfG45+M25qAPbg09bxWfeOuzHzPg3OCG5/fdKIHEPzMWC4m8RKpUNqGMtUOZZpBk0mUsxJD5UnjTCMZLUDG4TgA/BNAl4O/KVHJBzgd4g2di9ikqXltpjlGj68chVOBHmHV+VhZmqqdUfqpjBdsPZLPOQ43wuHsTGqtBAHLJXvw3zQyokuFD4n0KsYgiFjSjOm3rzATlZQVfLxBWe1BZOntiNm34wGULyLTPBEO9yaVS3ng6s3nzpiVs3dZq8DcP3Ij/AJh7wkR2fqa99OH4hfrjeAvXj95KWM7wWJ1dlgRH5OZFz8NBlfM20sc7j+hbyqF6U+EU7FmD6X/BSZ+o1SHdqIkveQuIPQhKRRvT5wPS3q/LpEEivb7gTJvbzKP8dvl0WhATvZcDCV7P+zlwz3sk2scqFd30BXAy8e3Yyw16mr7Tboj/e80yPIkmKcxyNVWH01BxRFaslbhBcphF5YxFaqRVJKb0na2jAFbTdMTlLf9c3UTwvst9c357WgVfVjjqwbd+2nRiqVwDLUVnRlUMuK7qnUCx4HAwwvz8u+5te+yGMd4Bh3fly3i4="
