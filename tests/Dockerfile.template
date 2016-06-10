@@ -1,0 +1,10 @@
+# Copyright 2016 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+FROM platform-{PLATFORM}
+WORKDIR /tests
+ADD . /tests
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/sstephenson/bats.git && mkdir ./bin && bats/install.sh .
+RUN bin/bats .
