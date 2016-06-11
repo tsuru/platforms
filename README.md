@@ -1,6 +1,8 @@
 platforms
 =========
 
+[![Build Status](https://travis-ci.org/tsuru/platforms.png?branch=master)](https://travis-ci.org/tsuru/platforms)
+
 Source for official Docker images of tsuru platforms.
 
 All platforms are available in Docker Hub:
