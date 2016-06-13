@@ -28,7 +28,13 @@ echo "-- Fetching ruby from: $RUBY_TARGET --"
 
 # Install Ruby
 mkdir -p "/home/application/ruby"
-curl -s --retry 3 -L "$RUBY_TARGET" | tar xz -C "/home/application/ruby"
+if ! (curl -s --retry 3 -L "$RUBY_TARGET" | tar xz -C "/home/application/ruby"); then
+    echo "ERROR: Unsuported ruby version."
+    if [ ! -z "$SUPPORTED_VERSIONS" ]; then
+        echo "Supported versions are: $SUPPORTED_VERSIONS"
+    fi
+    exit 1
+fi
 
 if [ -z "$GEM_SOURCE" ]; then
     gem install bundler
