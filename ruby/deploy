@@ -5,6 +5,11 @@
 # license that can be found in the LICENSE file.
 
 SOURCE_DIR=/var/lib/tsuru
+
+if [ -d ${CURRENT_DIR}/vendor ]; then
+    PLATFORM_EXTRA_RSYNC_ARGS="--filter \"protect vendor/\""
+fi
+
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
