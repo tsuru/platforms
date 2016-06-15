@@ -22,10 +22,10 @@
     [[ "$output" == *"ran base config"* ]]
 }
 
-@test "install ruby version 2.2.3 as default" {
+@test "install ruby version 2.3.1 as default" {
     run /home/application/ruby/bin/ruby --version
     [ "$status" -eq 0 ]
-    [[ "$output" == *"2.2.3"* ]]
+    [[ "$output" == *"2.3.1"* ]]
 }
 
 @test "install specific ruby version" {

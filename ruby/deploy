@@ -21,7 +21,7 @@ if [ -f ${CURRENT_DIR}/.ruby-version -a "${RUBY_VERSION}" == "" ]; then
     RUBY_VERSION=$(cat ${CURRENT_DIR}/.ruby-version)
 fi
 
-RUBY_VERSION=${RUBY_VERSION:-2.2.3}
+RUBY_VERSION=${RUBY_VERSION:-2.3.1}
 
 echo "-- Using ruby version: $RUBY_VERSION --"
 
