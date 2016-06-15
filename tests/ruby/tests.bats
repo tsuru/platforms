@@ -40,7 +40,7 @@
     export RUBY_VERSION="ABC"
     run /var/lib/tsuru/deploy
     [ "$status" -eq 1 ]
-    [[ "$output" == *"ERROR: Unsuported ruby version."* ]]
+    [[ "$output" == *"ERROR: ruby version ABC is not supported."* ]]
 }
 
 @test "display supported versions if set" {

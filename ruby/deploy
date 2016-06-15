@@ -34,7 +34,7 @@ echo "-- Fetching ruby from: $RUBY_TARGET --"
 # Install Ruby
 mkdir -p "/home/application/ruby"
 if ! (curl -s --retry 3 -L "$RUBY_TARGET" | tar xz -C "/home/application/ruby"); then
-    echo "ERROR: Unsuported ruby version."
+    echo "ERROR: ruby version $RUBY_VERSION is not supported."
     if [ ! -z "$SUPPORTED_VERSIONS" ]; then
         echo "Supported versions are: $SUPPORTED_VERSIONS"
     fi
