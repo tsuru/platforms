@@ -17,3 +17,24 @@
     [ -f /var/lib/tsuru/default/Procfile ]
     [ -s /var/lib/tsuru/default/Procfile ]
 }
+
+@test "deploys an customized nginx package" {
+    export NGINX_PKG="nginx-extras"
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    dpkg -s nginx-extras | grep "install ok installed"
+}
+
+@test "deploys fail on invalid nginx package" {
+    export NGINX_PKG="invalid-nginx"
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"ERROR: Invalid nginx package invalid-nginx."* ]]
+}
+
+@test "deploy installs default nginx if env not set" {
+    export NGINX_PKG=""
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    dpkg -s nginx | grep "install ok installed"
+}

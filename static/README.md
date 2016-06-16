@@ -13,3 +13,6 @@ repository](https://github.com/tsuru/platforms/blob/master/static/etc/nginx.conf
 A common practice is to copy it and then do some customizations, as it contains
 some mandatory directives for proper behavior on tsuru (like ``port_in_redirect
 off``).
+
+If your setup requires an specific nginx package, like ``nginx-extras``, you can specify
+it using the ``NGINX_PKG`` environment variable.
