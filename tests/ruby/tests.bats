@@ -12,16 +12,6 @@
     dpkg -s build-essential | grep "install ok installed"
 }
 
-@test "has runnable deploy script" {
-    [ -x "/var/lib/tsuru/deploy" ]
-}
-
-@test "deploy script uses the base scripts" {
-    run /var/lib/tsuru/deploy
-    [[ "$output" == *"ran base deploy"* ]]
-    [[ "$output" == *"ran base config"* ]]
-}
-
 @test "install ruby version 2.3.1 as default" {
     run /home/application/ruby/bin/ruby --version
     [ "$status" -eq 0 ]

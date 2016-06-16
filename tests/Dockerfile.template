@@ -5,8 +5,9 @@
 FROM platform-{PLATFORM}
 WORKDIR /tests
 ADD . /tests
+ADD common/* /tests/common
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/sstephenson/bats.git && mkdir ./bin && bats/install.sh .
 RUN echo "echo 'ran base deploy'" > /var/lib/tsuru/base/deploy
 RUN echo "echo 'ran base config'" > /var/lib/tsuru/base/rc/config
-RUN bin/bats .
+RUN bin/bats common && bin/bats .

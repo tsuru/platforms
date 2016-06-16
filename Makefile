@@ -3,4 +3,4 @@
 # license that can be found in the LICENSE file.
 
 test:
-	./tests/run.sh
+	./tests/run.sh $(platform)
