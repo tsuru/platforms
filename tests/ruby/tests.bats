@@ -40,3 +40,13 @@
     [ "$status" -eq 1 ]
     [[ "$output" == *"Supported versions are: 1.1.1, 1.2, 1.3"* ]]
 }
+
+@test "parse ruby version from .ruby-version" {
+    export CURRENT_DIR=$(pwd)
+    echo "ruby-2.1.2" > .ruby-version
+    run /var/lib/tsuru/deploy
+    run /home/application/ruby/bin/ruby --version
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"2.1.2"* ]]
+    rm .ruby-version
+}
