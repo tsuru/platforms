@@ -48,7 +48,7 @@ if [ -z "$GEM_SOURCE" ]; then
     gem install bundler
 else
     echo "-- Using $GEM_SOURCE as remote gem source --"
-    gem install --source=$GEM_SOURCE bundler
+    gem install --clear-sources --source=$GEM_SOURCE bundler
 fi
 
 if [ -f ${CURRENT_DIR}/Gemfile ]; then
