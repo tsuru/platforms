@@ -20,8 +20,12 @@ set +e
 go get -d ./...
 set -e
 
-if [ -f ${APP_DIR}/.default_procfile ]
+if [ ! -f ${APP_DIR}/Procfile ]
 then
+	echo "Procfile not found. Using the default Procfile"
+	cp ${SOURCE_DIR}/default/Procfile ${APP_DIR}/Procfile
+
+
 	go build -o tsuru-app
 fi
 
