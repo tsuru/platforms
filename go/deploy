@@ -11,7 +11,7 @@ source ${SOURCE_DIR}/base/rc/config
 GO_VERSION=$(test -f /tmp/app_envs && source /tmp/app_envs && echo $GO_VERSION)
 GO_VERSION=${GO_VERSION:-1.7}
 echo "Installing Go ${GO_VERSION}..."
-eval "$(gimme ${GO_VERSION})"
+eval "$(gimme ${GO_VERSION})" >/dev/null 2>&1
 
 pushd ${CURRENT_DIR} >/dev/null 2>&1
 
