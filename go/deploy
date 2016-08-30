@@ -13,11 +13,11 @@ GO_VERSION=${GO_VERSION:-1.7}
 echo "Installing Go ${GO_VERSION}..."
 eval "$(gimme ${GO_VERSION})" >/dev/null 2>&1
 
-APP_PATH = ${APP_DIR}/src/current
+APP_PATH=${APP_DIR}/src/current
 
 if [ ${GO_PKG_PATH} != "" ]
 then
-	APP_PATH = ${APP_DIR}/src/${GO_PKG_PATH}
+	APP_PATH=${APP_DIR}/src/${GO_PKG_PATH}
 fi
 
 mkdir -p ${APP_PATH}
