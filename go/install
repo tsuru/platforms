@@ -24,9 +24,3 @@ do
     echo "Installing Go ${GO_VERSION}..."
     sudo -u ubuntu gimme ${GO_VERSION}
 done
-
-mkdir -p ${APP_DIR}/src/current
-cd ${APP_DIR}
-ln -s ${APP_DIR}/src/current/ current
-chown ${USER}:${USER} ${APP_DIR}/current
-chown ${USER}:${USER} ${APP_DIR}/src

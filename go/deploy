@@ -13,7 +13,20 @@ GO_VERSION=${GO_VERSION:-1.7}
 echo "Installing Go ${GO_VERSION}..."
 eval "$(gimme ${GO_VERSION})" >/dev/null 2>&1
 
-pushd ${APP_DIR}/src/current >/dev/null 2>&1
+APP_PATH = ${APP_DIR}/src/current
+
+if [ ${GO_PKG_PATH} != "" ]
+then
+	APP_PATH = ${APP_DIR}/src/${GO_PKG_PATH}
+fi
+
+mkdir -p ${APP_PATH}
+cd ${APP_DIR}
+ln -s ${APP_DIR}/src/current/ current
+chown ${USER}:${USER} ${APP_DIR}/current
+chown ${USER}:${USER} ${APP_DIR}/src
+
+pushd ${APP_PATH} >/dev/null 2>&1
 
 # do not fail if the application is not go gettable
 set +e
