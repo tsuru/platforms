@@ -21,10 +21,8 @@ then
 fi
 
 mkdir -p ${APP_PATH}
-cd ${APP_DIR}
-ln -s ${APP_DIR}/src/current/ current
-chown ${USER}:${USER} ${APP_DIR}/current
-chown ${USER}:${USER} ${APP_DIR}/src
+ln -s ${APP_DIR}/current ${APP_PATH}
+chown ${USER}:${USER} ${APP_PATH}
 
 pushd ${APP_PATH} >/dev/null 2>&1
 
