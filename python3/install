@@ -15,4 +15,3 @@ rm -f /usr/bin/python3
 ln -s /usr/bin/python3.5 /usr/bin/python3
 ln -s /usr/bin/python3.5 /usr/bin/python
 curl -sL https://bootstrap.pypa.io/get-pip.py | python3
-chown -R ${USER} /usr/local/lib /usr/local/bin /usr/local/sbin /usr/local/share

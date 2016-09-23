@@ -10,8 +10,9 @@ source ${SOURCE_DIR}/base/rc/config
 
 pushd $CURRENT_DIR
 if [ -f ${CURRENT_DIR}/requirements.txt ]; then
-    pip3 install -r ${CURRENT_DIR}/requirements.txt
+    sudo pip3 install -r ${CURRENT_DIR}/requirements.txt
 elif [ -f ${CURRENT_DIR}/setup.py ]; then
-    pip3 install -e ${CURRENT_DIR}/
+    sudo pip3 install -e ${CURRENT_DIR}/
 fi
+chown -R ${USER} ${CURRENT_DIR}
 popd
