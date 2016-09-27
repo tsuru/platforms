@@ -37,6 +37,8 @@ then
 
 	echo "go build -o tsuru-app"
 	go build -o tsuru-app
+else
+	go build
 fi
 
 popd >/dev/null 2>&1
