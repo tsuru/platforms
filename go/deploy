@@ -21,6 +21,7 @@ then
 fi
 
 mkdir -p ${APP_PATH}
+rm ${APP_PATH}
 ln -s ${APP_DIR}/current ${APP_PATH}
 chown ${USER}:${USER} ${APP_PATH}
 
