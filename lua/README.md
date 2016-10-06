@@ -1,9 +1,8 @@
 # Lua Platform
 
-The Lua platform supports code deployment, the application is built in the
-target.
+The Lua platform uses Lua 5.1 and latest LuaRocks available.
 
+## Code deployment with dependencies
 
-## Code deployment
-
-If you just run a ``git push`` of your code, tsuru will try.
+We're using Luarocks to manage packages for Lua, and tsuru will expect
+for a file called `tsuru.rockspec` for dependencies definitions.
