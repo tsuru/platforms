@@ -4,5 +4,5 @@
 
 FROM    tsuru/base-platform
 ADD     . /var/lib/tsuru/lua
-RUN     cp /var/lib/tsuru/base/deploy /var/lib/tsuru
+RUN     cp /var/lib/tsuru/lua/deploy /var/lib/tsuru
 RUN     /var/lib/tsuru/lua/install
