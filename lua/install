@@ -4,8 +4,8 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-# Install dependencies
-apt-get update && apt-get install -y git cpp gcc libc6 libreadline6 zip
+SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/rc/config
 
-# Install packages
-apt-get install -y lua5.1 liblua5.1-dev luarocks
+apt-get update
+apt-get install -y lua5.1 luarocks git
