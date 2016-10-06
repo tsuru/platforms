@@ -5,7 +5,9 @@
 # license that can be found in the LICENSE file.
 
 @test "installs lua" {
-  lua -v | grep "Lua 5.1"
+  run /usr/bin/lua -v
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Lua 5.1"* ]]
 }
 
 @test "install luarocks" {
