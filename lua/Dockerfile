@@ -5,5 +5,4 @@
 FROM    tsuru/base-platform
 ADD     . /var/lib/tsuru/lua
 RUN     cp /var/lib/tsuru/base/deploy /var/lib/tsuru
-RUN     chmod +x /var/lib/tsuru/lua/install
 RUN     /var/lib/tsuru/lua/install
