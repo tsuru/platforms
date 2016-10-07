@@ -19,6 +19,7 @@ All platforms are available in Docker Hub:
 * tsuru/python: https://hub.docker.com/r/tsuru/python/
 * tsuru/pypy: https://hub.docker.com/r/tsuru/pypy/
 * tsuru/ruby: https://hub.docker.com/r/tsuru/ruby/
+* tsuru/rust: https://hub.docker.com/r/tsuru/rust/
 * tsuru/static: https://hub.docker.com/r/tsuru/static/
 
 Installing platforms
@@ -60,3 +61,10 @@ We provide a base image which platform developers can use to build upon:
 a base deployment script, which handles package downloading and extraction in
 proper path, along with operating system package management. For more details,
 check the README of base-platform.
+
+To update a platform:
+
+    docker rmi 127.0.0.1:5000/rust
+    docker build -t 127.0.0.1:5000/rust .
+    docker push 127.0.0.1:5000/rust
+    tsuru-admin platform-update rust -i 127.0.0.1:5000/rust

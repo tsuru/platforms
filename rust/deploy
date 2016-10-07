@@ -1,0 +1,23 @@
+#!/bin/bash -el
+
+# Copyright 2016 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/deploy
+source ${SOURCE_DIR}/base/rc/config
+
+if [ -f ${CURRENT_DIR}/Cargo.toml ]; then
+	pushd ${CURRENT_DIR} >/dev/null 2>&1
+	if [ ! -f ${CURRENT_DIR}/Procfile ]; then
+		echo "Procfile not found, using default one."
+		PKG_NAME=$(awk -F ' *= *' \
+			'{if ($1 ~ /^\[package\]/) stop=1; else if ($1 ~ /^name$/ && stop){print $2; exit}}' \
+			${CURRENT_DIR}/Cargo.toml | cut -d\" -f2)
+		echo "Package name: $PKG_NAME"
+		sed s:%web%:$PKG_NAME: ${SOURCE_DIR}/default/Procfile > ${CURRENT_DIR}/Procfile
+	fi
+	cargo install --force --verbose
+	popd >/dev/null 2>&1
+fi

@@ -1,0 +1,26 @@
+#!/bin/bash -el
+
+# Copyright 2016 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/rc/config
+
+# As of 2016-07-07 `file` is needed. Please check:
+# https://github.com/rust-lang-nursery/rustup.rs/issues/466
+apt-get update && apt-get install -y file gcc git
+
+sh <(curl -sSf https://static.rust-lang.org/rustup.sh) --verbose -y --channel=stable
+
+cp ${SOURCE_DIR}/rust/Procfile ${SOURCE_DIR}/default/Procfile
+
+CARGO_HOME=${APP_DIR}/.cargo
+mkdir -p ${CARGO_HOME}/bin
+mkdir ${CARGO_HOME}/target
+
+echo "export CARGO_HOME=${CARGO_HOME}" >> ${HOME}/.profile
+echo 'export CARGO_TARGET_DIR=$CARGO_HOME/target' >> ${HOME}/.profile
+echo 'PATH=$CARGO_HOME/bin:$PATH' >> ${HOME}/.profile
+
+chown -R ${USER}:${USER} ${CARGO_HOME}
