@@ -8,8 +8,8 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-if [ -f ${CURRENT_DIR}/tsuru.rockspec ]; then
+if [ -f ${CURRENT_DIR}/tsuru-1.0-1.rockspec ]; then
   pushd ${CURRENT_DIR} >/dev/null 2>&1
-  luarocks install tsuru.rockspec
+  sudo luarocks install tsuru-1.0-1.rockspec
   popd >/dev/null 2>&1
 fi
