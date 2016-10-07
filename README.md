@@ -12,6 +12,7 @@ All platforms are available in Docker Hub:
 * tsuru/elixir: https://hub.docker.com/r/tsuru/elixir/
 * tsuru/go: https://hub.docker.com/r/tsuru/go/
 * tsuru/java: https://hub.docker.com/r/tsuru/java/
+* tsuru/lua: https://hub.docker.com/r/tsuru/lua/
 * tsuru/nodejs: https://hub.docker.com/r/tsuru/nodejs/
 * tsuru/php: https://hub.docker.com/r/tsuru/php/
 * tsuru/play: https://hub.docker.com/r/tsuru/play/

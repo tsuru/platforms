@@ -1,0 +1,15 @@
+#!/bin/bash -le
+
+# Copyright 2016 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/deploy
+source ${SOURCE_DIR}/base/rc/config
+
+if [ -f ${CURRENT_DIR}/tsuru.rockspec ]; then
+  pushd ${CURRENT_DIR} >/dev/null 2>&1
+  luarocks install tsuru.rockspec
+  popd >/dev/null 2>&1
+fi
