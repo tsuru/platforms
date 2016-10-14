@@ -1,0 +1,5 @@
+hooks:
+  build:
+    - node hook.js
+healthcheck:
+  path: /

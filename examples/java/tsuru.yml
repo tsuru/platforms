@@ -1,0 +1,6 @@
+hooks:
+  build:
+    - mvn package
+    - mv target/ROOT.war .
+healthcheck:
+  path: /

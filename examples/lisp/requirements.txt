@@ -1,0 +1,2 @@
+https://github.com/orthecreedence/drakma-async.git
+https://github.com/orthecreedence/wookie.git

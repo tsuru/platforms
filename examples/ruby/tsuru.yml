@@ -1,0 +1,5 @@
+hooks:
+  build:
+    - ruby hook.rb
+healthcheck:
+  path: /

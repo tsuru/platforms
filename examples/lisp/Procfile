@@ -1,0 +1,1 @@
+web: sudo -H -E -u ubuntu sbcl --non-interactive --eval '(ql:quickload "example-tsuru-lisp-webapp")' --eval '(web:start)'
