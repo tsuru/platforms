@@ -28,7 +28,9 @@ function test_platform() {
 	app_dir=../examples/${platform}
 	echo "testing platform ${platform} with app ${app_name}..."
 
-	tsuru app-create ${app_name} ${platform} -o theonepool -t admin
+	pushd ${app_dir};
+    tsuru app-create ${app_name} ${platform} -o theonepool -t admin;
+    popd
 
 	echo "Running deploy with app-deploy..."
 	tsuru app-deploy -a ${app_name} ${app_dir}
