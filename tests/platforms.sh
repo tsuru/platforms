@@ -28,14 +28,15 @@ function test_platform() {
 	app_dir=../examples/${platform}
 	echo "testing platform ${platform} with app ${app_name}..."
 
-	pushd ${app_dir};
     tsuru app-create ${app_name} ${platform} -o theonepool -t admin;
-    popd
+
 
 	echo "Running deploy with app-deploy..."
-	tsuru app-deploy -a ${app_name} ${app_dir}
+    pushd ${app_dir}
+	tsuru app-deploy -a ${app_name} .
+    popd
 
-	host=`tsuru app-info -a ${app_name} | grep Address | awk '{print $2}'`
+    host=`tsuru app-info -a ${app_name} | grep Address | awk '{print $2}'`
 
 	set +e
 	for i in `seq 1 5`
