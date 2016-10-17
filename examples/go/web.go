@@ -1,4 +1,4 @@
-// Copyright 2015 basebuilder authors. All rights reserved.
+// Copyright 2016 tsuru authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -29,5 +29,5 @@ func main() {
 	if port == "" {
 		port = "5000"
 	}
-	http.ListenAndServe(":" + port, nil)
+	http.ListenAndServe(":"+port, nil)
 }
