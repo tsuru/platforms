@@ -41,10 +41,11 @@ ln -s $NVM_BIN ~/.nvm_bin
 if [ -f ${CURRENT_DIR}/package.json ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; then
     echo "yarn.lock detected, using yarn to install node packages"
     yarn_bin=$CURRENT_DIR/node_modules/yarn/bin/yarn
+    pushd $CURRENT_DIR
     if [ ! -f $yarn_bin ]; then
         npm install yarn
     fi
-    pushd $CURRENT_DIR && ${yarn_bin} install --production
+    ${yarn_bin} install --production    
     popd
 elif [ -f ${CURRENT_DIR}/package.json ] ; then
     pushd $CURRENT_DIR && npm install --production
