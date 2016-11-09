@@ -38,35 +38,15 @@ rm -f ~/.nvm_bin
 ln -s $NVM_BIN ~/.nvm_bin
 
 
-# yarn install
-download_url="https://yarnpkg.com/latest.tar.gz"
-code=$(curl "$download_url" -L --silent --fail --retry 5 --retry-max-time 15 -o /tmp/yarn.tar.gz --write-out "%{http_code}")
-if [ "$code" != "200" ]; then
-    echo "Unable to download yarn: $code" && false
-fi
-
-YARN_DIR="${HOME}/.yarn"
-
-rm -rf ${YARN_DIR}
-mkdir -p ${YARN_DIR}
-
-# https://github.com/yarnpkg/yarn/issues/770
-if tar --version | grep -q 'gnu'; then
-    tar xzf /tmp/yarn.tar.gz -C "${YARN_DIR}" --strip 1 --warning=no-unknown-keyword
-else
-    tar xzf /tmp/yarn.tar.gz -C "${YARN_DIR}" --strip 1
-fi
-
-if [ -e ${YARN_DIR} ]; then
-    export PATH="${YARN_DIR}/bin:$PATH"
-fi
-
 if [ -f ${CURRENT_DIR}/package.json ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; then
-    pushd $CURRENT_DIR && yarn install --production
+    echo "yarn.lock detected, using yarn to install node packages"
+    yarn_bin=$CURRENT_DIR/node_modules/yarn/bin/yarn
+    if [ ! -f $yarn_bin ]; then
+        npm install yarn
+    fi
+    pushd $CURRENT_DIR && ${yarn_bin} install --production
     popd
 elif [ -f ${CURRENT_DIR}/package.json ] ; then
     pushd $CURRENT_DIR && npm install --production
     popd
 fi
-
-rm -rf "${YARN_DIR}"
