@@ -27,6 +27,16 @@ if [ -n "$TMP_VERSION" ]; then
     NODE_VERSION=${TMP_VERSION}
 fi
 
+if [ $NPM_REGISTRY ]; then
+    echo "registry = $NPM_REGISTRY" > ~/.npmrc
+fi
+
+if [ $NVM_IOJS_ORG_MIRROR ] && [[ "$NODE_VERSION" =~ ^(iojs-v|v)?[123](\.[0-9]+)?(\.[0-9]+)? ]]; then
+    echo "disturl = $NVM_IOJS_ORG_MIRROR" >> ~/.npmrc
+elif [ $NVM_NODEJS_ORG_MIRROR ]; then
+    echo "disturl = $NVM_NODEJS_ORG_MIRROR" >> ~/.npmrc
+fi
+
 export NVM_DIR=${HOME}/.nvm
 [ ! -e ${NVM_DIR} ] && mkdir -p ${NVM_DIR}
 
@@ -37,15 +47,17 @@ nvm install ${NODE_VERSION}
 rm -f ~/.nvm_bin
 ln -s $NVM_BIN ~/.nvm_bin
 
-
 if [ -f ${CURRENT_DIR}/package.json ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; then
     echo "yarn.lock detected, using yarn to install node packages"
-    yarn_bin=$CURRENT_DIR/node_modules/yarn/bin/yarn
-    pushd $CURRENT_DIR
+    yarn_bin=${NVM_BIN}/yarn
     if [ ! -f $yarn_bin ]; then
-        npm install yarn
+        npm install -g yarn
     fi
-    ${yarn_bin} install --production    
+    if [ $NPM_REGISTRY ]; then
+        echo "registry \"$NPM_REGISTRY\"" > ~/.yarnrc
+        sed -i "s|https://registry.yarnpkg.com|$NPM_REGISTRY|g" ${CURRENT_DIR}/yarn.lock
+    fi
+    pushd $CURRENT_DIR && ${yarn_bin} install --production
     popd
 elif [ -f ${CURRENT_DIR}/package.json ] ; then
     pushd $CURRENT_DIR && npm install --production
