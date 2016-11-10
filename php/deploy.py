@@ -99,7 +99,7 @@ class Manager(object):
             if not os.path.isfile(composer_phar):
                 print('Composer is not found locally, downloading it')
 
-                download_cmd = 'curl -sSL http://getcomposer.org/composer.phar -o %s && chmod +x %s' % \
+                download_cmd = 'curl -s --retry 3 -L http://getcomposer.org/composer.phar -o %s && chmod +x %s' % \
                                (composer_phar, composer_phar)
 
                 if os.system(download_cmd) != 0:
