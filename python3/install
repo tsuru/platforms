@@ -5,13 +5,20 @@
 # license that can be found in the LICENSE file.
 
 SOURCE_DIR=/var/lib/tsuru
+APP_VENV=/home/application/.app_env
 
 source ${SOURCE_DIR}/base/rc/config
 
 add_repository ppa:fkrull/deadsnakes
 apt-get update
-apt-get install python3.5 python3.5-dev git -y
+apt-get install python3.5 python3.5-dev python3.5-venv git -y
 rm -f /usr/bin/python3
 ln -s /usr/bin/python3.5 /usr/bin/python3
 ln -s /usr/bin/python3.5 /usr/bin/python
-curl -sL https://bootstrap.pypa.io/get-pip.py | python3
+
+python3.5 -m venv $APP_VENV
+source $APP_VENV/bin/activate
+$APP_VENV/bin/pip install --upgrade --no-cache-dir pip distribute
+echo "export PATH=${APP_VENV}/bin:\${PATH}" | tee -a ${HOME}/.profile /etc/profile >/dev/null
+echo "Defaults secure_path=\"${APP_VENV}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"" > /etc/sudoers.d/venv
+chown -R ${USER}:${USER} ${APP_VENV}
