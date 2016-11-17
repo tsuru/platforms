@@ -9,13 +9,12 @@ source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
 APP_VENV=/home/application/.app_env
-source $APP_VENV/bin/activate
 
 pushd $CURRENT_DIR
 if [ -f ${CURRENT_DIR}/requirements.txt ]; then
-    sudo pip3 install --no-cache-dir -r ${CURRENT_DIR}/requirements.txt
+    $APP_VENV/bin/pip install --no-cache-dir -r ${CURRENT_DIR}/requirements.txt
 elif [ -f ${CURRENT_DIR}/setup.py ]; then
-    sudo pip3 install --no-cache-dir -e ${CURRENT_DIR}/
+    $APP_VENV/bin/pip install --no-cache-dir -e ${CURRENT_DIR}/
 fi
 chown -R ${USER} ${CURRENT_DIR}
 popd
