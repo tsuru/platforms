@@ -1,9 +1,11 @@
-#Go platform
+Go platform
+===========
 
 The Go platform supports two kinds of deployment: binary deployment and code
 deployment, where tsuru will build your application in the target.
 
-##Binary deployment
+Binary deployment
+-----------------
 
 For binary deployment, ensure your binary is named "tsuru-app" (``go build -o
 tsuru-app`` should do the trick) and matches the target platform (usually
@@ -17,7 +19,8 @@ something like:
 	web: ./myapp
 	% tsuru app-deploy -a [app-name] myapp Procfile
 
-##Code deployment
+Code deployment
+---------------
 
 If you just run a ``git push`` of your code, tsuru will try to download all of
 your dependencies using ``go get`` and build your application. You can
@@ -40,7 +43,8 @@ to follow the setup process, that will:
 - build the application, expecting the root of your project to be a main
   package
 
-##Code deployment with customized compilation step
+Code deployment with customized compilation step
+------------------------------------------------
 
 You can also use tsuru hooks to customize the compilation and a Procfile to
 customize the execution of your application, here's an example:
