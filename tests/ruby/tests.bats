@@ -50,3 +50,36 @@
     [[ "$output" == *"2.1.2"* ]]
     rm .ruby-version
 }
+
+@test "bundle install when provide Gemfile" {
+    export CURRENT_DIR=$(pwd)
+    echo "ruby-2.1.2" > .ruby-version
+    echo "source 'https://rubygems.org'" > Gemfile
+    echo "gem 'hello-world', '1.2.0'" >> Gemfile
+    cat <<EOF>Gemfile.lock
+GEM
+  remote: https://rubygems.org/
+  specs:
+    hello-world (1.2.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  hello-world (= 1.2.0)
+
+BUNDLED WITH
+   1.13.7
+EOF
+
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Installing hello-world"* ]]
+}
+
+@test "do not try to reinstall a gem already in vendor directory" {
+    export CURRENT_DIR=$(pwd)
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Using hello-world"* ]]
+}

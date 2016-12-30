@@ -35,20 +35,32 @@ RUBY_TARGET="$RUBY_REPO/ruby-$RUBY_VERSION.tgz"
 echo "-- Fetching ruby from: $RUBY_TARGET --"
 
 # Install Ruby
-mkdir -p "/home/application/ruby"
-if ! (curl -s --retry 3 -L "$RUBY_TARGET" | tar xz -C "/home/application/ruby"); then
-    echo "ERROR: ruby version $RUBY_VERSION is not supported."
-    if [ ! -z "$SUPPORTED_VERSIONS" ]; then
-        echo "Supported versions are: $SUPPORTED_VERSIONS"
+INSTALL_RUBY=1
+if [ -f /home/application/ruby/bin/ruby ]; then
+    RUBY_INSTALLED_VERSION=$(/home/application/ruby/bin/ruby -e 'puts RUBY_VERSION')
+    if [ "${RUBY_INSTALLED_VERSION}" != "${RUBY_VERSION}" ]; then
+        INSTALL_RUBY=1
+    else
+        INSTALL_RUBY=0
     fi
-    exit 1
 fi
 
-if [ -z "$GEM_SOURCE" ]; then
-    gem install bundler
-else
-    echo "-- Using $GEM_SOURCE as remote gem source --"
-    gem install --clear-sources --source=$GEM_SOURCE bundler
+if [ "$INSTALL_RUBY" == "1" ]; then
+    mkdir -p "/home/application/ruby"
+    if ! (curl -s --retry 3 -L "$RUBY_TARGET" | tar xz -C "/home/application/ruby"); then
+        echo "ERROR: ruby version $RUBY_VERSION is not supported."
+        if [ ! -z "$SUPPORTED_VERSIONS" ]; then
+            echo "Supported versions are: $SUPPORTED_VERSIONS"
+        fi
+        exit 1
+    fi
+
+    if [ -z "$GEM_SOURCE" ]; then
+        gem install bundler
+    else
+        echo "-- Using $GEM_SOURCE as remote gem source --"
+        gem install --clear-sources --source=$GEM_SOURCE bundler
+    fi
 fi
 
 if [ -f ${CURRENT_DIR}/Gemfile ]; then
