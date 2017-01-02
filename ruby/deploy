@@ -5,13 +5,13 @@
 # license that can be found in the LICENSE file.
 
 SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/rc/config
 
 if [ -d ${CURRENT_DIR}/vendor ]; then
     PLATFORM_EXTRA_RSYNC_ARGS="--filter \"protect vendor/\""
 fi
 
 source ${SOURCE_DIR}/base/deploy
-source ${SOURCE_DIR}/base/rc/config
 
 if [ -f ${CURRENT_DIR}/Gemfile ]; then
     RUBY_VERSION=$(/usr/bin/ruby /var/lib/tsuru/ruby/ruby_version_eval.rb ${CURRENT_DIR}/Gemfile 2>/dev/null || echo "")
@@ -24,6 +24,8 @@ if [ -f ${CURRENT_DIR}/.ruby-version -a "${RUBY_VERSION}" == "" ]; then
     fi
 fi
 
+echo "gem: --no-rdoc --no-ri" > ~/.gemrc
+
 RUBY_VERSION=${RUBY_VERSION:-2.3.1}
 
 echo "-- Using ruby version: $RUBY_VERSION --"
@@ -31,8 +33,6 @@ echo "-- Using ruby version: $RUBY_VERSION --"
 RUBY_REPO=${RUBY_REPO:-https://heroku-buildpack-ruby.s3.amazonaws.com/cedar-14}
 
 RUBY_TARGET="$RUBY_REPO/ruby-$RUBY_VERSION.tgz"
-
-echo "-- Fetching ruby from: $RUBY_TARGET --"
 
 # Install Ruby
 INSTALL_RUBY=1
@@ -47,6 +47,7 @@ fi
 
 if [ "$INSTALL_RUBY" == "1" ]; then
     mkdir -p "/home/application/ruby"
+    echo "-- Fetching ruby from: $RUBY_TARGET --"
     if ! (curl -s --retry 3 -L "$RUBY_TARGET" | tar xz -C "/home/application/ruby"); then
         echo "ERROR: ruby version $RUBY_VERSION is not supported."
         if [ ! -z "$SUPPORTED_VERSIONS" ]; then
