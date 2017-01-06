@@ -8,7 +8,7 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
 if [ -d ${CURRENT_DIR}/vendor ]; then
-    PLATFORM_EXTRA_RSYNC_ARGS="--filter \"protect vendor/\""
+    PLATFORM_EXTRA_RSYNC_ARGS=${PLATFORM_EXTRA_RSYNC_ARGS---exclude vendor/bundle}
 fi
 
 source ${SOURCE_DIR}/base/deploy
