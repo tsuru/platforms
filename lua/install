@@ -7,8 +7,8 @@
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
-apt-get update && \
-    apt-get install -y make gcc libreadline-dev
+apt-get update - && \
+    apt-get install -y make gcc libreadline-dev --no-install-recommends
 
 curl -R -O http://www.lua.org/ftp/lua-5.3.3.tar.gz && \
     tar zxf lua-5.3.3.tar.gz && \
@@ -18,4 +18,4 @@ curl -R -O http://www.lua.org/ftp/lua-5.3.3.tar.gz && \
     mv ./src/luac /usr/bin/luac
 
 apt-get install -y luarocks git
-# apt-get remove make gcc -y
+apt-get remove make gcc -y && apt-get clean
