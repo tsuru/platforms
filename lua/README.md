@@ -1,6 +1,6 @@
 # Lua Platform
 
-The Lua platform uses Lua 5.1 and latest LuaRocks available.
+The Lua platform uses Lua 5.3 and latest LuaRocks available.
 
 ## Code deployment with dependencies
 

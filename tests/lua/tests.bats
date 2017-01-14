@@ -7,7 +7,7 @@
 @test "installs lua" {
   run /usr/bin/lua -v
   [ "$status" -eq 0 ]
-  [[ "$output" == *"Lua 5.1"* ]]
+  [[ "$output" == *"Lua 5.3"* ]]
 }
 
 @test "install luarocks" {
