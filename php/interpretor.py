@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2016 tsuru authors. All rights reserved.
+# Copyright 2017 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 from utils import replace
+from vars import php_versions
 
 class Interpretor(object):
     def __init__(self, configuration, application):
@@ -17,62 +18,70 @@ class Interpretor(object):
 
     def configure(self, frontend):
         # If frontend supports unix sockets, use them by default
-        self.socket_address = 'unix:/var/run/php5/fpm.sock'
+        self.socket_address = 'unix:/var/run/php/fpm.sock'
         if not frontend.supports_unix_proxy():
             self.socket_address = '127.0.0.1:9000'
 
         # Clear pre-configured pools
-        map(os.unlink, [os.path.join('/etc/php5/fpm/pool.d', f) for f in os.listdir('/etc/php5/fpm/pool.d')])
-        templates_mapping = {
-            'pool.conf': '/etc/php5/fpm/pool.d/tsuru.conf',
-            'php-fpm.conf': '/etc/php5/fpm/php-fpm.conf'
-        }
+        for version in php_versions:
+            removed_fpm_files = []
+            for f in os.listdir('/etc/php/{}/fpm/pool.d'.format(version)):
+                removed_fpm_files.append(os.path.join('/etc/php/{}/fpm/pool.d'.format(version), f))
+            map(os.unlink, removed_fpm_files)
+            templates_mapping = {
+                'pool.conf': '/etc/php/{}/fpm/pool.d/tsuru.conf',
+                'php-fpm.conf': '/etc/php/{}/fpm/php-fpm.conf'
+            }
 
-        for template, target in templates_mapping.iteritems():
-            shutil.copyfile(
-                os.path.join(self.application.get('source_directory'), 'php', 'interpretor', 'fpm5', template),
-                target
-            )
+            for template, target in templates_mapping.iteritems():
+                shutil.copyfile(
+                    os.path.join(self.application.get('source_directory'), 'php', 'interpretor', 'fpm',
+                                 template.format(version)),
+                    target.format(version)
+                )
 
-        # Replace pool listen address
-        listen_address = self.socket_address
-        if listen_address[0:5] == 'unix:':
-            listen_address = listen_address[5:]
+            # Replace pool listen address
+            listen_address = self.socket_address
+            if listen_address[0:5] == 'unix:':
+                listen_address = listen_address[5:]
 
-        replace(templates_mapping['pool.conf'], '_FPM_POOL_LISTEN_', listen_address)
+            replace(templates_mapping['pool.conf'].format(version), '_FPM_POOL_LISTEN_', listen_address)
+            replace(templates_mapping['php-fpm.conf'].format(version), '_PHP_VERSION_', version)
 
-        if 'ini_file' in self.configuration:
-            shutil.copyfile(
-                os.path.join(self.application.get('directory'), self.configuration.get('ini_file')),
-                '/etc/php5/fpm/php.ini'
-            )
+            # Fix user rights
+            os.system('chown -R {} /etc/php/{}/fpm /var/run/php'.format(self.application.get('user'), version))
 
-        # Clean and touch some files
-        for file_path in ['/var/log/php5-fpm.log', '/etc/php5/fpm/environment.conf']:
-            open(file_path, 'a').close()
-            os.system('chown %s %s' % (self.application.get('user'), file_path))
+            # Clean and touch some files
+            for file_path in ['/var/log/php-fpm.log', '/etc/php/{}/fpm/environment.conf'.format(version)]:
+                open(file_path, 'a').close()
+                os.system('chown %s %s' % (self.application.get('user'), file_path))
+
+            if 'ini_file' in self.configuration:
+                shutil.copyfile(
+                    os.path.join(self.application.get('directory'), self.configuration.get('ini_file')),
+                    '/etc/php/{}/fpm/php.ini'.format(version)
+                )
 
         # Clean run directory
-        run_directory = '/var/run/php5'
+        run_directory = '/var/run/php'
         if not os.path.exists(run_directory):
             os.makedirs(run_directory)
 
-        # Fix user rights
-        os.system('chown -R %s /etc/php5/fpm /var/run/php5' % self.application.get('user'))
+
 
     def get_address(self):
         return self.socket_address
 
     def setup_environment(self):
-        target = '/etc/php5/fpm/environment.conf'
+        target = '/etc/php/{}/fpm/environment.conf'
+        for version in php_versions:
+            with open(target.format(version), 'w') as f:
+                for (k, v) in self.application.get('env', {}).items():
+                    if v:
+                        f.write('env[%s] = %s\n' % (k, v))
 
-        with open(target, 'w') as f:
-            for (k, v) in self.application.get('env', {}).items():
-                if v:
-                    f.write('env[%s] = %s\n' % (k, v))
-
-    def get_startup_cmd(self):
-        return '/usr/sbin/php5-fpm --fpm-config /etc/php5/fpm/php-fpm.conf'
+    def get_startup_cmd(self, version):
+        return '/usr/sbin/php-fpm{0} --fpm-config /etc/php/{0}/fpm/php-fpm.conf'.format(version)
 
     def get_packages_extensions(self):
         packages = []
@@ -81,41 +90,18 @@ class Interpretor(object):
                 packages.append(extension.join(['', self.phpversion]))
         return packages
 
-class FPM54(Interpretor):
-    def __init__(self, configuration, application):
-        super(FPM54, self).__init__(configuration, application)
-
     def pre_install(self):
-        os.system('apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A2098A6E')
-        os.system('echo deb http://packages.dotdeb.org stable all | tee /etc/apt/sources.list.d/php54.list')
-        os.system('apt-get update')
-        self.phpversion = subprocess.check_output('apt-cache madison php5|grep 5.4|awk \'{print "="$3}\'', shell=True)
+        pass
 
-    def get_packages(self):
-        packages = ['php5-cli', 'php5-common'.join(['', self.phpversion]), 'php5-fpm'.join(['', self.phpversion])]
-        return packages
-
-
-
-    def post_install(self):
-        # Remove autostart
-        os.system('service php5-fpm stop')
-
-class FPM55(Interpretor):
+class FPM(Interpretor):
     def __init__(self, configuration, application):
         self.phpversion = ''
-        super(FPM55, self).__init__(configuration, application)
-
-    def pre_install(self):
-        os.system('apt-get update')
-
-    def get_packages(self):
-        packages = ['php5-cli', 'php5-fpm']
-        return packages
+        super(FPM, self).__init__(configuration, application)
 
     def post_install(self):
         # Remove autostart
-        os.system('service php5-fpm stop')
+        for version in php_versions:
+            os.system('service php{}-fpm stop'.format(version))
 
 class HHVM(Interpretor):
     def __init__(self, configuration, application):
@@ -167,15 +153,6 @@ class HHVM(Interpretor):
         # Fix user rights
         os.system('chown -R %s /etc/hhvm /var/run/hhvm' % self.application.get('user'))
 
-    def pre_install(self):
-        # Add GPG key and source list
-        os.system('curl -L http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -')
-        os.system('echo deb http://dl.hhvm.com/ubuntu trusty main | tee /etc/apt/sources.list.d/hhvm.list')
-        os.system('apt-get update')
-
-    def get_packages(self):
-        return ['hhvm']
-
     def get_packages_extensions(self):
         return []
 
@@ -187,11 +164,12 @@ class HHVM(Interpretor):
     def setup_environment(self):
         pass
 
-    def get_startup_cmd(self):
+    def get_startup_cmd(self, version):
         return '/usr/bin/hhvm --config /etc/hhvm/php.ini --config /etc/hhvm/server.ini --user %s --mode daemon -vPidFile=/var/run/hhvm/pid' % self.application.get('user')
 
 interpretors = {
-    'fpm54': FPM54,
-    'fpm55': FPM55,
+    'fpm': FPM,
+    'fpm54': FPM,
+    'fpm55': FPM,
     'hhvm': HHVM
 }

@@ -1,4 +1,24 @@
 #!/bin/bash -e
 
+SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/rc/config
+PHP_VERSIONS="5.6 7.0 7.1"
+
+add_repository ppa:ondrej/php
+hhvm_repo="deb http://dl.hhvm.com/ubuntu ${UBUNTU_RELEASE} main"
+add_repository "${hhvm_repo}" "0x5a16e7281be7a449"
+
 apt-get update
 apt-get install python python-yaml -y --force-yes
+
+for version in $PHP_VERSIONS
+do
+    apt-get install -y php${version} php${version}-fpm libapache2-mod-php${version}
+done
+
+apt-get install -y nginx-core
+apt-get install -y hhvm
+
+curl -s -L http://getcomposer.org/composer.phar -o /usr/local/bin/composer_phar
+chmod +x /usr/local/bin/composer_phar
+apt-get autoclean

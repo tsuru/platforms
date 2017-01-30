@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2016 tsuru authors. All rights reserved.
+# Copyright 2017 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
 import os
 import shutil
 from utils import replace
+from vars import php_versions, default_version
 
 class Frontend(object):
     def __init__(self, configuration, application):
@@ -19,9 +20,6 @@ class Frontend(object):
     def post_install(self):
         pass
 
-    def get_packages(self):
-        return []
-
     def supports_unix_proxy(self):
         return True
 
@@ -29,9 +27,6 @@ class Frontend(object):
         pass
 
 class Apache(Frontend):
-    def get_packages(self):
-        return ['apache2']
-
     def supports_unix_proxy(self):
         return False
 
@@ -105,14 +100,17 @@ class ApacheModPHP(Apache):
     def get_default_vhost_filepath(self):
         return os.path.join(self.application.get('source_directory'), 'php', 'frontend', 'apache-mod-php', 'vhost.conf')
 
-    def get_packages(self):
-        return ['apache2', 'php5']
+    def configure(self, interpretor=None):
+        super(ApacheModPHP, self).configure(interpretor)
+        php_version = str(self.configuration.get('version', default_version))
+        if php_version not in php_versions:
+            php_version = default_version
+        for version in php_versions:
+            os.system('sudo /usr/sbin/a2dismod php{}'.format(version))
+        os.system('sudo /usr/sbin/a2enmod php{}'.format(php_version))
 
 
 class Nginx(Frontend):
-    def get_packages(self):
-        return ['nginx']
-
     def post_install(self):
         os.system('service nginx stop')
         os.system('update-rc.d nginx remove')

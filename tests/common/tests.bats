@@ -11,5 +11,4 @@
 @test "deploy script uses the base scripts" {
     run /var/lib/tsuru/deploy
     [[ "$output" == *"ran base deploy"* ]]
-    [[ "$output" == *"ran base config"* ]]
 }

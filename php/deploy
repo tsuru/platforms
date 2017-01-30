@@ -1,6 +1,6 @@
 #!/bin/bash -el
 
-# Copyright 2016 tsuru authors. All rights reserved.
+# Copyright 2017 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -13,5 +13,8 @@ source ${SOURCE_DIR}/base/rc/config
 
 # Deploying
 echo "Starting application configuration"
+if [ ! -d "${CURRENT_DIR}" ]; then
+  mkdir ${CURRENT_DIR} && chown ${USER} ${CURRENT_DIR}
+fi
 sudo -E python ${SOURCE_DIR}/php/deploy.py install
 python ${SOURCE_DIR}/php/deploy.py environment

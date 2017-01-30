@@ -4,12 +4,19 @@ The PHP platform is built to be able to manage multiple front-end and interpreto
 
 ```yml
 php:
+    version: 5.6
     frontend:
         name: nginx
     interpretor:
-        name: fpm54
+        name: fpm
     composer: true
 ```
+## Versions
+
+Currently, php supported versions are:
+- 5.6
+- 7.0
+- 7.1
 
 ## Front ends
 
@@ -50,20 +57,19 @@ php:
 
 The following PHP interpretors are supported:
 
-- `fpm54`: PHP 5.4 though PHP-FPM
-- `fpm55`: PHP 5.5 though PHP-FPM
-- `hhvm`: HipHop Virtual Machine (PHP 5.4)
+- `fpm`: PHP-FPM
+- `hhvm`: HipHop Virtual Machine
 
 You can chose between them by setting the `php.interpretor.name` parameter:
 ```yml
 php:
     interpretor:
-        name: fpm54
+        name: fpm
 ```
 
 These interpretors can also have options configured in the `php.interpretor.options` parameter.
 
-If you choose `fpm54` interpretor, use `extensions` option to install php5 extensions instead of using `requirements.apt`
+If you choose `fpm` interpretor, use `extensions` option to install php extensions instead of using `requirements.apt`
 
 All these options are not required and can be used the following ways
 ```yml
@@ -73,18 +79,13 @@ php:
         options:
             ini_file: /path/to/file.ini
             extensions:
-                - php5-mysql
+                - php-mysql
 ```
 
-## `fpm54` options
+## `fpm` options
 
 - `ini_file`: The relative path of your `php.ini` file in your project, that will replace the default one
-- `extensions`: A list of php5 extensions you need
-
-## `fpm55` options
-
-- `ini_file`: The relative path of your `php.ini` file in your project, that will replace the default one
-- `extensions`: A list of php5 extensions you need
+- `extensions`: A list of php extensions you need
 
 ## `hhvm` options
 
@@ -99,7 +100,7 @@ In addition to the `frontend` and `interpretor` options, there's an other one:
 ## Backward compatibility
 
 To keep the backward compatibility, there's also a `apache-mod-php` frontend that is in fact the Apache with modphp enabled, that remove the need of an interpretor.
-That's currently the default configuration if no parameter is set.
+That's currently the default configuration if no parameter is set along php version 5.6.
 
 ## Next steps
 

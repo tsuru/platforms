@@ -1,4 +1,6 @@
-# Copyright 2016 tsuru authors. All rights reserved.
+# -*- coding: utf-8 -*-
+
+# Copyright 2017 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -10,6 +12,7 @@ from utils import parse_env
 
 from interpretor import interpretors
 from frontend import frontends
+from vars import php_versions, default_version
 
 
 class ConfigurationException(Exception):
@@ -35,33 +38,28 @@ class Manager(object):
         if self.interpretor is not None:
             self.interpretor.pre_install()
 
-        packages = self.frontend.get_packages()
         packages_php_extensions = []
         if self.interpretor is not None:
-            packages += self.interpretor.get_packages()
             packages_php_extensions = self.interpretor.get_packages_extensions()
-
-        print('Installing system packages...')
-        try:
-            if os.system("apt-get install -y --force-yes %s" % (' '.join(packages))) != 0:
-                raise InstallationException('An error appeared while installing needed packages')
-        except InstallationException:
-            os.system("apt-get update")
-            if os.system("apt-get install -y --force-yes %s" % (' '.join(packages))) != 0:
-                raise InstallationException('An error appeared while installing needed packages')
 
         if packages_php_extensions:
             print('Installing php extensions..')
+            packages_to_install = []
+            for package in packages_php_extensions:
+                if "-" in package:
+                    packages_to_install.append(self.prefix_package_version(package.split("-")[1]))
+                else:
+                    packages_to_install.append(self.prefix_package_version(package))
             try:
-                if os.system("apt-get install -y --force-yes %s" % (' '.join(packages_php_extensions))) != 0:
+                if os.system("sudo apt-get install -y --force-yes %s" % (' '.join(packages_to_install))) != 0:
                     raise InstallationException('An error appeared while installing needed packages')
             except InstallationException:
                 os.system("apt-get update")
-                if os.system("apt-get install -y --force-yes %s" % (' '.join(packages_php_extensions))) != 0:
+                if os.system("sudo apt-get install -y --force-yes %s" % (' '.join(packages_to_install))) != 0:
                     raise InstallationException('An error appeared while installing needed packages')
-            for package in packages_php_extensions:
-                module_name = package.split("php5-")[1]
-                if os.system("php5enmod %s" % module_name) != 0:
+            for package in packages_to_install:
+                module_name = package.split("-")[1]
+                if os.system("phpenmod %s" % module_name) != 0:
                     raise InstallationException('Could not enable %s php module' % module_name)
 
         # Calling post-install hooks
@@ -83,7 +81,7 @@ class Manager(object):
             with open(Procfile_path, 'w') as f:
                 f.write('web: /bin/bash -lc "sudo -E %s' % self.frontend.get_startup_cmd())
                 if self.interpretor is not None:
-                    f.write(' && %s' % self.interpretor.get_startup_cmd())
+                    f.write(' && %s' % self.interpretor.get_startup_cmd(self.get_php_version()))
                 f.write(' "\n')
                 if procfile_contents:
                     f.write(procfile_contents)
@@ -91,21 +89,21 @@ class Manager(object):
         if self.configuration.get('composer', True):
             self.install_composer()
 
+    def get_php_version(self):
+        version = str(self.configuration.get('version', default_version))
+        if version not in php_versions:
+            version = default_version
+        return version
+
+    def prefix_package_version(self, package):
+        return "php{}-{}".format(self.get_php_version(), package)
+
     def install_composer(self):
         if os.path.isfile(os.path.join(self.application.get('directory'), 'composer.json')):
             print('Install composer dependencies')
-
-            composer_phar = os.path.join(self.application.get('directory'), 'composer.phar')
-            if not os.path.isfile(composer_phar):
-                print('Composer is not found locally, downloading it')
-
-                download_cmd = 'curl -s --retry 3 -L http://getcomposer.org/composer.phar -o %s && chmod +x %s' % \
-                               (composer_phar, composer_phar)
-
-                if os.system(download_cmd) != 0:
-                    raise InstallationException('Unable to download composer')
-
-            if os.system('cd %s && %s install' % (self.application.get('directory'), composer_phar)) != 0:
+            composer_phar = '/usr/local/bin/composer_phar'
+            if os.system('cd %s && sudo -u %s %s install' % (self.application.get('directory'),
+                                                             self.application.get('user'), composer_phar)) != 0:
                 raise InstallationException('Unable to install composer dependencies')
 
     def configure(self):
@@ -126,11 +124,9 @@ class Manager(object):
         frontend = self.configuration.get('frontend', {
             'name': 'apache-mod-php'
         })
-
-        if 'name' not in frontend:
-            raise ConfigurationException('Frontend name must be set')
-
-        return self.get_frontend_by_name(frontend.get('name'))(frontend.get('options', {}), self.application)
+        frontend_options = frontend.get('options', {})
+        frontend_options['version'] = self.configuration.get('version', default_version)
+        return self.get_frontend_by_name(frontend.get('name'))(frontend_options, self.application)
 
     def create_interpretor(self):
         interpretor = self.configuration.get('interpretor', None)
