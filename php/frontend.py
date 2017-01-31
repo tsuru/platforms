@@ -37,9 +37,14 @@ class Apache(Frontend):
     def configure(self, interpretor=None):
         # Set apache virtual host
         vhost_directory = '/etc/apache2/sites-enabled'
+        confs_directory = '/etc/apache2/conf-available'
         map(os.unlink, [os.path.join(vhost_directory, f) for f in os.listdir(vhost_directory)])
         vhost_path = os.path.join(vhost_directory, 'tsuru-vhost.conf')
+        security_dst_file = os.path.join(confs_directory, 'security.conf')
         shutil.copyfile(self.get_vhost_filepath(), vhost_path)
+        security_src_file = os.path.join(self.application.get('source_directory'), 'php', 'frontend',
+                                         'apache', 'security.conf')
+        shutil.copyfile(security_src_file, security_dst_file)
 
         # Set interpretor address is there's any
         if interpretor is not None:
@@ -86,7 +91,6 @@ class Apache(Frontend):
     def get_vhost_filepath(self):
         if 'vhost_file' in self.configuration:
             return os.path.join(self.application.get('directory'), self.configuration.get('vhost_file'))
-
         return self.get_default_vhost_filepath()
 
     def get_default_vhost_filepath(self):
