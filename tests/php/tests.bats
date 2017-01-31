@@ -108,3 +108,21 @@ EOF
     match="iralance/hello .+"
     [[ $output =~ $match ]]
 }
+
+@test "generate environment.conf for all php-fpm versions" {
+  cat >/home/application/current/tsuru.yaml <<EOF
+php:
+  version: 7.1
+  interpretor:
+    name: fpm
+EOF
+    cat >/tmp/app_envs <<EOF
+export FOO=1
+export BAR=2
+EOF
+    run /var/lib/tsuru/deploy
+    for version in 5.6 7.0 7.1; do
+        run bash -c "egrep '(FOO|BAR)' /etc/php/${version}/fpm/environment.conf | tr '\n' ' '"
+        [ "$output" = "env[BAR] = 2 env[FOO] = 1 " ]
+    done
+}
