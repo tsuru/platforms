@@ -46,7 +46,7 @@ php:
 EOF
     run /var/lib/tsuru/deploy
     run cat /home/application/current/Procfile
-    [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start -DNO_DETACH && /usr/sbin/php-fpm5.6 --fpm-config /etc/php/5.6/fpm/php-fpm.conf "' ]
+    [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start && /usr/sbin/php-fpm5.6 --fpm-config /etc/php/5.6/fpm/php-fpm.conf "' ]
 }
 
 @test "php 7.0 using fpm and default frontend" {
@@ -58,7 +58,7 @@ php:
 EOF
   run /var/lib/tsuru/deploy
   run cat /home/application/current/Procfile
-  [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start -DNO_DETACH && /usr/sbin/php-fpm7.0 --fpm-config /etc/php/7.0/fpm/php-fpm.conf "' ]
+  [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start && /usr/sbin/php-fpm7.0 --fpm-config /etc/php/7.0/fpm/php-fpm.conf "' ]
 }
 
 @test "php 7.0 using fpm and nginx as frontend" {
@@ -89,7 +89,7 @@ php:
 EOF
   run /var/lib/tsuru/deploy
   run cat /home/application/current/Procfile
-  [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start -DNO_DETACH && /usr/sbin/php-fpm7.1 --fpm-config /etc/php/7.1/fpm/php-fpm.conf "' ]
+  [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start && /usr/sbin/php-fpm7.1 --fpm-config /etc/php/7.1/fpm/php-fpm.conf "' ]
   run bash -c 'dpkg -s php7.1-mysql | grep Status'
   [ "$output" == 'Status: install ok installed' ]
 }

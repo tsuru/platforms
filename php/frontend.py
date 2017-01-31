@@ -97,7 +97,7 @@ class Apache(Frontend):
         return os.path.join(self.application.get('source_directory'), 'php', 'frontend', 'apache', 'vhost.conf')
 
     def get_startup_cmd(self):
-        return '/usr/sbin/apache2 -d /etc/apache2 -k start -DNO_DETACH'
+        return '/usr/sbin/apache2 -d /etc/apache2 -k start'
 
 
 class ApacheModPHP(Apache):
@@ -112,6 +112,9 @@ class ApacheModPHP(Apache):
         for version in php_versions:
             os.system('sudo /usr/sbin/a2dismod php{}'.format(version))
         os.system('sudo /usr/sbin/a2enmod php{}'.format(php_version))
+
+    def get_startup_cmd(self):
+            return '/usr/sbin/apache2 -d /etc/apache2 -k start -DNO_DETACH'
 
 
 class Nginx(Frontend):

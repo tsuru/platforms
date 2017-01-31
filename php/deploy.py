@@ -121,9 +121,15 @@ class Manager(object):
         self.frontend.setup_environment()
 
     def create_frontend(self):
-        frontend = self.configuration.get('frontend', {
-            'name': 'apache-mod-php'
-        })
+        interpretor = self.configuration.get('interpretor', None)
+        if interpretor:
+            frontend = self.configuration.get('frontend', {
+                'name': 'apache'
+            })
+        else:
+            frontend = self.configuration.get('frontend', {
+                'name': 'apache-mod-php'
+            })
         frontend_options = frontend.get('options', {})
         frontend_options['version'] = self.configuration.get('version', default_version)
         return self.get_frontend_by_name(frontend.get('name'))(frontend_options, self.application)
