@@ -49,6 +49,9 @@ class Interpretor(object):
             replace(templates_mapping['php-fpm.conf'].format(version), '_PHP_VERSION_', version)
 
             # Fix user rights
+            run_directory = '/var/run/php'
+            if not os.path.exists(run_directory):
+                os.makedirs(run_directory)
             os.system('chown -R {} /etc/php/{}/fpm /var/run/php'.format(self.application.get('user'), version))
 
             # Clean and touch some files
@@ -61,13 +64,6 @@ class Interpretor(object):
                     os.path.join(self.application.get('directory'), self.configuration.get('ini_file')),
                     '/etc/php/{}/fpm/php.ini'.format(version)
                 )
-
-        # Clean run directory
-        run_directory = '/var/run/php'
-        if not os.path.exists(run_directory):
-            os.makedirs(run_directory)
-
-
 
     def get_address(self):
         return self.socket_address
