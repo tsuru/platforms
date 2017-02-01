@@ -19,6 +19,12 @@ for plat in $platforms; do
     sed "s/{PLATFORM}/$plat/g" Dockerfile.template > ./$plat/Dockerfile
     cp -r common ./$plat/common
     docker build -t platform-$plat ../$plat && docker build -t tests-$plat --no-cache ./$plat
+    if [ "$?" != "0" ]; then
+      errors=1
+    fi
     rm ./$plat/Dockerfile && rm -rf ./$plat/common
 done
 
+if [ "$errors" == "1" ]; then
+  exit 1
+fi
