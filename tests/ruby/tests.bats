@@ -4,6 +4,12 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+setup() {
+    rm -rf /home/application/current && mkdir /home/application/current
+    chown ubuntu /home/application/current
+    export CURRENT_DIR=/home/application/current
+}
+
 @test "installs ruby" {
     dpkg -s ruby | grep "install ok installed"
 }
@@ -42,21 +48,19 @@
 }
 
 @test "parse ruby version from .ruby-version" {
-    export CURRENT_DIR=$(pwd)
-    echo "ruby-2.1.2" > .ruby-version
+    echo "ruby-2.1.2" > ${CURRENT_DIR}/.ruby-version
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
     [ "$status" -eq 0 ]
     [[ "$output" == *"2.1.2"* ]]
-    rm .ruby-version
+    rm ${CURRENT_DIR}/.ruby-version
 }
 
-@test "bundle install when provide Gemfile" {
-    export CURRENT_DIR=$(pwd)
-    echo "ruby-2.1.2" > .ruby-version
-    echo "source 'https://rubygems.org'" > Gemfile
-    echo "gem 'hello-world', '1.2.0'" >> Gemfile
-    cat <<EOF>Gemfile.lock
+@test "bundle install when provide Gemfile and reuse already installed gem" {
+    echo "ruby-2.1.2" > ${CURRENT_DIR}/.ruby-version
+    echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
+    echo "gem 'hello-world', '1.2.0'" >> ${CURRENT_DIR}/Gemfile
+    cat <<EOF>${CURRENT_DIR}/Gemfile.lock
 GEM
   remote: https://rubygems.org/
   specs:
@@ -75,11 +79,6 @@ EOF
     run /var/lib/tsuru/deploy
     [ "$status" -eq 0 ]
     [[ "$output" == *"Installing hello-world"* ]]
-}
-
-@test "do not try to reinstall a gem already in vendor directory" {
-    export CURRENT_DIR=$(pwd)
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
     [[ "$output" == *"Using hello-world"* ]]
 }
