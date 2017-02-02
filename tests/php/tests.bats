@@ -126,3 +126,21 @@ EOF
         [ "$output" = "env[BAR] = 2 env[FOO] = 1 " ]
     done
 }
+
+@test "update-alternatives for php and phar" {
+    for version in 5.6 7.0 7.1; do
+      cat >/home/application/current/tsuru.yaml <<EOF
+php:
+  version: ${version}
+  interpretor:
+    name: fpm
+EOF
+      run /var/lib/tsuru/deploy
+      run bash -c "php --version | grep \"PHP ${version}\""
+      [[ $output =~ ^PHP\ ${version}.+ ]]
+      run bash -c "phar.phar version | grep 'PHP Version'"
+      [[ $output =~ ^PHP\ Version:\ +${version}.+ ]]
+      run bash -c "phar version | grep 'PHP Version'"
+      [[ $output =~ ^PHP\ Version:\ +${version}.+ ]]
+    done
+}

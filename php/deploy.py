@@ -86,6 +86,8 @@ class Manager(object):
                 if procfile_contents:
                     f.write(procfile_contents)
 
+        self.update_alternatives(self.get_php_version())
+
         if self.configuration.get('composer', True):
             self.install_composer()
 
@@ -97,6 +99,10 @@ class Manager(object):
 
     def prefix_package_version(self, package):
         return "php{}-{}".format(self.get_php_version(), package)
+
+    def update_alternatives(self, version):
+        for app in ['php', 'phar', 'phar.phar']:
+            os.system('/usr/bin/update-alternatives --set {0} /usr/bin/{0}{1}'.format(app, version))
 
     def install_composer(self):
         if os.path.isfile(os.path.join(self.application.get('directory'), 'composer.json')):
