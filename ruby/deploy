@@ -67,6 +67,9 @@ fi
 if [ -f ${CURRENT_DIR}/Gemfile ]; then
     if [ ! -z "$GEM_SOURCE" ]; then
         sed -i "s,https\?://rubygems.org/\?,$GEM_SOURCE," ${CURRENT_DIR}/Gemfile
+        if [ -f ${CURRENT_DIR}/Gemfile.lock ]; then
+            sed -i "s,https\?://rubygems.org/\?,$GEM_SOURCE," ${CURRENT_DIR}/Gemfile.lock
+        fi
     fi
     pushd $CURRENT_DIR && bundle install --deployment --without ${BUNDLE_WITHOUT-development:test}
     popd
