@@ -26,10 +26,10 @@ Installing platforms
 --------------------
 
 In order to use one of the platforms provided here, you need to have
-tsuru-admin installed and run ``tsuru-admin platform-add``:
+tsuru installed and run ``tsuru platform-add``:
 
 ```bash
-% tsuru-admin platform-add <platform-name>
+% tsuru platform-add <platform-name>
 ```
 
 Prior to version 0.13.0, tsurud didn't accept prebuilt images in
@@ -38,11 +38,11 @@ repository, you need to create a Dockerfile with a single line (``FROM
 <image-name>``).
 
 Dockerfiles are provided in the basebuilder repository, so in order to add a
-platform, it's as simple as running ``tsuru-admin platform-add``. For example,
+platform, it's as simple as running ``tsuru platform-add``. For example,
 for the Java platform:
 
 ```bash
-% tsuru-admin platform-add java -d https://raw.github.com/tsuru/basebuilder/master/java/Dockerfile
+% tsuru platform-add java -d https://raw.github.com/tsuru/basebuilder/master/java/Dockerfile
 ```
 
 Replace "java" with any other platform and you're good to go!
