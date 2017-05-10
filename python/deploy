@@ -8,13 +8,31 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-APP_VENV=/home/application/.app_env
+APP_VENV=app_env
 
+#find apps python version
+PYTHON_VERSION=3.5.3  # default version if none pointed
+if [ -f ${CURRENT_DIR}/.python-version ]; then
+    TMP_VERSION=$(cat ${CURRENT_DIR}/.python-version)
+fi
+
+if [ -n "$TMP_VERSION" ]; then
+    PYTHON_VERSION=${TMP_VERSION}
+fi
+
+# Create a app env if needed (with correct python version)
+if [ ! -e $PYENV_ROOT/versions/$APP_VENV ]; then
+    pyenv virtualenv ${PYTHON_VERSION} ${APP_VENV}
+fi
+
+# install projects deps with pip
 pushd $CURRENT_DIR
+pyenv global $APP_VENV
+
 echo_debug "*** $0: About to do pip install (pwd: $(pwd))"
 if [ -f ${CURRENT_DIR}/requirements.txt ]; then
-	${APP_VENV}/bin/pip install -r ${CURRENT_DIR}/requirements.txt
+    pip install -r ./requirements.txt
 elif [ -f ${CURRENT_DIR}/setup.py ]; then
-	${APP_VENV}/bin/pip install -e ${CURRENT_DIR}/
+    pip install -e .
 fi
 popd
