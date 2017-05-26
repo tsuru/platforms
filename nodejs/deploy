@@ -51,7 +51,8 @@ if [ -f ${CURRENT_DIR}/package.json ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; then
     echo "yarn.lock detected, using yarn to install node packages"
     yarn_bin=${NVM_BIN}/yarn
     if [ ! -f $yarn_bin ]; then
-        npm install -g yarn && yarn self-update
+    	YARN_VERSION=`node -e 'var pkg = require("${CURRENT_DIR}/package.json"); console.log((pkg.engines && pkg.engines.yarn) ? pkg.engines.yarn.replace(" ", "") : "0.16.1")'`
+        npm install -g yarn@YARN_VERSION
     fi
     if [ $NPM_REGISTRY ]; then
         echo "registry \"$NPM_REGISTRY\"" > ~/.yarnrc
