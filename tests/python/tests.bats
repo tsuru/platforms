@@ -38,6 +38,20 @@ setup() {
     rm ${CURRENT_DIR}/.python-version
 }
 
+@test "parse python version from PYTHON_VERSION" {
+    export PYTHON_VERSION=3.6.1
+    run /var/lib/tsuru/deploy
+
+    pushd ${CURRENT_DIR}
+    run python --version
+    popd
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"3.6"* ]]
+    unset PYTHON_VERSION
+
+}
+
 @test "install from setup.py" {
     cat <<EOF>${CURRENT_DIR}/setup.py
 from setuptools import setup
