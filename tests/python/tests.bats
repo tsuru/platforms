@@ -11,6 +11,7 @@ setup() {
     export PYENV_ROOT=/var/lib/pyenv
     export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
+    pyenv uninstall --force app_env
 }
 
 @test "use python version 3.5 as default" {
