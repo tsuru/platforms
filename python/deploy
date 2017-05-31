@@ -11,7 +11,10 @@ source ${SOURCE_DIR}/base/rc/config
 APP_VENV=app_env
 
 #find apps python version
-PYTHON_VERSION=3.5.3  # default version if none pointed
+PYTHON_VERSION=${PYTHON_VERSION:-3.5.3}
+
+echo "-- Using python version: $PYTHON_VERSION --"
+
 if [ -f ${CURRENT_DIR}/.python-version ]; then
     TMP_VERSION=$(cat ${CURRENT_DIR}/.python-version)
 fi
