@@ -1,6 +1,22 @@
 # Python platform
 
-The Python platform uses Python 2.7.x.
+The Python platform uses python 3.5.3 by default and get your dependencies with pip,
+either ``requirements.txt`` or ``setup.py``.
+
+You can define which python version you want using ``.python-version``, always use full versions.
+
+ex:
+```
+3.6.1
+```
+
+available python versions:
+- 2.7.13
+- 3.5.3
+- 3.6.1
+- 3.7-dev
+
+every version will eventually be updated on stable releases on each series.
 
 ## Code deployment
 
