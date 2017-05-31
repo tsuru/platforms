@@ -22,8 +22,8 @@ git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/py
 
 # make pyenv available to platform deploys
 echo "export PYENV_ROOT=$PYENV_ROOT" >> ${HOME}/.profile
-echo "export PATH=\"$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH\"" >> ${HOME}/.profile
-echo 'eval "$(pyenv init -)"' >> ${HOME}/.profile
+echo "export PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH" | tee -a ${HOME}/.profile /etc/profile >/dev/null
+echo 'eval "$(pyenv init -)"' | tee -a ${HOME}/.profile /etc/profile >/dev/null
 
 # enable pyenv to pre install python versions
 export PYENV_ROOT=$PYENV_ROOT
@@ -34,4 +34,4 @@ export CFLAGS='-O2'
 
 for pyversion in $PY_VERSIONS; do (pyenv install $pyversion); done
 
-chown -R ubuntu:ubuntu $PYENV_ROOT
+chown -R ${USER}:${USER} $PYENV_ROOT
