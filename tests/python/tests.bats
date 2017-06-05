@@ -14,20 +14,8 @@ setup() {
     pyenv uninstall --force app_env
 }
 
-@test "use python version 3.5 as default" {
+@test "use python version 2.7 as default" {
 
-    run /var/lib/tsuru/deploy
-
-    pushd ${CURRENT_DIR}
-    run python --version
-    popd
-
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"3.5"* ]]
-}
-
-@test "parse python version from .python-version" {
-    echo "2.7.13" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
 
     pushd ${CURRENT_DIR}
@@ -36,6 +24,18 @@ setup() {
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"2.7"* ]]
+}
+
+@test "parse python version from .python-version" {
+    echo "3.5.3" > ${CURRENT_DIR}/.python-version
+    run /var/lib/tsuru/deploy
+
+    pushd ${CURRENT_DIR}
+    run python --version
+    popd
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"3.5"* ]]
     rm ${CURRENT_DIR}/.python-version
 }
 

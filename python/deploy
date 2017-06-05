@@ -11,7 +11,7 @@ source ${SOURCE_DIR}/base/rc/config
 APP_VENV=app_env
 
 #find apps python version
-PYTHON_VERSION=${PYTHON_VERSION:-3.5.3}
+PYTHON_VERSION=${PYTHON_VERSION:-2.7.13}
 
 echo "-- Using python version: $PYTHON_VERSION --"
 
