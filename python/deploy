@@ -8,12 +8,8 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-APP_VENV=app_env
-
 #find apps python version
 PYTHON_VERSION=${PYTHON_VERSION:-2.7.13}
-
-echo "-- Using python version: $PYTHON_VERSION --"
 
 if [ -f ${CURRENT_DIR}/.python-version ]; then
     TMP_VERSION=$(cat ${CURRENT_DIR}/.python-version)
@@ -23,9 +19,21 @@ if [ -n "$TMP_VERSION" ]; then
     PYTHON_VERSION=${TMP_VERSION}
 fi
 
+echo "-- Using python version: $PYTHON_VERSION --"
+
+APP_VENV="app_env_${PYTHON_VERSION}"
+
 # Create a app env if needed (with correct python version)
 if [ ! -e $PYENV_ROOT/versions/$APP_VENV ]; then
+    set +e
     pyenv virtualenv ${PYTHON_VERSION} ${APP_VENV}
+    exit=$?
+    if [[ $exit != 0 ]]; then
+        echo "Valid python versions are:" 1>&2
+        pyenv versions --skip-aliases --bare | grep -v "/env" 1>&2
+        exit 1
+    fi
+    set -e
 fi
 
 # install projects deps with pip
