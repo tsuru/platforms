@@ -82,3 +82,19 @@ EOF
     [[ "$output" == *"msgpack-python"* ]]
     rm ${CURRENT_DIR}/requirements.txt
 }
+
+@test "change python version" {
+    run /var/lib/tsuru/deploy
+    run python --version
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"2.7"* ]]
+
+    export PYTHON_VERSION=3.6.1
+    run /var/lib/tsuru/deploy
+    run python --version
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"3.6"* ]]
+    unset PYTHON_VERSION
+}
