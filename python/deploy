@@ -8,13 +8,42 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-APP_VENV=/home/application/.app_env
+#find apps python version
+PYTHON_VERSION=${PYTHON_VERSION:-2.7.13}
 
+if [ -f ${CURRENT_DIR}/.python-version ]; then
+    TMP_VERSION=$(cat ${CURRENT_DIR}/.python-version)
+fi
+
+if [ -n "$TMP_VERSION" ]; then
+    PYTHON_VERSION=${TMP_VERSION}
+fi
+
+echo "-- Using python version: $PYTHON_VERSION --"
+
+APP_VENV="app_env_${PYTHON_VERSION}"
+
+# Create a app env if needed (with correct python version)
+if [ ! -e $PYENV_ROOT/versions/$APP_VENV ]; then
+    set +e
+    pyenv virtualenv ${PYTHON_VERSION} ${APP_VENV}
+    exit=$?
+    if [[ $exit != 0 ]]; then
+        echo "Valid python versions are:" 1>&2
+        pyenv versions --skip-aliases --bare | grep -v "/env" 1>&2
+        exit 1
+    fi
+    set -e
+fi
+
+# install projects deps with pip
 pushd $CURRENT_DIR
+pyenv global $APP_VENV
+
 echo_debug "*** $0: About to do pip install (pwd: $(pwd))"
 if [ -f ${CURRENT_DIR}/requirements.txt ]; then
-	${APP_VENV}/bin/pip install -r ${CURRENT_DIR}/requirements.txt
+    pip install -r ./requirements.txt
 elif [ -f ${CURRENT_DIR}/setup.py ]; then
-	${APP_VENV}/bin/pip install -e ${CURRENT_DIR}/
+    pip install -e .
 fi
 popd
