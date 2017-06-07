@@ -14,17 +14,37 @@ else
     platforms=$(ls -d */ | cut -f1 -d'/' | grep -v common)
 fi
 
-for plat in $platforms; do
+export failure_file=$(mktemp)
+
+function run_test {
+    local plat=$1
     echo "Testing $plat platform..."
     sed "s/{PLATFORM}/$plat/g" Dockerfile.template > ./$plat/Dockerfile
     cp -r common ./$plat/common
     docker build -t platform-$plat ../$plat && docker build -t tests-$plat --no-cache ./$plat
     if [ "$?" != "0" ]; then
-      errors=1
+        echo 1 > "$failure_file"
     fi
     rm ./$plat/Dockerfile && rm -rf ./$plat/common
+}
+export -f run_test
+
+has_parallel=$(which parallel)
+
+for plat in $platforms; do
+    if [ "${has_parallel}" ]; then
+        parallel --semaphore --no-notice -j 4 run_test $plat
+    else
+        run_test $plat
+    fi
 done
 
-if [ "$errors" == "1" ]; then
-  exit 1
+if [ "${has_parallel}" ]; then
+    parallel --semaphore --wait --no-notice
 fi
+
+if [ "$(cat $failure_file)" == "1" ]; then
+    rm "$failure_file"
+    exit 1
+fi
+rm "$failure_file"
