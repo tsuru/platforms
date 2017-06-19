@@ -47,12 +47,12 @@ nvm install ${NODE_VERSION}
 rm -f ~/.nvm_bin
 ln -s $NVM_BIN ~/.nvm_bin
 
-if [ -f ${CURRENT_DIR}/package.json ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; then
+if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; then
     echo "yarn.lock detected, using yarn to install node packages"
     yarn_bin=${NVM_BIN}/yarn
     if [ ! -f $yarn_bin ]; then
-    	YARN_VERSION=`node -e 'var pkg = require(process.env.CURRENT_DIR+"/package.json"); console.log((pkg.engines && pkg.engines.yarn) ? pkg.engines.yarn.replace(" ", "") : "0.16.1")'`
-        npm install -g yarn@YARN_VERSION
+    	YARN_VERSION=`CURRENT_DIR=${CURRENT_DIR} node -e 'var pkg = require(process.env.CURRENT_DIR+"/package.json"); console.log((pkg.engines && pkg.engines.yarn) ? pkg.engines.yarn.replace(" ", "") : "0.16.1")'`
+        npm install -g yarn@${YARN_VERSION}
     fi
     if [ $NPM_REGISTRY ]; then
         echo "registry \"$NPM_REGISTRY\"" > ~/.yarnrc
