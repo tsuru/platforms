@@ -16,3 +16,6 @@ RUN apt-get update && \
     apt-get install -y libssl1.0.0 zlib1g libbz2-1.0 \
     libreadline6 libsqlite3-0 libncurses5 libncursesw5 && \
     apt-get autoremove -y
+ENV PYENV_ROOT="/var/lib/pyenv"
+ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+RUN pyenv global 2.7.13
