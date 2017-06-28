@@ -18,4 +18,3 @@ RUN apt-get update && \
     apt-get autoremove -y
 ENV PYENV_ROOT="/var/lib/pyenv"
 ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
-RUN pyenv global 2.7.13

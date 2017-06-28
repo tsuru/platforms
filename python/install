@@ -24,6 +24,7 @@ echo 'eval "$(pyenv init -)"' | tee -a ${HOME}/.profile /etc/profile >/dev/null
 export PYENV_ROOT=$PYENV_ROOT
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)" # we only need pyenv at this point
+pyenv global 2.7.13
 
 export CFLAGS='-O2'
 
