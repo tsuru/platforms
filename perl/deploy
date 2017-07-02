@@ -1,0 +1,21 @@
+#!/bin/bash -el
+
+# Copyright 2017 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/deploy
+source ${SOURCE_DIR}/base/rc/config
+
+pushd $CURRENT_DIR
+if [ -f ${CURRENT_DIR}/cpanfile.snapshot ]; then
+	if [ -f ${CURRENT_DIR}/vendor ]; then
+		carton install --cached --deployment
+	else
+		carton install --deployment
+	fi
+elif [ -f ${CURRENT_DIR}/cpanfile ]; then
+    carton install
+fi
+popd

@@ -1,0 +1,13 @@
+#!/bin/bash -e
+
+# Copyright 2017 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+
+source ${SOURCE_DIR}/base/rc/config
+
+add_repository ppa:pypy/ppa
+apt-get update
+apt-get install carton -y
