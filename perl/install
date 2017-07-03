@@ -10,4 +10,4 @@ source ${SOURCE_DIR}/base/rc/config
 
 add_repository ppa:pypy/ppa
 apt-get update
-apt-get install carton -y
+apt-get install carton make -y
