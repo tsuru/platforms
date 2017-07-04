@@ -8,7 +8,7 @@ use strict;
 use warnings;
 use Mojolicious::Lite;
 
-get '/' => { text => 'Hello World' };
+get '/' => { text => 'Hello world from tsuru' };
 
 app->config(hypnotoad => {
     listen => [
