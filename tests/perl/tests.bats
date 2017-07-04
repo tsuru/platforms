@@ -29,6 +29,5 @@ setup() {
     popd
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"IO-Socket-IP"* ]]
     rm ${CURRENT_DIR}/cpanfile
 }
