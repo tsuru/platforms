@@ -18,3 +18,17 @@ setup() {
     [ "$status" -eq 0 ]
     [[ "$output" == *"carton v1"* ]]
 }
+
+@test "install from cpanfile" {
+    echo "requires 'IO::Socket::IP';" > ${CURRENT_DIR}/cpanfile
+
+    run /var/lib/tsuru/deploy
+
+    pushd ${CURRENT_DIR}
+    run carton install
+    popd
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"IO-Socket-IP"* ]]
+    rm ${CURRENT_DIR}/cpanfile
+}
