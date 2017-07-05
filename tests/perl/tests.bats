@@ -10,7 +10,7 @@ setup() {
     export CURRENT_DIR=/home/application/current
 }
 
-@test "check if carton is intalled" {
+@test "check if carton is installed" {
     pushd ${CURRENT_DIR}
     run carton -v
     popd
