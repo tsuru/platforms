@@ -8,8 +8,10 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-GO_VERSION=$(test -f /tmp/app_envs && source /tmp/app_envs && echo $GO_VERSION)
-GO_VERSION=${GO_VERSION:-1.7.4}
+go_default_version="stable"
+if [ -z "${GO_VERSION}" ]; then
+  GO_VERSION="${go_default_version}"
+fi
 echo "Installing Go ${GO_VERSION}..."
 eval "$(gimme ${GO_VERSION})" >/dev/null 2>&1
 
@@ -19,7 +21,7 @@ fi
 
 APP_PATH=${APP_DIR}/src/current
 
-if [ ! -z "${GO_PKG_PATH}" ]
+if [ -n  "${GO_PKG_PATH}" ]
 then
 	APP_PATH=${APP_DIR}/src/${GO_PKG_PATH}
 fi
