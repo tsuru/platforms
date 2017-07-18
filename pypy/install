@@ -5,7 +5,6 @@
 # license that can be found in the LICENSE file.
 
 SOURCE_DIR=/var/lib/tsuru
-
 source ${SOURCE_DIR}/base/rc/config
 
 add_repository ppa:pypy/ppa

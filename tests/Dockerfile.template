@@ -7,6 +7,6 @@ WORKDIR /tests
 ADD . /tests
 ADD common/* /tests/common
 ADD https://github.com/sstephenson/bats/archive/master.tar.gz .
-RUN mkdir ./bin && tar -zxf master.tar.gz && ./bats-master/install.sh .
+RUN mkdir ./bin && ./bats-master/install.sh .
 RUN echo "echo 'ran base deploy'" > /var/lib/tsuru/base/deploy
 RUN bin/bats common && bin/bats .

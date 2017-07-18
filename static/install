@@ -8,7 +8,7 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
 apt-get update
-apt-get install nginx -y
+apt-get install -y --no-install-recommends nginx
 
 rm -rf /var/log/nginx /var/lib/nginx
 mkdir -p /var/log/nginx /var/lib/nginx

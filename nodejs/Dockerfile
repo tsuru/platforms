@@ -5,4 +5,6 @@
 FROM	tsuru/base-platform
 ADD	. /var/lib/tsuru/nodejs
 RUN	cp /var/lib/tsuru/nodejs/deploy /var/lib/tsuru
-RUN	/var/lib/tsuru/nodejs/install
+RUN set -ex; \
+    /var/lib/tsuru/nodejs/install; \
+    rm -rf /var/lib/apt/lists/*

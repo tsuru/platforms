@@ -5,4 +5,6 @@
 FROM	tsuru/base-platform
 ADD	. /var/lib/tsuru/ruby
 RUN	cp /var/lib/tsuru/ruby/deploy /var/lib/tsuru
-RUN	/var/lib/tsuru/ruby/install
+RUN set -ex; \
+    /var/lib/tsuru/ruby/install; \
+    rm -rf /var/lib/apt/lists/*

@@ -5,4 +5,6 @@
 FROM	tsuru/base-platform
 ADD	. /var/lib/tsuru/cordova
 RUN	cp /var/lib/tsuru/base/deploy /var/lib/tsuru
-RUN	/var/lib/tsuru/cordova/install
+RUN set -ex; \
+    /var/lib/tsuru/cordova/install; \
+    rm -rf /var/lib/apt/lists/*

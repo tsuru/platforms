@@ -8,21 +8,22 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
 # Install Essential Packages
-apt-get update && apt-get install -y \
-nodejs \
-ruby \
-libgmp-dev \
-libgmp3-dev \
-zlib1g-dev \
-build-essential \
-libssl-dev \
-libreadline-dev \
-libyaml-dev \
-libsqlite3-dev \
-sqlite3 \
-libxml2-dev \
-libxslt1-dev \
-libcurl4-openssl-dev \
-libffi-dev
+apt-get update
+apt-get install -y --no-install-recommends \
+        nodejs \
+        ruby \
+        libgmp-dev \
+        libgmp3-dev \
+        zlib1g-dev \
+        build-essential \
+        libssl-dev \
+        libreadline-dev \
+        libyaml-dev \
+        libsqlite3-dev \
+        sqlite3 \
+        libxml2-dev \
+        libxslt1-dev \
+        libcurl4-openssl-dev \
+        libffi-dev
 
 echo "export PATH=/home/application/ruby/bin:${PATH} GEM_PATH=/home/application/ruby GEM_HOME=/home/application/ruby BUNDLE_APP_CONFIG=/home/application/ruby/.bundle/config" | tee -a ${HOME}/.profile /etc/profile >/dev/null
