@@ -98,14 +98,14 @@ EOF
     cat >/home/application/current/composer.json <<EOF
   {
       "require": {
-          "iralance/hello": "*"
+          "ehime/hello-world": "*"
       }
   }
 EOF
     run /var/lib/tsuru/deploy
     [ "$status" -eq 0 ]
     run su - ubuntu -c "cd /home/application/current && composer_phar show"
-    match="iralance/hello .+"
+    match="ehime/hello-world .+"
     [[ $output =~ $match ]]
 }
 
