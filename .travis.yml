@@ -2,8 +2,6 @@ sudo: required
 env:
   global:
     - PLATFORMS="buildpack cordova elixir go java lua nodejs perl php play pypy python python3 ruby static"
-before_script:
-  - sudo apt-get install parallel
 script:
   - make test
 after_success:
