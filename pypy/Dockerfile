@@ -5,4 +5,6 @@
 FROM	tsuru/base-platform
 ADD	. /var/lib/tsuru/pypy
 RUN	cp /var/lib/tsuru/pypy/deploy /var/lib/tsuru
-RUN	/var/lib/tsuru/pypy/install
+RUN set -ex; \
+    /var/lib/tsuru/pypy/install; \
+    rm -rf /var/lib/apt/lists/*

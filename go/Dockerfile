@@ -6,9 +6,5 @@ FROM tsuru/base-platform
 ADD	. /var/lib/tsuru/go
 RUN	cp /var/lib/tsuru/go/deploy /var/lib/tsuru
 RUN set -ex; \
-    apt-get update && \
-    apt-get install -y bzr mercurial git && \
-    /var/lib/tsuru/go/install && \
-    rm -rf /var/lib/apt/lists/* && \
-    apt-get autoremove -y && \
-    apt-get clean
+    /var/lib/tsuru/go/install; \
+    rm -rf /var/lib/apt/lists/*

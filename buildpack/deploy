@@ -5,11 +5,10 @@
 # license that can be found in the LICENSE file.
 
 SOURCE_DIR=/var/lib/tsuru
-
 source ${SOURCE_DIR}/base/deploy
-echo "BUILDPACK: $BUILDPACK_URL"
-
 source ${SOURCE_DIR}/base/rc/config
+
+echo "BUILDPACK: $BUILDPACK_URL"
 
 cd $CURRENT_DIR
 sudo /bin/sh -c "rm -rf /app && mkdir /app && cp -a . /app"

@@ -5,4 +5,6 @@
 FROM	tsuru/base-platform
 ADD	. /var/lib/tsuru/perl
 RUN	cp /var/lib/tsuru/perl/deploy /var/lib/tsuru
-RUN	/var/lib/tsuru/perl/install
+RUN set -ex; \
+    /var/lib/tsuru/perl/install; \
+    rm -rf /var/lib/apt/lists/*

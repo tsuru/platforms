@@ -5,8 +5,13 @@
 # license that can be found in the LICENSE file.
 
 SOURCE_DIR=/var/lib/tsuru
-
 source ${SOURCE_DIR}/base/rc/config
+
+apt-get update
+apt-get install -y --no-install-recommends \
+        bzr \
+        mercurial \
+        git
 
 curl -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme -o /usr/bin/gimme
 chmod +x /usr/bin/gimme

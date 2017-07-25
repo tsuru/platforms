@@ -5,4 +5,6 @@
 FROM	tsuru/base-platform
 ADD	. /var/lib/tsuru/elixir
 RUN	cp /var/lib/tsuru/elixir/deploy /var/lib/tsuru
-RUN	/var/lib/tsuru/elixir/install
+RUN set -ex; \
+    /var/lib/tsuru/elixir/install; \
+    rm -rf /var/lib/apt/lists/*

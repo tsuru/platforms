@@ -5,4 +5,6 @@
 FROM	tsuru/base-platform
 ADD	. /var/lib/tsuru/java
 RUN	cp /var/lib/tsuru/base/deploy /var/lib/tsuru
-RUN	/var/lib/tsuru/java/install
+RUN set -ex; \
+	  /var/lib/tsuru/java/install; \
+    rm -rf /var/lib/apt/lists/*
