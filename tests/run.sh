@@ -33,14 +33,14 @@ has_parallel=$(which parallel)
 
 for plat in $platforms; do
     if [ "${has_parallel}" ]; then
-        parallel --semaphore --no-notice -j 4 run_test $plat
+        parallel --semaphore -j 4 run_test $plat
     else
         run_test $plat
     fi
 done
 
 if [ "${has_parallel}" ]; then
-    parallel --semaphore --wait --no-notice
+    parallel --semaphore --wait
 fi
 
 if [ "$(cat $failure_file)" == "1" ]; then
