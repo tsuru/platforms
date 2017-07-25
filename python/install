@@ -7,7 +7,7 @@
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
-PY_VERSIONS="2.7.13 3.5.3 3.6.1 3.7-dev"
+PY_VERSIONS="2.7.13 3.5.3 3.6.1"
 PYENV_ROOT="/var/lib/pyenv"
 
 apt-get update
