@@ -14,9 +14,11 @@ available python versions:
 - 2.7.13
 - 3.5.3
 - 3.6.1
-- 3.7-dev
+- 3.6.2
 
-every version will eventually be updated on stable releases on each series.
+when adding new releases, we will retain previous version on the series to allow time for users update their apps.
+e,g: when 3.6.3 is released, we will remove 3.6.1.
+
 
 ## Code deployment
 
