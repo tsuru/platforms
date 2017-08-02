@@ -49,16 +49,17 @@ ln -s $NVM_BIN ~/.nvm_bin
 
 if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; then
     echo "yarn.lock detected, using yarn to install node packages"
+    YARN_DEFAULT_VERSION="0.27.5"
     yarn_bin=${NVM_BIN}/yarn
     if [ ! -f $yarn_bin ]; then
-    	YARN_VERSION=`CURRENT_DIR=${CURRENT_DIR} node -e 'var pkg = require(process.env.CURRENT_DIR+"/package.json"); console.log((pkg.engines && pkg.engines.yarn) ? pkg.engines.yarn.replace(" ", "") : "0.16.1")'`
+    	YARN_VERSION=`CURRENT_DIR=${CURRENT_DIR} node -e 'var pkg = require(process.env.CURRENT_DIR+"/package.json"); console.log((pkg.engines && pkg.engines.yarn) ? pkg.engines.yarn.replace(" ", "") : "'${YARN_DEFAULT_VERSION}'")'`
         npm install -g yarn@${YARN_VERSION}
     fi
     if [ $NPM_REGISTRY ]; then
         echo "registry \"$NPM_REGISTRY\"" > ~/.yarnrc
         sed -i "s|https://registry.yarnpkg.com|$NPM_REGISTRY|g" ${CURRENT_DIR}/yarn.lock
     fi
-    pushd $CURRENT_DIR && ${yarn_bin} install
+    pushd $CURRENT_DIR && ${yarn_bin} install --production
     popd
 elif [ -f ${CURRENT_DIR}/package.json ] ; then
     pushd $CURRENT_DIR && npm install --production
