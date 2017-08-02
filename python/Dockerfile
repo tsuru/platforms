@@ -4,9 +4,9 @@
 
 FROM tsuru/base-platform
 ADD . /var/lib/tsuru/python
-RUN cp /var/lib/tsuru/python/deploy /var/lib/tsuru
+RUN sudo cp /var/lib/tsuru/python/deploy /var/lib/tsuru
 RUN set -ex; \
-    /var/lib/tsuru/python/install; \
-    rm -rf /var/lib/apt/lists/*
+    sudo /var/lib/tsuru/python/install; \
+    sudo rm -rf /var/lib/apt/lists/*
 ENV PYENV_ROOT="/var/lib/pyenv"
 ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
