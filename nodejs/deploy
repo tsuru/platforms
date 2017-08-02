@@ -64,9 +64,10 @@ ln -s $NVM_BIN ~/.nvm_bin
 
 if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; then
     echo "yarn.lock detected, using yarn to install node packages"
+    YARN_DEFAULT_VERSION="0.27.5"
     yarn_bin=${NVM_BIN}/yarn
     if [ ! -f $yarn_bin ]; then
-    	YARN_VERSION=`CURRENT_DIR=${CURRENT_DIR} node -e 'var pkg = require(process.env.CURRENT_DIR+"/package.json"); console.log((pkg.engines && pkg.engines.yarn) ? pkg.engines.yarn.replace(" ", "") : "0.16.1")'`
+    	YARN_VERSION=`CURRENT_DIR=${CURRENT_DIR} node -e 'var pkg = require(process.env.CURRENT_DIR+"/package.json"); console.log((pkg.engines && pkg.engines.yarn) ? pkg.engines.yarn.replace(" ", "") : "'${YARN_DEFAULT_VERSION}'")'`
         npm install -g yarn@${YARN_VERSION}
     fi
     if [ $NPM_REGISTRY ]; then
@@ -77,7 +78,7 @@ if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; th
     set +e
     exec 9>&1
     TMPFILE=`mktemp`
-    YARN_OUTPUT=`${yarn_bin} install --non-interactive 2>&1 | tee /dev/fd/9; echo ${PIPESTATUS[0]} > $TMPFILE`
+    YARN_OUTPUT=`${yarn_bin} install --production --non-interactive 2>&1 | tee /dev/fd/9; echo ${PIPESTATUS[0]} > $TMPFILE`
     STATUS=`cat $TMPFILE 2>/dev/null || echo 1`
     set -e
     if [ $STATUS -ne 0 ]; then
