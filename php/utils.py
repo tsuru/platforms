@@ -23,25 +23,8 @@ def replace(source_file_path, pattern, substring):
 def parse_env(configuration):
     return dict(
         os.environ.items() +
-        parse_apprc().items() +
         parse_envs_from_configuration(configuration).items()
     )
-
-
-def parse_apprc():
-    path = "/tmp/app_envs"
-    environments = {}
-    if os.path.exists(path):
-        with open(path) as file:
-            for line in file.readlines():
-                if "export" in line:
-                    line = line.replace("export ", "")
-                    k, v = line.split("=")
-                    v = v.replace("\n", "").replace('"', '')
-
-                    environments[k] = v
-
-    return environments
 
 
 def parse_envs_from_configuration(configuration):
