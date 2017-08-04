@@ -4,7 +4,7 @@
 
 FROM	tsuru/base-platform
 ADD	. /var/lib/tsuru/static
-RUN	cp /var/lib/tsuru/static/deploy /var/lib/tsuru
+RUN	sudo cp /var/lib/tsuru/static/deploy /var/lib/tsuru
 RUN set -ex; \
-    /var/lib/tsuru/static/install; \
-    rm -rf /var/lib/apt/lists/*
+    sudo /var/lib/tsuru/static/install; \
+    sudo rm -rf /var/lib/apt/lists/*

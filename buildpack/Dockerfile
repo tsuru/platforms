@@ -16,5 +16,6 @@ RUN curl -sLo base-platform.tar.gz https://github.com/tsuru/base-platform/tarbal
     tar -xvf base-platform.tar.gz -C /var/lib/tsuru/base --strip 1; \
     rm -rf base-platform.tar.gz
 RUN set -ex; \
-    /var/lib/tsuru/buildpack/install; \
-    rm -rf /var/lib/apt/lists/*
+    sudo /var/lib/tsuru/buildpack/install; \
+    sudo rm -rf /var/lib/apt/lists/*
+USER ubuntu

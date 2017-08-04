@@ -4,7 +4,7 @@
 
 FROM  tsuru/base-platform
 ADD . /var/lib/tsuru/lua
-RUN cp /var/lib/tsuru/lua/deploy /var/lib/tsuru
+RUN sudo cp /var/lib/tsuru/lua/deploy /var/lib/tsuru
 RUN set -ex; \
-    /var/lib/tsuru/lua/install; \
-    rm -rf /var/lib/apt/lists/*
+    sudo /var/lib/tsuru/lua/install; \
+    sudo rm -rf /var/lib/apt/lists/*

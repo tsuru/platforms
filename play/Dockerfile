@@ -4,8 +4,8 @@
 
 FROM	tsuru/base-platform
 ADD	. /var/lib/tsuru/play
-RUN	cp /var/lib/tsuru/play/deploy /var/lib/tsuru
-RUN	chmod -R 777 /var/lib/tsuru/play
+RUN	sudo cp /var/lib/tsuru/play/deploy /var/lib/tsuru
+RUN	sudo chmod -R 777 /var/lib/tsuru/play
 RUN set -ex; \
-    /var/lib/tsuru/play/install; \
-    rm -rf /var/lib/apt/lists/*
+    sudo /var/lib/tsuru/play/install; \
+    sudo rm -rf /var/lib/apt/lists/*
