@@ -17,7 +17,6 @@ All platforms are available in Docker Hub:
 * tsuru/php: https://hub.docker.com/r/tsuru/php/
 * tsuru/play: https://hub.docker.com/r/tsuru/play/
 * tsuru/python: https://hub.docker.com/r/tsuru/python/
-* tsuru/python3: https://hub.docker.com/r/tsuru/python3/
 * tsuru/pypy: https://hub.docker.com/r/tsuru/pypy/
 * tsuru/ruby: https://hub.docker.com/r/tsuru/ruby/
 * tsuru/static: https://hub.docker.com/r/tsuru/static/
