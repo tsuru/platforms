@@ -18,6 +18,3 @@ echo "export PORT=8888" | tee /app/.profile.d/tsuru.sh >/dev/null
 echo 'export PYTHONPATH=${PYTHONPATH}:/usr/lib/python2.7/dist-packages:/usr/local/lib/python2.7/dist-packages' | tee -a /app/.profile.d/tsuru.sh >/dev/null
 
 LC_ALL=C perl -lne '/^(.*?):/ && print "$1: /start $1"' /app/Procfile | sudo tee /Procfile >/dev/null
-sudo sed -i "s^\(\s*\)\(.*\) | bash^\1exec /bin/bash -c \"\`\2\`\"^g" /start
-sudo sed -i 's/chown -R .*//' /start
-sudo sed -i 's/setuidgid .*/$(eval echo ${command})/' /start
