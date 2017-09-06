@@ -60,7 +60,8 @@ if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; th
     fi
     pushd $CURRENT_DIR
     set +e
-    YARN_OUTPUT=`${yarn_bin} install --non-interactive 2>&1`
+    exec 9>&1
+    YARN_OUTPUT=`${yarn_bin} install --non-interactive 2>&1 | tee /dev/fd/9`
     STATUS=$?
     set -e
     if [ $STATUS -ne 0 ] && [[ $YARN_OUTPUT =~ ^.*unknown\ option.*--non-interactive.*$ ]]; then
