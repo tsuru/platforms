@@ -58,7 +58,15 @@ if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; th
         echo "registry \"$NPM_REGISTRY\"" > ~/.yarnrc
         sed -i "s|https://registry.yarnpkg.com|$NPM_REGISTRY|g" ${CURRENT_DIR}/yarn.lock
     fi
-    pushd $CURRENT_DIR && ${yarn_bin} install
+    pushd $CURRENT_DIR
+    set +e
+    exec 9>&1
+    YARN_OUTPUT=`${yarn_bin} install --non-interactive 2>&1 | tee /dev/fd/9`
+    STATUS=$?
+    set -e
+    if [ $STATUS -ne 0 ] && [[ $YARN_OUTPUT =~ ^.*unknown\ option.*--non-interactive.*$ ]]; then
+      ${yarn_bin} install
+    fi
     popd
 elif [ -f ${CURRENT_DIR}/package.json ] ; then
     pushd $CURRENT_DIR && npm install --production
