@@ -58,5 +58,30 @@ EOF
     [[ "$output" == *"yarn.lock detected, using yarn to install node packages"* ]]
 
     run /home/ubuntu/.nvm_bin/yarn --version
-    [[ "$output" == *"0.24.6"* ]]    
+    [[ "$output" == *"0.24.6"* ]]
+}
+
+@test "works with versions without support to --non-interactive flag" {
+    cat <<EOF>>${CURRENT_DIR}/package.json
+{
+  "name": "hello-world",
+  "description": "hello world test on tsuru",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.x"
+  },
+  "engines": {
+      "yarn": "0.17.0"
+  }
+}
+EOF
+
+    touch ${CURRENT_DIR}/yarn.lock
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"yarn.lock detected, using yarn to install node packages"* ]]
+
+    run /home/ubuntu/.nvm_bin/yarn --version
+    [[ "$output" == *"0.17.0"* ]]
 }
