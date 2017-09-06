@@ -22,11 +22,14 @@ This file should be in the root of deploy files.
     $ ls
     Procfile     app.js       hook.js      package.json
 
-We use npm to install your dependencies, so you have to list it in
-``package.json`` file.
+To install your dependencies, first we check if there is a `yarn.lock` file
+in the root of your files. If so, we use [yarn](https://yarnpkg.com/);
+otherwise, we use [npm](https://www.npmjs.com/package/npm).
+
+You have to list your dependencies in the `package.json` file.
 
     $ cat package.json
-    ...    
+    ...
     "dependencies": {
         "express": "3.x"
     }
