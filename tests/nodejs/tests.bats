@@ -61,7 +61,29 @@ EOF
     [[ "$output" == *"0.24.6"* ]]
 }
 
-@test "works with versions without support to --non-interactive flag" {
+@test "breaks with invalid dependencies" {
+    cat <<EOF>>${CURRENT_DIR}/package.json
+{
+  "name": "hello-world",
+  "description": "hello world test on tsuru",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "999"
+  },
+  "engines": {
+      "yarn": "0.24.6"
+  }
+}
+EOF
+
+    touch ${CURRENT_DIR}/yarn.lock
+    run /var/lib/tsuru/deploy
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"Couldn't find any versions for \"express\" that matches \"999\""* ]]
+}
+
+@test "works with yarn versions without support to --non-interactive flag" {
     cat <<EOF>>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
