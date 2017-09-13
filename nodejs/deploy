@@ -61,11 +61,17 @@ if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; th
     pushd $CURRENT_DIR
     set +e
     exec 9>&1
-    YARN_OUTPUT=`${yarn_bin} install --non-interactive 2>&1 | tee /dev/fd/9`
-    STATUS=$?
+    TMPFILE=`mktemp`
+    YARN_OUTPUT=`${yarn_bin} install --non-interactive 2>&1 | tee /dev/fd/9; echo ${PIPESTATUS[0]} > $TMPFILE`
+    STATUS=`cat $TMPFILE 2>/dev/null || echo 1`
     set -e
-    if [ $STATUS -ne 0 ] && [[ $YARN_OUTPUT =~ ^.*unknown\ option.*--non-interactive.*$ ]]; then
-      ${yarn_bin} install
+    if [ $STATUS -ne 0 ]; then
+      if [[ $YARN_OUTPUT =~ ^.*unknown\ option.*--non-interactive.*$ ]]; then
+        # If --non-interactive flag is not available (older yarn versions), falls back to the default install command
+        ${yarn_bin} install
+      else
+        exit $STATUS
+      fi
     fi
     popd
 elif [ -f ${CURRENT_DIR}/package.json ] ; then
