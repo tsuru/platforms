@@ -31,6 +31,9 @@ You can customize this behavior, see the next section for more details.
 There are two ways to list the applications dependencies: ``requirements.txt`` or ``setup.py``.
 The priority order is: requirements -> setup. The file should be in the root of deploy files.
 
+packages will be upgrade to specified version or last stable version
+
+
 ### Using requirements.txt
 
 You can define a file called ``requirements.txt`` that list all pip dependencies of your application,
@@ -58,4 +61,4 @@ You can also define the setup script to list your depencies, here's an example:
 	)
 
 After invokin ``git push`` or ``tsuru app-deploy``, tsuru will receive your code and tell the platform
-to install all the depencies using ``pip install -r requirements.txt`` or ``pip instal -e ./``.
+to install all the depencies using ``pip install --upgrade -r requirements.txt`` or ``pip instal --upgrade -e ./``.

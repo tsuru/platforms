@@ -54,8 +54,8 @@ pyenv global $APP_VENV
 
 echo_debug "*** $0: About to do pip install (pwd: $(pwd))"
 if [ -f "${CURRENT_DIR}/requirements.txt" ]; then
-    pip install -r ./requirements.txt
+    pip install --upgrade -r ./requirements.txt
 elif [ -f "${CURRENT_DIR}/setup.py" ]; then
-    pip install -e .
+    pip install --upgrade -e .
 fi
 popd
