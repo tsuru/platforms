@@ -9,21 +9,8 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 source ${SOURCE_DIR}/base/deploy
 
-set +e
-test -e ${CURRENT_DIR}/nginx.conf && sudo mv ${CURRENT_DIR}/nginx.conf /etc/nginx/nginx.conf
-set -e
-
-NGINX_PKG=${NGINX_PKG:-nginx}
-
-case "$NGINX_PKG" in
-    "nginx-core"|"nginx"|"nginx-full"|"nginx-light"|"nginx-extras")
-        dpkg -s $NGINX_PKG &> /dev/null || (sudo apt-get update && sudo apt-get install -qy $NGINX_PKG)
-        ;;
-    *)
-        echo "ERROR: Invalid nginx package $NGINX_PKG."
-        echo "Supported values are: nginx, nginx-core, nginx-full, nginx-light, nginx-extras."
-        exit 1
-        ;;
-esac
+if test -e ${CURRENT_DIR}/nginx.conf; then
+  sudo mv ${CURRENT_DIR}/nginx.conf /etc/nginx/nginx.conf || exit $?
+fi
 
 ${SOURCE_DIR}/static/validate-nginx-conf /etc/nginx/nginx.conf
