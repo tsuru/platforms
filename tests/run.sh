@@ -23,7 +23,7 @@ function run_test {
     cp -r common ./$plat/common
     docker build -t platform-$plat ../$plat && docker build -t tests-$plat --no-cache ./$plat
     if [ "$?" != "0" ]; then
-        echo 1 > "$failure_file"
+        echo "errors in platform ${plat}" >> "$failure_file"
     fi
     rm ./$plat/Dockerfile && rm -rf ./$plat/common
 }
@@ -33,8 +33,9 @@ has_parallel=$(which parallel)
 
 for plat in $platforms; do
     if [ "${has_parallel}" ]; then
-        parallel --semaphore -j 4 run_test $plat
+        parallel --semaphore -j 10 run_test $plat
     else
+        set -e
         run_test $plat
     fi
 done
@@ -43,8 +44,9 @@ if [ "${has_parallel}" ]; then
     parallel --semaphore --wait
 fi
 
-if [ "$(cat $failure_file)" == "1" ]; then
-    rm "$failure_file"
+if [ -s "$failure_file" ]; then
+    echo "FAILURES FOUND:"
+    cat $failure_file
     exit 1
 fi
 rm "$failure_file"
