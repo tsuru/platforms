@@ -1,0 +1,19 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[dev-packages]
+
+
+
+[packages]
+
+msgpack-python = "==0.4.8"
+
+
+[requires]
+
+python_version = "2.7"
