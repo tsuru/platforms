@@ -52,10 +52,15 @@ fi
 
 pyenv global $APP_VENV
 
-echo_debug "*** $0: About to do pip install (pwd: $(pwd))"
-if [ -f "${CURRENT_DIR}/requirements.txt" ]; then
+if [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
+    echo "Pipfile.lock detected, using 'pipenv install --system --deploy' to install dependencies"
+    pip install pipenv
+    pipenv install --system --deploy
+elif [ -f "${CURRENT_DIR}/requirements.txt" ]; then
+    echo "requirements.txt detected, using 'pip install -r ./requirements.txt' to install dependencies"
     pip install -r ./requirements.txt
 elif [ -f "${CURRENT_DIR}/setup.py" ]; then
+    echo "setup.py detected, using 'pip install -e .' to install dependencies"
     pip install -e .
 fi
 popd
