@@ -7,18 +7,16 @@ PHP_VERSIONS="5.6 7.0 7.1"
 
 add_repository ppa:ondrej/php
 hhvm_repo="deb http://dl.hhvm.com/ubuntu ${UBUNTU_RELEASE} main"
-add_repository "${hhvm_repo}" "0x5a16e7281be7a449"
+add_repository "${hhvm_repo}" "0xB4112585D386EB94"
 
-apt-get update
-apt-get install -y --force-yes --no-install-recommends python python-yaml git
-
+packages=("nginx-core" "hhvm" "python" "python-yaml" "git" "apache2")
 for version in $PHP_VERSIONS
 do
-    apt-get install -y php${version} php${version}-fpm libapache2-mod-php${version}
+    packages+=("php${version}" "php${version}-fpm" "libapache2-mod-php${version}")
 done
 
-apt-get install -y nginx-core
-apt-get install -y hhvm
+apt-get update
+apt-get install -y --force-yes "${packages[@]}"
 
 curl -s -L http://getcomposer.org/composer.phar -o /usr/local/bin/composer_phar
 chmod +x /usr/local/bin/composer_phar
