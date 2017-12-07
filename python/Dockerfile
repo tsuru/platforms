@@ -3,10 +3,10 @@
 # license that can be found in the LICENSE file.
 
 FROM tsuru/base-platform
-ADD . /var/lib/tsuru/python
-RUN sudo cp /var/lib/tsuru/python/deploy /var/lib/tsuru
+COPY ./install /var/lib/tsuru/python/
 RUN set -ex; \
     sudo /var/lib/tsuru/python/install; \
     sudo rm -rf /var/lib/apt/lists/*
-ENV PYENV_ROOT="/var/lib/pyenv"
-ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+COPY ./deploy /var/lib/tsuru/python/
+RUN sudo cp /var/lib/tsuru/python/deploy /var/lib/tsuru
+ENV PYENV_ROOT="/var/lib/pyenv" PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
