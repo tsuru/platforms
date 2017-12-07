@@ -112,6 +112,20 @@ EOF
     rm ${CURRENT_DIR}/requirements.txt
 }
 
+@test "install from Pipfile.lock" {
+    cp Pipfile Pipfile.lock ${CURRENT_DIR}/
+
+    run /var/lib/tsuru/deploy
+
+    pushd ${CURRENT_DIR}
+    run pip freeze
+    popd
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"msgpack-python"* ]]
+    rm ${CURRENT_DIR}/Pipfile*
+}
+
 @test "change python version" {
     run /var/lib/tsuru/deploy
     run python --version
