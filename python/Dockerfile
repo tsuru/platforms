@@ -9,4 +9,5 @@ RUN set -ex; \
     sudo rm -rf /var/lib/apt/lists/*
 COPY ./deploy /var/lib/tsuru/python/
 RUN sudo cp /var/lib/tsuru/python/deploy /var/lib/tsuru
-ENV PYENV_ROOT="/var/lib/pyenv" PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+ENV PYENV_ROOT="/var/lib/pyenv"
+ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
