@@ -7,11 +7,7 @@
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
-apt-get update
-apt-get install -y --no-install-recommends git
-
-git clone https://github.com/creationix/nvm.git /etc/nvm
-cd /etc/nvm && git checkout `git describe --abbrev=0 --tags`
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.7/install.sh | NVM_DIR=/etc/nvm bash
 
 cat >> ${HOME}/.profile <<EOF
 if [ -e ${HOME}/.nvm_bin ]; then
