@@ -8,8 +8,11 @@ parent_path=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
 
 cd "$parent_path"
 
+has_parallel=$(which parallel)
+
 if [ ! -z $1 ]; then
     platforms=$1
+    has_parallel=""
 else
     platforms=$(ls -d */ | cut -f1 -d'/' | grep -v common)
 fi
@@ -28,8 +31,6 @@ function run_test {
     rm ./$plat/Dockerfile && rm -rf ./$plat/common
 }
 export -f run_test
-
-has_parallel=$(which parallel)
 
 for plat in $platforms; do
     if [ "${has_parallel}" ]; then
