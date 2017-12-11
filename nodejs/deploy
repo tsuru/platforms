@@ -40,9 +40,24 @@ fi
 export NVM_DIR=${HOME}/.nvm
 [ ! -e ${NVM_DIR} ] && mkdir -p ${NVM_DIR}
 
+set +e
 . /etc/nvm/nvm.sh
+nvm_source_exit_code="$?"
+set -e
 
-nvm install ${NODE_VERSION}
+if [[ "$nvm_source_exit_code" != "0" ]]; then
+    echo "WARNING: sourcing nvm.sh returned exit status ${nvm_source_exit_code}. This may not be a problem but report this message if the deploy fails."
+fi
+
+set +e
+nvm install "${NODE_VERSION}"
+nvm_install_exit_code="$?"
+set -e
+
+if [[ "$nvm_install_exit_code" != "0" ]]; then
+    echo "ERROR: \`nvm install \"${NODE_VERSION}\"\` returned exit status ${nvm_install_exit_code}."
+    exit "${nvm_install_exit_code}"
+fi
 
 rm -f ~/.nvm_bin
 ln -s $NVM_BIN ~/.nvm_bin
