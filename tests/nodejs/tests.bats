@@ -14,7 +14,7 @@ setup() {
     rm -rf /home/ubuntu/.nvm
 }
 
-@test "defaults yarn 0.27.5 if yarn.lock present" {
+@test "defaults yarn 1.3.2 if yarn.lock present" {
     cat <<EOF>>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
@@ -33,7 +33,7 @@ EOF
     [[ "$output" == *"yarn.lock detected, using yarn to install node packages"* ]]
 
     run /home/ubuntu/.nvm_bin/yarn --version
-    [[ "$output" == *"0.27.5"* ]]
+    [[ "$output" == *"1.3.2"* ]]
 }
 
 @test "installs yarn from package.json" {

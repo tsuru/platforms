@@ -64,7 +64,7 @@ ln -s $NVM_BIN ~/.nvm_bin
 
 if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; then
     echo "yarn.lock detected, using yarn to install node packages"
-    YARN_DEFAULT_VERSION="0.27.5"
+    YARN_DEFAULT_VERSION="1.3.2"
     yarn_bin=${NVM_BIN}/yarn
     if [ ! -f $yarn_bin ]; then
     	YARN_VERSION=`CURRENT_DIR=${CURRENT_DIR} node -e 'var pkg = require(process.env.CURRENT_DIR+"/package.json"); console.log((pkg.engines && pkg.engines.yarn) ? pkg.engines.yarn.replace(" ", "") : "'${YARN_DEFAULT_VERSION}'")'`
