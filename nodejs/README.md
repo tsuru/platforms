@@ -35,5 +35,8 @@ You have to list your dependencies in the `package.json` file.
     }
     ...
 
+If you want to also install development dependencies, set the environment
+variable ``NPM_CONFIG_PRODUCTION=false``. Otherwise, we'll only install
+regular dependencies.
 You can also cache your node_modules by setting environment variable
 ``KEEP_NODE_MODULES=true``.
