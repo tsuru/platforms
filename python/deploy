@@ -56,6 +56,7 @@ if [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
     echo "Pipfile.lock detected, using 'pipenv install --system --deploy' to install dependencies"
     pip install pipenv
     pipenv install --system --deploy
+    pyenv rehash
 elif [ -f "${CURRENT_DIR}/requirements.txt" ]; then
     echo "requirements.txt detected, using 'pip install -r ./requirements.txt' to install dependencies"
     pip install -r ./requirements.txt
