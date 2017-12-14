@@ -7,7 +7,7 @@
 if [[ $ELIXIR_VERSION ]] ; then
 	echo "-- Using elixir version: $ELIXIR_VERSION --"
 	ELIXIR_REPO=${ELIXIR_REPO:-https://packages.erlang-solutions.com}
-	ELIXIR_TARGET="$ELIXIR_REPO/erlang/elixir/FLAVOUR_2_download/elixir_${ELIXIR_VERSION}~ubuntu~trusty_amd64.deb"
+	ELIXIR_TARGET="$ELIXIR_REPO/erlang/elixir/FLAVOUR_2_download/elixir_${ELIXIR_VERSION}-1~ubuntu~trusty_amd64.deb"
 
 	if ! (curl -s --retry 3 -L $ELIXIR_TARGET -o /tmp/elixir.deb); then
 		echo "ERROR: elixir version $ELIXIR_VERSION is not supported."
