@@ -201,6 +201,53 @@ EOF
     [ ! -d ${CURRENT_DIR}/node_modules/leftpad ]
 }
 
+@test "doesn't install dev dependencies with npm and NPM_CONFIG_PRODUCTION=true" {
+    cat <<EOF>>${CURRENT_DIR}/package.json
+{
+  "name": "hello-world",
+  "description": "hello world test on tsuru",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "is-sorted": "1.x"
+  },
+  "devDependencies": {
+    "leftpad": "0.0.1"
+  }
+}
+EOF
+
+    NPM_CONFIG_PRODUCTION=true run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+
+    [ -d ${CURRENT_DIR}/node_modules/is-sorted ]
+    [ ! -d ${CURRENT_DIR}/node_modules/leftpad ]
+}
+
+@test "doesn't install dev dependencies with yarn and NPM_CONFIG_PRODUCTION=true" {
+    cat <<EOF>>${CURRENT_DIR}/package.json
+{
+  "name": "hello-world",
+  "description": "hello world test on tsuru",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "is-sorted": "1.x"
+  },
+  "devDependencies": {
+    "leftpad": "0.0.1"
+  }
+}
+EOF
+
+    touch ${CURRENT_DIR}/yarn.lock
+    NPM_CONFIG_PRODUCTION=true run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+
+    [ -d ${CURRENT_DIR}/node_modules/is-sorted ]
+    [ ! -d ${CURRENT_DIR}/node_modules/leftpad ]
+}
+
 @test "installs dev dependencies with npm and NPM_CONFIG_PRODUCTION=false" {
     cat <<EOF>>${CURRENT_DIR}/package.json
 {
