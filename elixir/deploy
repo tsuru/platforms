@@ -4,10 +4,28 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+REPO=${REPO:-https://packages.erlang-solutions.com}
+
+if [[ $ERLANG_VERSION ]] ; then
+	ERLANG_TARGET="$REPO/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_${ERLANG_VERSION}-1~ubuntu~trusty_amd64.deb"
+
+	if ! (curl -s --retry 3 -L $ERLANG_TARGET -o /tmp/erlang.deb); then
+		echo "ERROR: erlang version $ERLANG_VERSION is not supported."
+		echo "You will find supported versions here: https://www.erlang-solutions.com/resources/download.html"
+		exit 1
+	fi
+
+	echo "-- Installing erlang version: $ERLANG_VERSION --"
+	if ! (sudo dpkg -i /tmp/erlang.deb); then
+		echo "ERROR: There was a problem installing the elixir version"
+		exit 1
+	fi
+	rm /tmp/erlang.deb
+fi
+
 if [[ $ELIXIR_VERSION ]] ; then
 	echo "-- Using elixir version: $ELIXIR_VERSION --"
-	ELIXIR_REPO=${ELIXIR_REPO:-https://packages.erlang-solutions.com}
-	ELIXIR_TARGET="$ELIXIR_REPO/erlang/elixir/FLAVOUR_2_download/elixir_${ELIXIR_VERSION}-1~ubuntu~trusty_amd64.deb"
+	ELIXIR_TARGET="$REPO/erlang/elixir/FLAVOUR_2_download/elixir_${ELIXIR_VERSION}-1~ubuntu~trusty_amd64.deb"
 
 	if ! (curl -s --retry 3 -L $ELIXIR_TARGET -o /tmp/elixir.deb); then
 		echo "ERROR: elixir version $ELIXIR_VERSION is not supported."
