@@ -25,8 +25,9 @@ setup() {
 @test "deploy fails on invalid erlang version" {
     export ERLANG_VERSION="ABC"
     run /var/lib/tsuru/deploy
+    echo "$output"
     [ "$status" -eq 1 ]
-    [[ "$output" == *"ERROR: There was a problem installing the elixir version"* ]]
+    [[ "$output" == *"ERROR: erlang version ABC is not supported"* ]]
 }
 
 @test "install elixir" {
@@ -46,7 +47,7 @@ setup() {
     export ELIXIR_VERSION="ABC"
     run /var/lib/tsuru/deploy
     [ "$status" -eq 1 ]
-    [[ "$output" == *"ERROR: There was a problem installing the elixir version"* ]]
+    [[ "$output" == *"ERROR: elixir version ABC is not supported"* ]]
 }
 
 @test "mix is installed" {
