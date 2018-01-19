@@ -42,7 +42,7 @@ each line represents one dependency, here's an example:
 
 ### Using setup script
 
-You can also define the setup script to list your depencies, here's an example:
+You can also define the setup script to list your dependencies, here's an example:
 
 	$ cat setup.py
 	from setuptools import setup, find_packages
@@ -58,4 +58,4 @@ You can also define the setup script to list your depencies, here's an example:
 	)
 
 After invokin ``git push`` or ``tsuru app-deploy``, tsuru will receive your code and tell the platform
-to install all the depencies using ``pip install -r requirements.txt`` or ``pip instal -e ./``.
+to install all the dependencies using ``pip install -r requirements.txt`` or ``pip instal -e ./``.
