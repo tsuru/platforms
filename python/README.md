@@ -1,23 +1,19 @@
 # Python platform
 
-The Python platform uses python 2.7.13 by default and get your dependencies with pip,
+The Python platform uses python 2.7.14 by default and get your dependencies with pip,
 either ``requirements.txt`` or ``setup.py``.
 
 You can define which python version you want using ``.python-version``, always use full versions.
 
 ex:
 ```
-3.6.1
+3.6.4
 ```
 
 available python versions:
-- 2.7.13
-- 3.5.3
-- 3.6.1
-- 3.6.2
-
-when adding new releases, we will retain previous version on the series to allow time for users update their apps.
-e,g: when 3.6.3 is released, we will remove 3.6.1.
+- 2.7.14
+- 3.5.4
+- 3.6.4
 
 
 ## Code deployment
