@@ -43,9 +43,9 @@ then
 	echo "Procfile not found. Using default Procfile"
 
 	echo "go build -o tsuru-app"
-	go build -o tsuru-app
+	go build -i -o tsuru-app
 else
-	go build
+	go build -i
 fi
 
 popd >/dev/null 2>&1
