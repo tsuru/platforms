@@ -21,7 +21,7 @@ echo "GOPATH=${APP_DIR}" >> ${HOME}/.profile
 echo 'PATH=$GOPATH:$PATH' >> ${HOME}/.profile
 echo 'export PATH GOPATH' >> ${HOME}/.profile
 echo 'export GIMME_SILENT_ENV=1' >> ${HOME}/.profile
-echo '[ -f ${HOME}/.gimme/envs/latest.env ] && source ${HOME}/.gimme/envs/latest.env' >> ${HOME}/.profile
+echo '[ -f ${HOME}/.gimme/envs/latest.env ] && . ${HOME}/.gimme/envs/latest.env' >> ${HOME}/.profile
 
 sudo -u ubuntu mkdir -p ${HOME}/.gimme/versions
 GO_VERSIONS="stable"
