@@ -80,7 +80,7 @@ if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; th
     if [ $NPM_REGISTRY ]; then
         echo "registry \"$NPM_REGISTRY\"" > ~/.yarnrc
         sed -i "s|https?://registry.yarnpkg.com|$NPM_REGISTRY|g" ${CURRENT_DIR}/yarn.lock
-	sed -i "s|https?://registry.npmjs.org|$NPM_REGISTRY|g" ${CURRENT_DIR}/yarn.lock
+        sed -i "s|https?://registry.npmjs.org|$NPM_REGISTRY|g" ${CURRENT_DIR}/yarn.lock
     fi
     pushd $CURRENT_DIR
     set +e
