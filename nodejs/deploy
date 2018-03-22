@@ -79,7 +79,8 @@ if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; th
     fi
     if [ $NPM_REGISTRY ]; then
         echo "registry \"$NPM_REGISTRY\"" > ~/.yarnrc
-        sed -i "s|https://registry.yarnpkg.com|$NPM_REGISTRY|g" ${CURRENT_DIR}/yarn.lock
+        sed -i "s|https?://registry.yarnpkg.com|$NPM_REGISTRY|g" ${CURRENT_DIR}/yarn.lock
+	sed -i "s|https?://registry.npmjs.org|$NPM_REGISTRY|g" ${CURRENT_DIR}/yarn.lock
     fi
     pushd $CURRENT_DIR
     set +e
@@ -98,6 +99,9 @@ if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; th
     fi
     popd
 elif [ -f ${CURRENT_DIR}/package.json ] ; then
+    if [ -f "${CURRENT_DIR}/package-lock.json" ]; then
+    	sed -i "s|https?://registry.npmjs.org|$NPM_REGISTRY|g" ${CURRENT_DIR}/package-lock.json
+    fi
     pushd $CURRENT_DIR && npm install ${PRODUCTION_FLAG}
     popd
 fi
