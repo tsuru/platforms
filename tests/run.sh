@@ -33,6 +33,9 @@ function run_test {
 export -f run_test
 
 for plat in $platforms; do
+    if [ ! -d "./${plat}" ]; then
+        continue
+    fi
     if [ "${has_parallel}" ]; then
         parallel --semaphore -j 10 run_test $plat
     else

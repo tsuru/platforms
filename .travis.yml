@@ -1,13 +1,25 @@
 sudo: required
+language: bash
 env:
-  global:
-    - PLATFORMS="buildpack cordova elixir go java lua nodejs perl php play pypy python ruby static"
-before_script:
-  - sudo apt-get install parallel
+  matrix:
+    - PLATFORM=buildpack
+    - PLATFORM=cordova
+    - PLATFORM=elixir
+    - PLATFORM=go
+    - PLATFORM=java
+    - PLATFORM=lua
+    - PLATFORM=nodejs
+    - PLATFORM=perl
+    - PLATFORM=php
+    - PLATFORM=play
+    - PLATFORM=pypy
+    - PLATFORM=python
+    - PLATFORM=ruby
+    - PLATFORM=static
 script:
-  - make test
+  - make test platform=$PLATFORM
 after_success:
-  - curl https://raw.githubusercontent.com/tsuru/push-to-docker/master/platform_build_tag.sh | bash
+  - curl https://raw.githubusercontent.com/tsuru/push-to-docker/master/platform_build_tag.sh | PLATFORMS="$PLATFORM" bash
 services:
   - docker
 notifications:
