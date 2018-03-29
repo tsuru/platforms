@@ -8,3 +8,5 @@ RUN	sudo cp /var/lib/tsuru/elixir/deploy /var/lib/tsuru
 RUN set -ex; \
     sudo /var/lib/tsuru/elixir/install; \
     sudo rm -rf /var/lib/apt/lists/*
+RUN	yes | mix local.rebar --force
+RUN	yes | mix local.hex --force

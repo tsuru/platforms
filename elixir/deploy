@@ -47,8 +47,6 @@ source ${SOURCE_DIR}/base/rc/config
 
 if [ -f ${CURRENT_DIR}/mix.exs ]; then
 	pushd $CURRENT_DIR >/dev/null
-	yes | mix local.rebar --force
-	yes | mix local.hex --force
 	mix deps.get
 	mix deps.compile
 	popd >/dev/null
