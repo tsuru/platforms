@@ -10,7 +10,7 @@ source ${SOURCE_DIR}/base/rc/config
 
 pushd $CURRENT_DIR
 if [ -f ${CURRENT_DIR}/cpanfile.snapshot ]; then
-	if [ -f ${CURRENT_DIR}/vendor ]; then
+	if [ -d ${CURRENT_DIR}/vendor ]; then
 		carton install --cached --deployment
 	else
 		carton install --deployment
