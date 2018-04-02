@@ -14,7 +14,7 @@ apt-get update
 apt-get install -y --no-install-recommends \
     make build-essential libssl-dev zlib1g-dev libbz2-dev \
     libreadline-dev libsqlite3-dev curl llvm libncurses5-dev libncursesw5-dev \
-    xz-utils tk-dev git
+    xz-utils tk-dev git libexpat1
 
 git clone https://github.com/pyenv/pyenv.git ${PYENV_ROOT}
 git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
