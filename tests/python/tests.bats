@@ -16,40 +16,40 @@ setup() {
 
 @test "use python version 2.7 as default" {
     run /var/lib/tsuru/deploy
-    [[ "$output" == *"Using python version: 2.7.13 (default)"* ]]
+    [[ "$output" == *"Using python version: 2.7.14 (default)"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"2.7"* ]]
+    [[ "$output" == *"2.7.14"* ]]
 }
 
 @test "parse python version from .python-version" {
-    echo "3.5.3" > ${CURRENT_DIR}/.python-version
+    echo "3.5.5" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
-    [[ "$output" == *"Using python version: 3.5.3 (.python-version file)"* ]]
+    [[ "$output" == *"Using python version: 3.5.5 (.python-version file)"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"3.5"* ]]
+    [[ "$output" == *"3.5.5"* ]]
 }
 
 @test "parse python version from PYTHON_VERSION" {
-    export PYTHON_VERSION=3.6.1
+    export PYTHON_VERSION=3.5.5
     run /var/lib/tsuru/deploy
-    [[ "$output" == *"Using python version: 3.6.1 (PYTHON_VERSION environment variable)"* ]]
+    [[ "$output" == *"Using python version: 3.5.5 (PYTHON_VERSION environment variable)"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"3.6"* ]]
+    [[ "$output" == *"3.5.5"* ]]
     unset PYTHON_VERSION
 }
 
@@ -57,28 +57,28 @@ setup() {
     echo "xyz" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Python version 'xyz' (.python-version file) is not supported"* ]]
-    [[ "$output" == *"Using python version: 2.7.13 (default)"* ]]
+    [[ "$output" == *"Using python version: 2.7.14 (default)"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"2.7"* ]]
+    [[ "$output" == *"2.7.14"* ]]
 }
 
 @test "use python version 2.7 as default with invalid PYTHON_VERSION" {
     export PYTHON_VERSION=abc
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Python version 'abc' (PYTHON_VERSION environment variable) is not supported"* ]]
-    [[ "$output" == *"Using python version: 2.7.13 (default)"* ]]
+    [[ "$output" == *"Using python version: 2.7.14 (default)"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"2.7"* ]]
+    [[ "$output" == *"2.7.14"* ]]
     unset PYTHON_VERSION
 }
 
@@ -131,13 +131,52 @@ EOF
     run python --version
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"2.7"* ]]
+    [[ "$output" == *"2.7.14"* ]]
 
-    export PYTHON_VERSION=3.6.1
+    export PYTHON_VERSION=3.5.5
     run /var/lib/tsuru/deploy
     run python --version
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"3.6"* ]]
+    [[ "$output" == *"3.5.5"* ]]
+    unset PYTHON_VERSION
+}
+
+@test "change python version to closest version" {
+    export PYTHON_VERSION=3.6.1
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using python version: 3.6.5 (PYTHON_VERSION environment variable (closest))"* ]]
+    run python --version
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"3.6.5"* ]]
+
+    export PYTHON_VERSION=3.5.1
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using python version: 3.5.5 (PYTHON_VERSION environment variable (closest))"* ]]
+    run python --version
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"3.5.5"* ]]
+
+    export PYTHON_VERSION=pypy2.7
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using python version: pypy2.7-5.10.0 (PYTHON_VERSION environment variable (closest))"* ]]
+    run python --version
+
+    [ "$status" -eq 0 ]
+    echo "OUTPUT: xxx${output}xxx"
+    [[ "$output" == *"2.7"* ]]
+    [[ "$output" == *"5.10.0"* ]]
+
+    export PYTHON_VERSION=pypy3.5
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using python version: pypy3.5-5.10.1 (PYTHON_VERSION environment variable (closest))"* ]]
+    run python --version
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"3.5"* ]]
+    [[ "$output" == *"5.10.1"* ]]
+
     unset PYTHON_VERSION
 }
