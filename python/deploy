@@ -9,7 +9,7 @@ source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
 #find apps python version
-python_version_default="2.7.13"
+python_version_default="2.7.14"
 version_origin="default"
 
 if [ -n "${PYTHON_VERSION}" ]; then
@@ -30,7 +30,16 @@ if ! pyenv versions | grep -E " ${PYTHON_VERSION}(\s|$)" >/dev/null; then
     echo "Python version '${PYTHON_VERSION}' (${version_origin}) is not supported."
     echo "Valid python versions are:"
     pyenv versions --skip-aliases --bare | grep -v "/env"
-    PYTHON_VERSION="${python_version_default}"
+    case $PYTHON_VERSION in
+        3.6*)
+            PYTHON_VERSION="3.6.4"
+            ;;
+        3.5*)
+            PYTHON_VERSION="3.5.4"
+            ;;
+        *)
+            PYTHON_VERSION=${python_version_default}
+    esac
     version_origin="default"
 fi
 

@@ -16,7 +16,7 @@ setup() {
 
 @test "use python version 2.7 as default" {
     run /var/lib/tsuru/deploy
-    [[ "$output" == *"Using python version: 2.7.13 (default)"* ]]
+    [[ "$output" == *"Using python version: 2.7.14 (default)"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
@@ -40,9 +40,23 @@ setup() {
 }
 
 @test "parse python version from PYTHON_VERSION" {
-    export PYTHON_VERSION=3.6.1
+    export PYTHON_VERSION=3.6.4
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Using python version: 3.6.1 (PYTHON_VERSION environment variable)"* ]]
+
+    pushd ${CURRENT_DIR}
+    run python --version
+    popd
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"3.6"* ]]
+    unset PYTHON_VERSION
+}
+
+@test "find nearest python version if possible" {
+    export PYTHON_VERSION=3.6.1
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using python version: 3.6.4 (default)"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
@@ -57,7 +71,7 @@ setup() {
     echo "xyz" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Python version 'xyz' (.python-version file) is not supported"* ]]
-    [[ "$output" == *"Using python version: 2.7.13 (default)"* ]]
+    [[ "$output" == *"Using python version: 2.7.14 (default)"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
@@ -71,7 +85,7 @@ setup() {
     export PYTHON_VERSION=abc
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Python version 'abc' (PYTHON_VERSION environment variable) is not supported"* ]]
-    [[ "$output" == *"Using python version: 2.7.13 (default)"* ]]
+    [[ "$output" == *"Using python version: 2.7.14 (default)"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
