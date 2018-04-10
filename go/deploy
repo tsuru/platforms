@@ -33,14 +33,10 @@ chown ${USER}:${USER} ${APP_PATH}
 
 pushd ${APP_PATH} >/dev/null 2>&1
 
-if [ ! -d ${APP_PATH}/vendor ]
-then
-  # do not fail if the application is not go gettable
-  echo "vendor not found. running go get"
-  set +e
-  go get -d ./...
-  set -e
-fi
+# do not fail if the application is not go gettable
+set +e
+go get -d .
+set -e
 
 if [ -f ${APP_DIR}/.default_procfile ]
 then
