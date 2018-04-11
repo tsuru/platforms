@@ -35,7 +35,7 @@ pushd ${APP_PATH} >/dev/null 2>&1
 
 # do not fail if the application is not go gettable
 set +e
-go get -d ./...
+go get -d .
 set -e
 
 if [ -f ${APP_DIR}/.default_procfile ]
