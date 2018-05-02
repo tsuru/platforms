@@ -84,6 +84,6 @@ elif [ -f "${CURRENT_DIR}/requirements.txt" ]; then
     pip install -r ./requirements.txt
 elif [ -f "${CURRENT_DIR}/setup.py" ]; then
     echo "setup.py detected, using 'pip install -e .' to install dependencies"
-    pip install -e .
+    pip install --process-dependency-links -e .
 fi
 popd
