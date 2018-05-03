@@ -74,6 +74,17 @@ fi
 
 pyenv global $APP_VENV
 
+if [[ "${PIP_VERSION}" ]]; then
+    PIP_VERSION_SPEC="${PIP_VERSION}"
+    if [[ "$PIP_VERSION" =~ ^[0-9] ]]; then
+        PIP_VERSION_SPEC="==${PIP_VERSION}"
+    fi
+    echo "Using pip version ${PIP_VERSION_SPEC}"
+    pip install "pip$PIP_VERSION_SPEC"
+else
+    echo "Using default pip version"
+fi
+
 if [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
     echo "Pipfile.lock detected, using 'pipenv install --system --deploy' to install dependencies"
     pip install pipenv
