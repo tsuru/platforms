@@ -187,15 +187,15 @@ EOF
 }
 
 @test "set specific pip version" {
-    export PIP_VERSION=9.0.3
+    export PYTHON_PIP_VERSION=9.0.3
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Using pip version ==9.0.3"* ]]
-    unset PIP_VERSION
+    unset PYTHON_PIP_VERSION
 }
 
 @test "set pip version as range" {
-    export PIP_VERSION="<10"
+    export PYTHON_PIP_VERSION="<10"
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Using pip version <10"* ]]
-    unset PIP_VERSION
+    unset PYTHON_PIP_VERSION
 }

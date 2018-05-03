@@ -74,10 +74,10 @@ fi
 
 pyenv global $APP_VENV
 
-if [[ "${PIP_VERSION}" ]]; then
-    PIP_VERSION_SPEC="${PIP_VERSION}"
-    if [[ "$PIP_VERSION" =~ ^[0-9] ]]; then
-        PIP_VERSION_SPEC="==${PIP_VERSION}"
+if [[ "${PYTHON_PIP_VERSION}" ]]; then
+    PIP_VERSION_SPEC="${PYTHON_PIP_VERSION}"
+    if [[ "$PYTHON_PIP_VERSION" =~ ^[0-9] ]]; then
+        PIP_VERSION_SPEC="==${PYTHON_PIP_VERSION}"
     fi
     echo "Using pip version ${PIP_VERSION_SPEC}"
     pip install "pip$PIP_VERSION_SPEC"

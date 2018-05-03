@@ -23,9 +23,9 @@ e,g: when 3.6.3 is released, we will remove 3.6.1.
 ## Setting pip version
 
 By default, the latest pip version will be installed. If you want to use a specific version, set
-a ``PIP_VERSION`` environment variable. It accepts a specific version (``PIP_VERSION=7.1.2``) or a
+a ``PYTHON_PIP_VERSION`` environment variable. It accepts a specific version (``PYTHON_PIP_VERSION=7.1.2``) or a
 [requirement specifier](https://pip.pypa.io/en/stable/reference/pip_install/#requirement-specifiers)
-(``PIP_VERSION="<10"``).
+(``PYTHON_PIP_VERSION="<10"``).
 
 ## Code deployment
 
