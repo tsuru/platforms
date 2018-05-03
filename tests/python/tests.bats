@@ -180,3 +180,22 @@ EOF
 
     unset PYTHON_VERSION
 }
+
+@test "use default pip version" {
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using default pip version"* ]]
+}
+
+@test "set specific pip version" {
+    export PIP_VERSION=9.0.3
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using pip version ==9.0.3"* ]]
+    unset PIP_VERSION
+}
+
+@test "set pip version as range" {
+    export PIP_VERSION="<10"
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using pip version <10"* ]]
+    unset PIP_VERSION
+}
