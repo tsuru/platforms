@@ -1,7 +1,7 @@
 # Python platform
 
-The Python platform uses python 2.7.13 by default and get your dependencies with pip,
-either ``requirements.txt`` or ``setup.py``.
+The Python platform uses python 2.7.14 by default and get your dependencies with pip,
+either by ``Pipfile.lock``, ``requirements.txt`` or ``setup.py``.
 
 You can define which python version you want using ``.python-version``, always use full versions.
 
@@ -11,14 +11,21 @@ ex:
 ```
 
 available python versions:
-- 2.7.13
-- 3.5.3
-- 3.6.1
-- 3.6.2
+- 2.7.14
+- 3.5.5
+- 3.6.5
+- pypy2.7-5.10.0
+- pypy3.5-5.10.1
 
 when adding new releases, we will retain previous version on the series to allow time for users update their apps.
 e,g: when 3.6.3 is released, we will remove 3.6.1.
 
+## Setting pip version
+
+By default, the latest pip version will be installed. If you want to use a specific version, set
+a ``PIP_VERSION`` environment variable. It accepts a specific version (``PIP_VERSION=7.1.2``) or a
+[requirement specifier](https://pip.pypa.io/en/stable/reference/pip_install/#requirement-specifiers)
+(``PIP_VERSION="<10"``).
 
 ## Code deployment
 
@@ -30,6 +37,10 @@ You can customize this behavior, see the next section for more details.
 
 There are two ways to list the applications dependencies: ``requirements.txt`` or ``setup.py``.
 The priority order is: requirements -> setup. The file should be in the root of deploy files.
+
+### Using Pipfile.lock
+
+If you have a ``Pipfile.lock`` file, tsuru will use pipenv to install the dependencies of your application.
 
 ### Using requirements.txt
 
@@ -57,5 +68,6 @@ You can also define the setup script to list your dependencies, here's an exampl
 		],
 	)
 
-After invokin ``git push`` or ``tsuru app-deploy``, tsuru will receive your code and tell the platform
-to install all the dependencies using ``pip install -r requirements.txt`` or ``pip instal -e ./``.
+After invoking ``git push`` or ``tsuru app-deploy``, tsuru will receive your code and tell the platform
+to install all the dependencies using ``pipenv install --system --deploy``, ``pip install -r requirements.txt``
+or ``pip instal -e ./``.
