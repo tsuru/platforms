@@ -294,3 +294,43 @@ EOF
     [ -d ${CURRENT_DIR}/node_modules/is-sorted ]
     [ -d ${CURRENT_DIR}/node_modules/leftpad ]
 }
+
+@test "replaces the default npmjs.org urls with NPM_REGISTRY" {
+    cat <<EOF>>${CURRENT_DIR}/package.json
+{
+  "name": "hello-world",
+  "description": "hello world test on tsuru",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.x"
+  }
+}
+EOF
+    cat <<EOF>>${CURRENT_DIR}/package-lock.json
+https://registry.npmjs.org/express
+EOF
+    export NPM_REGISTRY=my-registry.example.com
+    run /var/lib/tsuru/deploy
+    [ `cat ${CURRENT_DIR}/package-lock.json` == "my-registry.example.com/express" ]
+}
+
+@test "replaces the default yarnpkg.com urls with NPM_REGISTRY" {
+    cat <<EOF>>${CURRENT_DIR}/package.json
+{
+  "name": "hello-world",
+  "description": "hello world test on tsuru",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.x"
+  }
+}
+EOF
+    cat <<EOF>>${CURRENT_DIR}/yarn.lock
+https://registry.yarnpkg.com/express
+EOF
+    export NPM_REGISTRY=my-registry.example.com
+    run /var/lib/tsuru/deploy
+    [ `cat ${CURRENT_DIR}/yarn.lock` == "my-registry.example.com/express" ]
+}
