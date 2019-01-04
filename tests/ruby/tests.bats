@@ -8,6 +8,7 @@ setup() {
     rm -rf /home/application/current && mkdir /home/application/current
     chown ubuntu /home/application/current
     export CURRENT_DIR=/home/application/current
+    export PATH=/home/application/ruby/bin:${PATH}
 }
 
 @test "installs ruby" {
@@ -54,6 +55,22 @@ setup() {
     [ "$status" -eq 0 ]
     [[ "$output" == *"2.1.2"* ]]
     rm ${CURRENT_DIR}/.ruby-version
+}
+
+@test "install bundler version <2 when ruby version < 2.3.0" {
+    export RUBY_VERSION="2.2.2"
+    run /var/lib/tsuru/deploy
+    run /home/application/ruby/bin/bundler --version
+    [ "$status" -eq 0 ]
+    [[ "$output" == "Bundler version 1."* ]]
+}
+
+@test "install bundler version >=2 when ruby version >= 2.3.0" {
+    export RUBY_VERSION="2.3.0"
+    run /var/lib/tsuru/deploy
+    run /home/application/ruby/bin/bundler --version
+    [ "$status" -eq 0 ]
+    [[ "$output" == "Bundler version 2."* ]]
 }
 
 @test "bundle install when provide Gemfile and reuse already installed gem" {
