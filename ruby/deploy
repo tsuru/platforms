@@ -74,14 +74,13 @@ if [ "$INSTALL_RUBY" == "1" ]; then
         exit 1
     fi
 
-    BUNDLER_VERSION=get_bundler_version $RUBY_VERSION
+    BUNDLER_VERSION=$(get_bundler_version $RUBY_VERSION)
     if [ "$BUNDLER_VERSION" != "" ]; then
         if [ -z "$GEM_SOURCE" ]; then
-                gem instal bundler -v "$BUNDLER_VERSION"
-            fi
+            gem instal bundler -f -v "$BUNDLER_VERSION"
         else
             echo "-- Using $GEM_SOURCE as remote gem source --"
-            gem install --clear-sources --source=$GEM_SOURCE bundler -v "$BUNDLER_VERSION"
+            gem install --clear-sources --source=$GEM_SOURCE bundler -f -v "$BUNDLER_VERSION"
         fi
     fi
 fi
