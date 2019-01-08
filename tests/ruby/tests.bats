@@ -108,6 +108,5 @@ EOF
     [[ "$output" == *"Using hello-world"* ]]
     run /home/application/ruby/bin/bundler --version
     [ "$status" -eq 0 ]
-    echo $output
     [[ "$output" == "Bundler version 1.13.7" ]]
 }
