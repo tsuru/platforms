@@ -45,6 +45,24 @@ if [ -f /home/application/ruby/bin/ruby ]; then
     fi
 fi
 
+function get_bundler_version() {
+    ruby_version=$1
+    if [ "$(printf "%s\n%s" "$ruby_version" "2.6.0" | sort -V | head -n 1)" = "2.6.0" ]; then
+        echo ""
+    else
+        if [ -f ${CURRENT_DIR}/Gemfile.lock ]; then
+            bundler_version=$(cat ${CURRENT_DIR}/Gemfile.lock | grep -A1 "BUNDLED WITH" | grep -v "BUNDLED WITH" | tr -d " ")
+            if [ "$bundler_version" != "" ]; then
+                echo $bundler_version
+            fi
+        elif [ "$(printf "%s\n%s" "$ruby_version" "2.3.0" | sort -V | head -n 1)" != "2.3.0" ]; then
+            echo "<2"
+        else
+            echo ">2"
+        fi
+    fi
+}
+
 if [ "$INSTALL_RUBY" == "1" ]; then
     mkdir -p "/home/application/ruby"
     echo "-- Fetching ruby from: $RUBY_TARGET --"
@@ -56,15 +74,15 @@ if [ "$INSTALL_RUBY" == "1" ]; then
         exit 1
     fi
 
-    if [ -z "$GEM_SOURCE" ]; then
-        if [ "$(printf "%s\n%s" "$RUBY_VERSION" "2.3.0" | sort -V | head -n 1)" != "2.3.0" ]; then
-            gem install bundler -v "<2"
+    BUNDLER_VERSION=$(get_bundler_version $RUBY_VERSION)
+    if [ "$BUNDLER_VERSION" != "" ]; then
+        gem uninstall bundler
+        if [ -z "$GEM_SOURCE" ]; then
+            gem instal bundler --no-ri --no-rdoc -v "$BUNDLER_VERSION"
         else
-            gem install bundler
+            echo "-- Using $GEM_SOURCE as remote gem source --"
+            gem install --clear-sources --no-ri --no-rdoc --source=$GEM_SOURCE bundler -v "$BUNDLER_VERSION"
         fi
-    else
-        echo "-- Using $GEM_SOURCE as remote gem source --"
-        gem install --clear-sources --source=$GEM_SOURCE bundler
     fi
 fi
 

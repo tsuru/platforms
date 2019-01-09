@@ -73,6 +73,14 @@ setup() {
     [[ "$output" == "Bundler version 2."* ]]
 }
 
+@test "using bundler within ruby package when version >=2.6.0" {
+    export RUBY_VERSION="2.6.0"
+    run /var/lib/tsuru/deploy
+    run /home/application/ruby/bin/bundler --version
+    [ "$status" -eq 0 ]
+    [[ "$output" == "Bundler version "* ]]
+}
+
 @test "bundle install when provide Gemfile and reuse already installed gem" {
     echo "ruby-2.1.2" > ${CURRENT_DIR}/.ruby-version
     echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
@@ -98,4 +106,7 @@ EOF
     [[ "$output" == *"Installing hello-world"* ]]
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Using hello-world"* ]]
+    run /home/application/ruby/bin/bundler --version
+    [ "$status" -eq 0 ]
+    [[ "$output" == "Bundler version 1.13.7" ]]
 }
