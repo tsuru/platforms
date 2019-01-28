@@ -12,8 +12,8 @@ apt-get install -y --no-install-recommends \
         make \
         gcc \
         build-essential \
-        libreadline6 \
-        libreadline6-dev
+        libreadline7 \
+        libreadline-dev
 
 curl -R -O http://www.lua.org/ftp/lua-5.3.3.tar.gz
 tar zxf lua-5.3.3.tar.gz

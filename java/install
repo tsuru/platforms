@@ -9,14 +9,14 @@ source ${SOURCE_DIR}/base/rc/config
 
 apt-get update
 apt-get install -y --no-install-recommends \
-            openjdk-7-jdk \
+            openjdk-11-jdk \
             maven \
-            tomcat7
+            tomcat8
 
 cp $SOURCE_DIR/java/Procfile $SOURCE_DIR/default/Procfile
 
-rm -rf /var/lib/tomcat7/webapps
-ln -s ${CURRENT_DIR} /var/lib/tomcat7/webapps
-mkdir -p /usr/share/tomcat7/common/classes /usr/share/tomcat7/server/classes /usr/share/tomcat7/shared/classes
-chown -R ${USER}:${USER} /etc/tomcat7 /var/lib/tomcat7 /var/cache/tomcat7 /var/log/tomcat7 /usr/share/tomcat7
-sed -i 's/8080/8888/' /etc/tomcat7/server.xml
+rm -rf /var/lib/tomcat8/webapps
+ln -s ${CURRENT_DIR} /var/lib/tomcat8/webapps
+mkdir -p /usr/share/tomcat8/common/classes /usr/share/tomcat8/server/classes /usr/share/tomcat8/shared/classes
+chown -R ${USER}:${USER} /etc/tomcat8 /var/lib/tomcat8 /var/cache/tomcat8 /var/log/tomcat8 /usr/share/tomcat8
+sed -i 's/8080/8888/' /etc/tomcat8/server.xml
