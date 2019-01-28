@@ -7,13 +7,16 @@ PHP_VERSIONS="5.6 7.0 7.1"
 
 add_repository ppa:ondrej/php
 hhvm_repo="deb http://dl.hhvm.com/ubuntu ${UBUNTU_RELEASE} main"
-add_repository "${hhvm_repo}" "0xB4112585D386EB94"
+curl https://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
+add_repository "${hhvm_repo}"
 
 packages=("nginx-core" "hhvm" "python" "python-yaml" "git" "apache2")
 for version in $PHP_VERSIONS
 do
     packages+=("php${version}" "php${version}-fpm" "libapache2-mod-php${version}")
 done
+
+export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
 apt-get install -y --force-yes "${packages[@]}"
