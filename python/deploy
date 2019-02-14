@@ -75,6 +75,9 @@ fi
 pyenv global $APP_VENV
 
 if [[ "${PYTHON_PIP_VERSION}" ]]; then
+    if [ ${PYTHON_PIP_VERSION/.*/} -lt 19 ]; then
+        PIP_EXTRA_OPTS="--process-dependency-links"
+    fi
     PIP_VERSION_SPEC="${PYTHON_PIP_VERSION}"
     if [[ "$PYTHON_PIP_VERSION" =~ ^[0-9] ]]; then
         PIP_VERSION_SPEC="==${PYTHON_PIP_VERSION}"
@@ -95,6 +98,6 @@ elif [ -f "${CURRENT_DIR}/requirements.txt" ]; then
     pip install -r ./requirements.txt
 elif [ -f "${CURRENT_DIR}/setup.py" ]; then
     echo "setup.py detected, using 'pip install -e .' to install dependencies"
-    pip install --process-dependency-links -e .
+    pip install ${PIP_EXTRA_OPTS:-} -e .
 fi
 popd
