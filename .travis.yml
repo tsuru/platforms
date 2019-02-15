@@ -19,7 +19,7 @@ env:
 script:
   - make test platform=$PLATFORM
 after_success:
-  - curl https://raw.githubusercontent.com/tsuru/push-to-docker/master/platform_build_tag.sh | PLATFORMS="$PLATFORM" bash
+  - echo $TRAVIS_BRANCH; if [ $TRAVIS_BRANCH == "master" ]; then curl https://raw.githubusercontent.com/tsuru/push-to-docker/master/platform_build_tag.sh | PLATFORMS="$PLATFORM" bash; fi
 services:
   - docker
 notifications:
