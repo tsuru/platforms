@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-FROM	tsuru/base-platform
+FROM	tsuru/base-platform:14.04
 ADD	. /var/lib/tsuru/static
 RUN	sudo cp /var/lib/tsuru/static/deploy /var/lib/tsuru
 RUN set -ex; \

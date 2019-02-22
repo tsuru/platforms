@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-FROM tsuru/base-platform
+FROM tsuru/base-platform:14.04
 COPY ./install /var/lib/tsuru/python/
 RUN set -ex; \
     sudo /var/lib/tsuru/python/install; \
