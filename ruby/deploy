@@ -49,17 +49,19 @@ function get_bundler_version() {
     ruby_version=$1
     if [ "$(printf "%s\n%s" "$ruby_version" "2.6.0" | sort -V | head -n 1)" = "2.6.0" ]; then
         echo ""
-    else
-        if [ -f ${CURRENT_DIR}/Gemfile.lock ]; then
-            bundler_version=$(cat ${CURRENT_DIR}/Gemfile.lock | grep -A1 "BUNDLED WITH" | grep -v "BUNDLED WITH" | tr -d " ")
-            if [ "$bundler_version" != "" ]; then
-                echo $bundler_version
-            fi
-        elif [ "$(printf "%s\n%s" "$ruby_version" "2.3.0" | sort -V | head -n 1)" != "2.3.0" ]; then
-            echo "<2"
-        else
-            echo ">2"
+        return
+    fi
+    if [ -f ${CURRENT_DIR}/Gemfile.lock ]; then
+        bundler_version=$(cat ${CURRENT_DIR}/Gemfile.lock | grep -A1 "BUNDLED WITH" | grep -v "BUNDLED WITH" | tr -d " ")
+        if [ "$bundler_version" != "" ]; then
+            echo $bundler_version
+            return
         fi
+    fi
+    if [ "$(printf "%s\n%s" "$ruby_version" "2.3.0" | sort -V | head -n 1)" != "2.3.0" ]; then
+        echo "<2"
+    else
+        echo ">2"
     fi
 }
 
