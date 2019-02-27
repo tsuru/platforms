@@ -5,6 +5,7 @@
 # license that can be found in the LICENSE file.
 
 setup() {
+    rm -rf /home/application/ruby
     rm -rf /home/application/current && mkdir /home/application/current
     chown ubuntu /home/application/current
     export CURRENT_DIR=/home/application/current
@@ -20,6 +21,7 @@ setup() {
 }
 
 @test "install ruby version 2.3.1 as default" {
+    run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
     [ "$status" -eq 0 ]
     [[ "$output" == *"2.3.1"* ]]
@@ -109,4 +111,31 @@ EOF
     run /home/application/ruby/bin/bundler --version
     [ "$status" -eq 0 ]
     [[ "$output" == "Bundler version 1.13.7" ]]
+}
+
+@test "bundle install when provide Gemfile with no bundled with section" {
+    echo "ruby-2.1.2" > ${CURRENT_DIR}/.ruby-version
+    echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
+    echo "gem 'hello-world', '1.2.0'" >> ${CURRENT_DIR}/Gemfile
+    cat <<EOF>${CURRENT_DIR}/Gemfile.lock
+GEM
+  remote: https://rubygems.org/
+  specs:
+    hello-world (1.2.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  hello-world (= 1.2.0)
+EOF
+
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Installing hello-world"* ]]
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using hello-world"* ]]
+    run /home/application/ruby/bin/bundler --version
+    [ "$status" -eq 0 ]
+    [[ "$output" == "Bundler version 1."* ]]
 }
