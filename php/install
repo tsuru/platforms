@@ -3,7 +3,7 @@
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
-PHP_VERSIONS="5.6 7.0 7.1"
+PHP_VERSIONS="5.6 7.0 7.1 7.2"
 
 add_repository ppa:ondrej/php
 hhvm_repo="deb http://dl.hhvm.com/ubuntu ${UBUNTU_RELEASE} main"
