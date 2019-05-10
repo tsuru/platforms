@@ -8,7 +8,7 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-go_default_version="stable"
+go_default_version="1.11.1"
 if [ -z "${GO_VERSION}" ]; then
   GO_VERSION="${go_default_version}"
 fi
