@@ -1,0 +1,16 @@
+#!/bin/bash -el
+
+# Copyright 2016 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/rc/config
+
+apt-get update
+apt-get install -y --no-install-recommends 
+
+curl -R -O https://product-dist.ballerina.io/downloads/0.991.0/ballerina-linux-installer-x64-0.991.0.deb
+dpkg -i ballerina-linux-installer-x64-0.991.0.deb
+
+apt-get autoremove -y

@@ -2,7 +2,8 @@ sudo: required
 language: bash
 env:
   matrix:
-    - PLATFORM=buildpack
+    - PLATFORM=ballerina
+    - PLATFORM=buildpack    
     - PLATFORM=cordova
     - PLATFORM=elixir
     - PLATFORM=go
