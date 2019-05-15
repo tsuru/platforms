@@ -24,7 +24,7 @@ echo 'export GIMME_SILENT_ENV=1' >> ${HOME}/.profile
 echo '[ -f ${HOME}/.gimme/envs/latest.env ] && . ${HOME}/.gimme/envs/latest.env' >> ${HOME}/.profile
 
 sudo -u ubuntu mkdir -p ${HOME}/.gimme/versions
-GO_VERSIONS="stable"
+GO_VERSIONS="1.11.1"
 for GO_VERSION in ${GO_VERSIONS}
 do
     echo "Installing Go ${GO_VERSION}..."
