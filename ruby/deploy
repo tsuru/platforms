@@ -58,11 +58,7 @@ function get_bundler_version() {
             return
         fi
     fi
-    if [ "$(printf "%s\n%s" "$ruby_version" "2.3.0" | sort -V | head -n 1)" != "2.3.0" ]; then
-        echo "<2"
-    else
-        echo ">2"
-    fi
+    echo ">2"
 }
 
 if [ "$INSTALL_RUBY" == "1" ]; then
