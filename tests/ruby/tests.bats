@@ -20,19 +20,19 @@ setup() {
     dpkg -s build-essential | grep "install ok installed"
 }
 
-@test "install ruby version 2.3.1 as default" {
+@test "install ruby version 2.4.6 as default" {
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
     [ "$status" -eq 0 ]
-    [[ "$output" == *"2.3.1"* ]]
+    [[ "$output" == *"2.4.6"* ]]
 }
 
 @test "install specific ruby version" {
-    export RUBY_VERSION="2.2.2"
+    export RUBY_VERSION="2.6.3"
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
     [ "$status" -eq 0 ]
-    [[ "$output" == *"2.2.2"* ]]
+    [[ "$output" == *"2.6.3"* ]]
 }
 
 @test "deploy fails on invalid ruby version" {
@@ -51,11 +51,11 @@ setup() {
 }
 
 @test "parse ruby version from .ruby-version" {
-    echo "ruby-2.1.2" > ${CURRENT_DIR}/.ruby-version
+    echo "ruby-2.5.5" > ${CURRENT_DIR}/.ruby-version
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
     [ "$status" -eq 0 ]
-    [[ "$output" == *"2.1.2"* ]]
+    [[ "$output" == *"2.5.5"* ]]
     rm ${CURRENT_DIR}/.ruby-version
 }
 
