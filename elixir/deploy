@@ -7,7 +7,7 @@
 ERLANG_REPO=${ERLANG_REPO:-https://packages.erlang-solutions.com}
 
 if [[ $ERLANG_VERSION ]] ; then
-	ERLANG_TARGET="$ERLANG_REPO/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_${ERLANG_VERSION}-1~ubuntu~trusty_amd64.deb"
+	ERLANG_TARGET="$ERLANG_REPO/erlang/debian/pool/esl-erlang_${ERLANG_VERSION}-1~ubuntu~xenial_amd64.deb"
 
 	if ! (curl -fsS --retry 3 -L $ERLANG_TARGET -o /tmp/erlang.deb); then
 		echo "ERROR: erlang version $ERLANG_VERSION is not supported."
@@ -25,7 +25,7 @@ fi
 
 if [[ $ELIXIR_VERSION ]] ; then
 	echo "-- Using elixir version: $ELIXIR_VERSION --"
-	ELIXIR_TARGET="$ERLANG_REPO/erlang/elixir/FLAVOUR_2_download/elixir_${ELIXIR_VERSION}-1~ubuntu~trusty_amd64.deb"
+	ELIXIR_TARGET="$ERLANG_REPO/erlang/debian/pool/elixir_${ELIXIR_VERSION}-1~ubuntu~xenial_amd64.deb"
 
 	if ! (curl -fsS --retry 3 -L $ELIXIR_TARGET -o /tmp/elixir.deb); then
 		echo "ERROR: elixir version $ELIXIR_VERSION is not supported."
