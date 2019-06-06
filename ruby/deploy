@@ -80,7 +80,7 @@ if [ "$BUNDLER_VERSION" != "" ]; then
         gem install bundler --force -v "$BUNDLER_VERSION"
     else
         echo "-- Using $GEM_SOURCE as remote gem source --"
-        gem install --clear-sources --no-ri --no-rdoc --source=$GEM_SOURCE bundler -v "$BUNDLER_VERSION"
+        gem install --clear-sources --force --source=$GEM_SOURCE bundler -v "$BUNDLER_VERSION"
     fi
 fi
 
