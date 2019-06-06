@@ -97,6 +97,36 @@ EOF
     [[ "$output" == "Bundler version 1.13.7" ]]
 }
 
+@test "using bundle inside Gemfile.lock and ignore bundle vendoring version for ruby >= 2.6" {
+    echo "ruby-2.6.3" > ${CURRENT_DIR}/.ruby-version
+    echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
+    echo "gem 'hello-world', '1.2.0'" >> ${CURRENT_DIR}/Gemfile
+    cat <<EOF>${CURRENT_DIR}/Gemfile.lock
+GEM
+  remote: https://rubygems.org/
+  specs:
+    hello-world (1.2.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  hello-world (= 1.2.0)
+
+BUNDLED WITH
+   2.0.1
+EOF
+
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Installing hello-world"* ]]
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using hello-world"* ]]
+    run /home/application/ruby/bin/bundler --version
+    [ "$status" -eq 0 ]
+    [[ "$output" == "Bundler version 2.0.1" ]]
+}
+
 @test "bundle install when provide Gemfile with no bundled with section" {
     echo "ruby-2.5.4" > ${CURRENT_DIR}/.ruby-version
     echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
