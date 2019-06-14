@@ -12,5 +12,5 @@ apt-get install -y --no-install-recommends
 
 curl -R -O https://product-dist.ballerina.io/downloads/0.991.0/ballerina-linux-installer-x64-0.991.0.deb
 dpkg -i ballerina-linux-installer-x64-0.991.0.deb
-
 apt-get autoremove -y
+rm -f ballerina-linux-installer-x64-0.991.0.deb
