@@ -3,7 +3,7 @@ language: bash
 env:
   matrix:
     - PLATFORM=ballerina
-    - PLATFORM=buildpack    
+    - PLATFORM=buildpack
     - PLATFORM=cordova
     - PLATFORM=elixir
     - PLATFORM=go
