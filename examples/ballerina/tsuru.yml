@@ -1,5 +1,2 @@
-hooks:
-  build:
-    - ballerina run hello_service.bal
 healthcheck:
   path: /hello/sayHello
