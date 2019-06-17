@@ -7,6 +7,7 @@ Source for official Docker images of tsuru platforms.
 
 All platforms are available in Docker Hub:
 
+* tsuru/ballerina: https://hub.docker.com/r/tsuru/ballerina/
 * tsuru/buildpack: https://hub.docker.com/r/tsuru/buildpack/
 * tsuru/cordova: https://hub.docker.com/r/tsuru/cordova/
 * tsuru/elixir: https://hub.docker.com/r/tsuru/elixir/

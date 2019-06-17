@@ -1,0 +1,1 @@
+web: ballerina run hello_service.bal
