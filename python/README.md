@@ -14,6 +14,7 @@ available python versions:
 - 2.7.14
 - 3.5.5
 - 3.6.5
+- 3.7.4
 - pypy2.7-5.10.0
 - pypy3.5-5.10.1
 
