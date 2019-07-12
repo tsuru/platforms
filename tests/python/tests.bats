@@ -151,6 +151,14 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"3.6.5"* ]]
 
+    export PYTHON_VERSION=3
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using python version: 3.6.5 (PYTHON_VERSION environment variable (closest))"* ]]
+    run python --version
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"3.6.5"* ]]
+
     export PYTHON_VERSION=3.5.1
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Using python version: 3.5.5 (PYTHON_VERSION environment variable (closest))"* ]]
