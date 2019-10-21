@@ -23,7 +23,7 @@ export GOPATH="/go"
 sudo mkdir -p $GOPATH
 sudo chown ubuntu:ubuntu $GOPATH
 
-GO_VERSIONS="1.11.13 1.12.10 1.13.1"
+GO_VERSIONS="1.12.12 1.13.3"
 
 for GO_VERSION in ${GO_VERSIONS}; do
     echo "Installing Go ${GO_VERSION}..."

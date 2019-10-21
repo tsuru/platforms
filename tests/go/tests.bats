@@ -11,48 +11,48 @@ setup() {
     export CURRENT_DIR=/home/application/current
 }
 
-@test "use Go version 1.13.1 as default" {
+@test "use Go version 1.13.3 as default" {
     run /var/lib/tsuru/deploy
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Using Go version: go version go1.13.1 linux/amd64"* ]]
+    [[ "$output" == *"Using Go version: go version go1.13.3 linux/amd64"* ]]
 
     pushd ${CURRENT_DIR}
     run go version
     popd
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"go version go1.13.1 linux/amd64"* ]]
+    [[ "$output" == *"go version go1.13.3 linux/amd64"* ]]
 }
 
 @test "use existing Go version from GO_VERSION" {
-    export GO_VERSION=1.11
+    export GO_VERSION=1.12
     run /var/lib/tsuru/deploy
     [ "$status" -eq 0 ]
     [[ "$output" != *"Installing Go"* ]]
-    [[ "$output" == *"Using Go version: go version go1.11.13 linux/amd64"* ]]
+    [[ "$output" == *"Using Go version: go version go1.12.12 linux/amd64"* ]]
 
     pushd ${CURRENT_DIR}
     run go version
     popd
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"1.11.13"* ]]
+    [[ "$output" == *"1.12.12"* ]]
     unset GO_VERSION
 }
 
 @test "use downloaded Go version from GO_VERSION" {
-    export GO_VERSION=1.10
+    export GO_VERSION=1.11
     run /var/lib/tsuru/deploy
     [ "$status" -eq 0 ]
     [[ "$output" == *"Installing Go"* ]]
-    [[ "$output" == *"Using Go version: go version go1.10 linux/amd64"* ]]
+    [[ "$output" == *"Using Go version: go version go1.11 linux/amd64"* ]]
 
     pushd ${CURRENT_DIR}
     run go version
     popd
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"1.10"* ]]
+    [[ "$output" == *"1.11"* ]]
     unset GO_VERSION
 }
 
@@ -63,14 +63,14 @@ setup() {
     [ "$status" -eq 0 ]
     [[ "$output" != *"Installing Go"* ]]
     [[ "$output" == *"Requested Go version is 1.9 but download is not allowed."* ]]
-    [[ "$output" == *"Using Go version: go version go1.13.1 linux/amd64"* ]]
+    [[ "$output" == *"Using Go version: go version go1.13.3 linux/amd64"* ]]
 
     pushd ${CURRENT_DIR}
     run go version
     popd
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"1.13.1"* ]]
+    [[ "$output" == *"1.13.3"* ]]
     unset GO_VERSION
     unset GO_DOWNLOAD_ALLOWED
 }
