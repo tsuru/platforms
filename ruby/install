@@ -9,6 +9,7 @@ source ${SOURCE_DIR}/base/rc/config
 
 # Install Essential Packages
 apt-get update
+export DEBIAN_FRONTEND=noninteractive
 apt-get install -y --no-install-recommends \
         nodejs \
         ruby \
@@ -24,7 +25,8 @@ apt-get install -y --no-install-recommends \
         libxml2-dev \
         libxslt1-dev \
         libcurl4-openssl-dev \
-        libffi-dev
+        libffi-dev \
+        tzdata
 
 mkdir /home/application/ruby
 chown ${USER}:${USER} /home/application/ruby

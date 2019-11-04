@@ -7,6 +7,10 @@
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
+apt-get update
+export DEBIAN_FRONTEND=noninteractive
+apt-get install -y --no-install-recommends tzdata
+
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.7/install.sh | NVM_DIR=/etc/nvm bash
 
 cat >> ${HOME}/.profile <<EOF
