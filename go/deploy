@@ -52,15 +52,19 @@ set +e
 go get -d .
 set -e
 
+if [ -f ${APP_DIR}/current/go.mod ] && [ -d ${APP_DIR}/current/vendor ]; then
+	GO_BUILD_VENDOR="-mod=vendor"
+fi
+
 if [ -f ${APP_DIR}/.default_procfile ]
 then
 	echo "Procfile not found. Using default Procfile"
 
 	echo "go build -o tsuru-app"
-	go build -i -o tsuru-app
+	go build $GO_BUILD_VENDOR -i -o tsuru-app
 else
-	go build -i 2>/dev/null || true
-	go install ./...
+	go build $GO_BUILD_VENDOR -i 2>/dev/null || true
+	go install $GO_BUILD_VENDOR ./...
 fi
 
 popd >/dev/null 2>&1

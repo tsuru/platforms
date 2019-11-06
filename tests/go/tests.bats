@@ -176,3 +176,14 @@ setup() {
     [[ "$output" == *"ok"* ]]
     unset GO_PKG_PATH
 }
+
+@test "test using vendor and go mod for go >= 1.13" {
+    cp -a ./fixtures/vendored/* ${CURRENT_DIR}/
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+
+    [ -x /home/application/bin/blah ]
+    run /home/application/bin/blah
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"compiled using vendor"* ]]
+}
