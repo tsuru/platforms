@@ -7,7 +7,7 @@ import ballerina/http;
 // A service is a network-accessible entry point. This service
 // is accessed at '/hello', and bound to a listener on port default 8888.
 
-int port = config:getAsInt("PORT", defaultValue = 8888);
+int port = config:getAsInt("PORT", 8888);
 
 service hello on new http:Listener(port) {
 
