@@ -9,7 +9,6 @@ source ${SOURCE_DIR}/base/rc/config
 
 apt-get update
 apt-get install -y --no-install-recommends software-properties-common
-add-apt-repository -y ppa:nginx/stable
 apt-get update
 apt-get install -y --no-install-recommends nginx
 

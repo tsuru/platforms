@@ -20,19 +20,19 @@ setup() {
     dpkg -s build-essential | grep "install ok installed"
 }
 
-@test "install ruby version 2.3.1 as default" {
+@test "install ruby version 2.4.6 as default" {
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
     [ "$status" -eq 0 ]
-    [[ "$output" == *"2.3.1"* ]]
+    [[ "$output" == *"2.4.6"* ]]
 }
 
 @test "install specific ruby version" {
-    export RUBY_VERSION="2.2.2"
+    export RUBY_VERSION="2.6.3"
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
     [ "$status" -eq 0 ]
-    [[ "$output" == *"2.2.2"* ]]
+    [[ "$output" == *"2.6.3"* ]]
 }
 
 @test "deploy fails on invalid ruby version" {
@@ -51,28 +51,12 @@ setup() {
 }
 
 @test "parse ruby version from .ruby-version" {
-    echo "ruby-2.1.2" > ${CURRENT_DIR}/.ruby-version
+    echo "ruby-2.5.5" > ${CURRENT_DIR}/.ruby-version
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
     [ "$status" -eq 0 ]
-    [[ "$output" == *"2.1.2"* ]]
+    [[ "$output" == *"2.5.5"* ]]
     rm ${CURRENT_DIR}/.ruby-version
-}
-
-@test "install bundler version <2 when ruby version < 2.3.0" {
-    export RUBY_VERSION="2.2.2"
-    run /var/lib/tsuru/deploy
-    run /home/application/ruby/bin/bundler --version
-    [ "$status" -eq 0 ]
-    [[ "$output" == "Bundler version 1."* ]]
-}
-
-@test "install bundler version >=2 when ruby version >= 2.3.0" {
-    export RUBY_VERSION="2.3.0"
-    run /var/lib/tsuru/deploy
-    run /home/application/ruby/bin/bundler --version
-    [ "$status" -eq 0 ]
-    [[ "$output" == "Bundler version 2."* ]]
 }
 
 @test "using bundler within ruby package when version >=2.6.0" {
@@ -84,7 +68,7 @@ setup() {
 }
 
 @test "bundle install when provide Gemfile and reuse already installed gem" {
-    echo "ruby-2.1.2" > ${CURRENT_DIR}/.ruby-version
+    echo "ruby-2.4.3" > ${CURRENT_DIR}/.ruby-version
     echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
     echo "gem 'hello-world', '1.2.0'" >> ${CURRENT_DIR}/Gemfile
     cat <<EOF>${CURRENT_DIR}/Gemfile.lock
@@ -113,8 +97,38 @@ EOF
     [[ "$output" == "Bundler version 1.13.7" ]]
 }
 
+@test "using bundle inside Gemfile.lock and ignore bundle vendoring version for ruby >= 2.6" {
+    echo "ruby-2.6.3" > ${CURRENT_DIR}/.ruby-version
+    echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
+    echo "gem 'hello-world', '1.2.0'" >> ${CURRENT_DIR}/Gemfile
+    cat <<EOF>${CURRENT_DIR}/Gemfile.lock
+GEM
+  remote: https://rubygems.org/
+  specs:
+    hello-world (1.2.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  hello-world (= 1.2.0)
+
+BUNDLED WITH
+   2.0.1
+EOF
+
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Installing hello-world"* ]]
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using hello-world"* ]]
+    run /home/application/ruby/bin/bundler --version
+    [ "$status" -eq 0 ]
+    [[ "$output" == "Bundler version 2.0.1" ]]
+}
+
 @test "bundle install when provide Gemfile with no bundled with section" {
-    echo "ruby-2.1.2" > ${CURRENT_DIR}/.ruby-version
+    echo "ruby-2.5.4" > ${CURRENT_DIR}/.ruby-version
     echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
     echo "gem 'hello-world', '1.2.0'" >> ${CURRENT_DIR}/Gemfile
     cat <<EOF>${CURRENT_DIR}/Gemfile.lock
@@ -137,5 +151,5 @@ EOF
     [[ "$output" == *"Using hello-world"* ]]
     run /home/application/ruby/bin/bundler --version
     [ "$status" -eq 0 ]
-    [[ "$output" == "Bundler version 1."* ]]
+    [[ "$output" == "Bundler version 2."* ]]
 }

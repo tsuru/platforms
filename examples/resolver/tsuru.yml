@@ -1,0 +1,7 @@
+hooks:
+  build:
+    - cat /etc/resolv.conf
+    - sudo apt-get update
+    - sudo apt-get update
+healthcheck:
+  path: /

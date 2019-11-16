@@ -27,13 +27,13 @@ if [ -f "${CURRENT_DIR}/.python-version" ]; then
 fi
 
 function choose_closest_python() {
-    local VERSIONS="$(pyenv versions --skip-aliases --bare | sort -V)"
+    local VERSIONS="$(pyenv versions --skip-aliases --bare | grep -v 'app_env_' | sort -rV)"
     local TRY_PYTHON_VERSION="$1"
     local CHOSEN_PYTHON_VERSION=""
     local LAST_PYTHON_VERSION=""
     while [[ "${LAST_PYTHON_VERSION}" != "${TRY_PYTHON_VERSION}" ]]; do
-        if echo "${VERSIONS}" | grep "${TRY_PYTHON_VERSION}" >/dev/null; then
-            CHOSEN_PYTHON_VERSION=$(echo "${VERSIONS}" | grep "${TRY_PYTHON_VERSION}" | head -1)
+        if echo "${VERSIONS}" | grep "^${TRY_PYTHON_VERSION}" >/dev/null; then
+            CHOSEN_PYTHON_VERSION=$(echo "${VERSIONS}" | grep "^${TRY_PYTHON_VERSION}" | head -1)
             break
         fi
         LAST_PYTHON_VERSION="${TRY_PYTHON_VERSION}"

@@ -8,12 +8,26 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-go_default_version="1.11.1"
-if [ -z "${GO_VERSION}" ]; then
-  GO_VERSION="${go_default_version}"
+version=$(find /go/bin -name "go${GO_VERSION}*" | sort -V | tail -n 1)
+if [[ -n "$version" ]]; then
+	sudo update-alternatives --set go $version
+else
+	if [[ "$GO_DOWNLOAD_ALLOWED" == "false" ]]; then
+		echo "Requested Go version is ${GO_VERSION} but download is not allowed."
+		version=$(find /go/bin -name "go*" | sort -V | tail -n 1)
+		sudo update-alternatives --set go $version
+	else
+		echo "Installing Go ${GO_VERSION}..."
+		export GOPATH=/go
+		go get "golang.org/dl/go${GO_VERSION}"
+		$GOPATH/bin/go${GO_VERSION} download
+		sudo update-alternatives --install /usr/bin/go go $GOPATH/bin/go${GO_VERSION} 1
+		sudo update-alternatives --set go $GOPATH/bin/go${GO_VERSION}
+		export GOPATH=${APP_DIR}
+	fi
 fi
-echo "Installing Go ${GO_VERSION}..."
-eval "$(gimme ${GO_VERSION})" >/dev/null 2>&1
+
+echo "Using Go version: $(go version)"
 
 if [ -z $(find ${APP_DIR}/current -name "*.go" -print -quit) ]; then
 	exit 0
@@ -38,14 +52,19 @@ set +e
 go get -d .
 set -e
 
+if [ -f ${APP_DIR}/current/go.mod ] && [ -d ${APP_DIR}/current/vendor ]; then
+	GO_BUILD_VENDOR="-mod=vendor"
+fi
+
 if [ -f ${APP_DIR}/.default_procfile ]
 then
 	echo "Procfile not found. Using default Procfile"
 
 	echo "go build -o tsuru-app"
-	go build -i -o tsuru-app
+	go build $GO_BUILD_VENDOR -i -o tsuru-app
 else
-	go build -i
+	go build $GO_BUILD_VENDOR -i 2>/dev/null || true
+	go install $GO_BUILD_VENDOR ./...
 fi
 
 popd >/dev/null 2>&1

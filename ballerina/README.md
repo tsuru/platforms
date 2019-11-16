@@ -1,6 +1,5 @@
 # Ballerina Platform
-
-The Ballerian platform uses Ballerian 1.0.4 and latest available.
+The Ballerian platform uses Ballerian 1.0.3 and latest available.
 
 https://ballerina.io/
 

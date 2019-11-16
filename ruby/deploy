@@ -26,11 +26,11 @@ fi
 
 echo "gem: --no-rdoc --no-ri" > ~/.gemrc
 
-RUBY_VERSION=${RUBY_VERSION:-2.3.1}
+RUBY_VERSION=${RUBY_VERSION:-2.4.6}
 
 echo "-- Using ruby version: $RUBY_VERSION --"
 
-RUBY_REPO=${RUBY_REPO:-https://heroku-buildpack-ruby.s3.amazonaws.com/cedar-14}
+RUBY_REPO=${RUBY_REPO:-https://heroku-buildpack-ruby.s3.amazonaws.com/heroku-18}
 
 RUBY_TARGET="$RUBY_REPO/ruby-$RUBY_VERSION.tgz"
 
@@ -47,10 +47,6 @@ fi
 
 function get_bundler_version() {
     ruby_version=$1
-    if [ "$(printf "%s\n%s" "$ruby_version" "2.6.0" | sort -V | head -n 1)" = "2.6.0" ]; then
-        echo ""
-        return
-    fi
     if [ -f ${CURRENT_DIR}/Gemfile.lock ]; then
         bundler_version=$(cat ${CURRENT_DIR}/Gemfile.lock | grep -A1 "BUNDLED WITH" | grep -v "BUNDLED WITH" | tr -d " ")
         if [ "$bundler_version" != "" ]; then
@@ -58,11 +54,11 @@ function get_bundler_version() {
             return
         fi
     fi
-    if [ "$(printf "%s\n%s" "$ruby_version" "2.3.0" | sort -V | head -n 1)" != "2.3.0" ]; then
-        echo "<2"
-    else
-        echo ">2"
+    if [ "$(printf "%s\n%s" "$ruby_version" "2.6.0" | sort -V | head -n 1)" = "2.6.0" ]; then
+        echo ""
+        return
     fi
+    echo ">2"
 }
 
 if [ "$INSTALL_RUBY" == "1" ]; then
@@ -79,12 +75,12 @@ fi
 
 BUNDLER_VERSION=$(get_bundler_version $RUBY_VERSION)
 if [ "$BUNDLER_VERSION" != "" ]; then
-    gem uninstall bundler
+    yes | gem uninstall -a bundler
     if [ -z "$GEM_SOURCE" ]; then
-        gem install bundler --no-ri --no-rdoc -v "$BUNDLER_VERSION"
+        gem install bundler --force -v "$BUNDLER_VERSION"
     else
         echo "-- Using $GEM_SOURCE as remote gem source --"
-        gem install --clear-sources --no-ri --no-rdoc --source=$GEM_SOURCE bundler -v "$BUNDLER_VERSION"
+        gem install --clear-sources --force --source=$GEM_SOURCE bundler -v "$BUNDLER_VERSION"
     fi
 fi
 
