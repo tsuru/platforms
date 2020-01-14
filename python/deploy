@@ -8,26 +8,50 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-#find apps python version
-python_version_default="2.7.14"
-version_origin="default"
+PYTHON_REPO=${PYTHON_REPO:-https://lang-python.s3.amazonaws.com/heroku-18/runtimes}
+GET_PIP_URL=${GET_PIP_URL:-https://bootstrap.pypa.io/get-pip.py}
+
+LATEST_38="3.8.1"
+LATEST_37="3.7.6"
+LATEST_36="3.6.10"
+LATEST_35="3.5.7"
+LATEST_34="3.4.10"
+LATEST_27="2.7.17"
+PYPY_36="pypy3.6-7.2.0"
+PYPY_27="pypy2.7-7.2.0"
+LATEST_PYTHON_VERSIONS=(${LATEST_38} ${LATEST_37} ${LATEST_36} ${LATEST_35} ${LATEST_34} ${LATEST_27} ${PYPY_36} ${PYPY_27})
+PYTHON_VERSION_DEFAULT="${LATEST_27}"
+VERSION_ORIGIN="default"
+PYTHON_BASE_DIR="/home/application/python"
+INSTALLED_PYTHON_FILE="${PYTHON_BASE_DIR}/.installed-version"
 
 if [ -n "${PYTHON_VERSION}" ]; then
-    version_origin="PYTHON_VERSION environment variable"
+    VERSION_ORIGIN="PYTHON_VERSION environment variable"
 else
-    PYTHON_VERSION="${python_version_default}"
+    PYTHON_VERSION="${PYTHON_VERSION_DEFAULT}"
 fi
 
 if [ -f "${CURRENT_DIR}/.python-version" ]; then
     tmp_version=$(cat "${CURRENT_DIR}/.python-version")
     if [ -n "${tmp_version}" ]; then
         PYTHON_VERSION=${tmp_version}
-        version_origin=".python-version file"
+        VERSION_ORIGIN=".python-version file"
+    fi
+fi
+
+INSTALL_PYTHON=1
+if [[ -f ${PYTHON_BASE_DIR}/bin/python ]] && [[ -f ${INSTALLED_PYTHON_FILE} ]]; then
+    INSTALLED_VERSION=$(cat ${INSTALLED_PYTHON_FILE})
+    if [[ ${INSTALLED_VERSION} == ${PYTHON_VERSION} ]]; then
+        echo "-- Using already installed python version: ${INSTALLED_VERSION} --"
+        INSTALL_PYTHON=0
     fi
 fi
 
 function choose_closest_python() {
-    local VERSIONS="$(pyenv versions --skip-aliases --bare | grep -v 'app_env_' | sort -rV)"
+    IFS=$'\n'
+    local VERSIONS=$(sort -rV <<<"${LATEST_PYTHON_VERSIONS[*]}")
+    unset IFS
     local TRY_PYTHON_VERSION="$1"
     local CHOSEN_PYTHON_VERSION=""
     local LAST_PYTHON_VERSION=""
@@ -42,57 +66,81 @@ function choose_closest_python() {
     echo "${CHOSEN_PYTHON_VERSION}"
 }
 
-NEW_PYTHON_VERSION=$(choose_closest_python $PYTHON_VERSION)
-if [[ "${NEW_PYTHON_VERSION}" == "" ]]; then
-    echo "Python version '${PYTHON_VERSION}' (${version_origin}) is not supported."
-    echo "Valid python versions are:"
-    pyenv versions --skip-aliases --bare | grep -v "/env"
-    PYTHON_VERSION="${python_version_default}"
-    version_origin="default"
-elif [[ "${NEW_PYTHON_VERSION}" != "${PYTHON_VERSION}" ]]; then
-    echo "Exact python version '${PYTHON_VERSION}' (${version_origin}) is not supported."
-    echo "Closest version is '${NEW_PYTHON_VERSION}'."
-    PYTHON_VERSION="${NEW_PYTHON_VERSION}"
-    version_origin="${version_origin} (closest)"
+function install_python() {
+    DOWNLOAD_VERSION=${PYTHON_VERSION}
+    if [[ ${DOWNLOAD_VERSION} =~ ^[0-9]\..* ]]; then
+        DOWNLOAD_VERSION="python-${DOWNLOAD_VERSION}"
+    fi
+
+    DOWNLOAD_URL="${PYTHON_REPO}/${DOWNLOAD_VERSION}.tar.gz"
+    if ! curl -m 10 -o/dev/null -ILfs $DOWNLOAD_URL; then
+        # The exact requested version returned an http error so it's probably
+        # not available, let's try finding the closest one.
+        NEW_PYTHON_VERSION=$(choose_closest_python $PYTHON_VERSION)
+
+        if [[ "${NEW_PYTHON_VERSION}" == "" ]]; then
+            echo "Python version '${PYTHON_VERSION}' (${VERSION_ORIGIN}) is not supported."
+            PYTHON_VERSION="${PYTHON_VERSION_DEFAULT}"
+            VERSION_ORIGIN="default"
+        elif [[ "${NEW_PYTHON_VERSION}" != "${PYTHON_VERSION}" ]]; then
+            echo "Exact python version '${PYTHON_VERSION}' (${VERSION_ORIGIN}) is not supported."
+            echo "Closest version is '${NEW_PYTHON_VERSION}'."
+            PYTHON_VERSION="${NEW_PYTHON_VERSION}"
+            VERSION_ORIGIN="${VERSION_ORIGIN} (closest)"
+        fi
+    fi
+
+    if [[ ${INSTALLED_VERSION} == ${PYTHON_VERSION} ]]; then
+        echo "-- Using already installed python version: ${INSTALLED_VERSION} --"
+        return
+    fi
+
+    DOWNLOAD_VERSION=${PYTHON_VERSION}
+    if [[ ${DOWNLOAD_VERSION} =~ ^[0-9]\..* ]]; then
+        DOWNLOAD_VERSION="python-${DOWNLOAD_VERSION}"
+    fi
+    DOWNLOAD_URL="${PYTHON_REPO}/${DOWNLOAD_VERSION}.tar.gz"
+
+    # install python binaries
+    rm -rf "${PYTHON_BASE_DIR}"
+    mkdir -p "${PYTHON_BASE_DIR}"
+    echo "-- Using python version: ${PYTHON_VERSION} (${VERSION_ORIGIN}) from $DOWNLOAD_URL --"
+    if ! (curl -m 120 -sS --retry 3 -L "$DOWNLOAD_URL" | tar xz -C "${PYTHON_BASE_DIR}"); then
+        echo "ERROR: python version $PYTHON_VERSION is not supported."
+        exit 1
+    fi
+
+    hash -r
+
+    # install pip
+    if [[ "${PYTHON_PIP_VERSION}" ]]; then
+        if [ ${PYTHON_PIP_VERSION/.*/} -lt 19 ]; then
+            PIP_EXTRA_OPTS="--process-dependency-links"
+        fi
+        PIP_VERSION_SPEC="${PYTHON_PIP_VERSION}"
+        if [[ "$PYTHON_PIP_VERSION" =~ ^[0-9] ]]; then
+            PIP_VERSION_SPEC="==${PYTHON_PIP_VERSION}"
+        fi
+        echo "Using pip version ${PIP_VERSION_SPEC}"
+        curl -m 120 -LsS ${GET_PIP_URL} | python - "pip${PIP_VERSION_SPEC}"
+    else
+        echo "Using default pip version"
+        curl -m 120 -LsS ${GET_PIP_URL} | python
+    fi
+
+    echo ${PYTHON_VERSION} >${INSTALLED_PYTHON_FILE}
+}
+
+if [[ ${INSTALL_PYTHON} == 1 ]]; then
+    install_python
 fi
 
-echo "-- Using python version: ${PYTHON_VERSION} (${version_origin}) --"
-
-APP_VENV="app_env_${PYTHON_VERSION}"
-
-# Create a app env if needed (with correct python version)
-if [ ! -e "${PYENV_ROOT}/versions/$APP_VENV" ]; then
-    pyenv virtualenv "${PYTHON_VERSION}" "${APP_VENV}"
-fi
-
-# install projects deps with pip
+# install project deps with pipenv or pip
 pushd "$CURRENT_DIR"
-
-if [ -f "${CURRENT_DIR}/.python-version" ]; then
-    mv "${CURRENT_DIR}/.python-version" "${CURRENT_DIR}/.python-version.tsuru.original"
-fi
-
-pyenv global $APP_VENV
-
-if [[ "${PYTHON_PIP_VERSION}" ]]; then
-    if [ ${PYTHON_PIP_VERSION/.*/} -lt 19 ]; then
-        PIP_EXTRA_OPTS="--process-dependency-links"
-    fi
-    PIP_VERSION_SPEC="${PYTHON_PIP_VERSION}"
-    if [[ "$PYTHON_PIP_VERSION" =~ ^[0-9] ]]; then
-        PIP_VERSION_SPEC="==${PYTHON_PIP_VERSION}"
-    fi
-    echo "Using pip version ${PIP_VERSION_SPEC}"
-    pip install "pip$PIP_VERSION_SPEC"
-else
-    echo "Using default pip version"
-fi
-
 if [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
     echo "Pipfile.lock detected, using 'pipenv install --system --deploy' to install dependencies"
     pip install pipenv
     pipenv install --system --deploy
-    pyenv rehash
 elif [ -f "${CURRENT_DIR}/requirements.txt" ]; then
     echo "requirements.txt detected, using 'pip install -r ./requirements.txt' to install dependencies"
     pip install -r ./requirements.txt
