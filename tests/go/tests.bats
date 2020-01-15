@@ -4,75 +4,84 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+latest=$(curl -sS -f https://golang.org/dl/?mode=json | jq -r '.[0].version')
+
 setup() {
     rm -rf /home/application/current && mkdir /home/application/current
     rm -f /home/application/.default_procfile
     chown ubuntu /home/application/current
     export CURRENT_DIR=/home/application/current
+    export PATH=/home/application/go/bin:${PATH}
+    rm -rf /home/application/go
 }
 
-@test "use Go version 1.13.3 as default" {
+@test "use latest Go version as default" {
     run /var/lib/tsuru/deploy
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Using Go version: go version go1.13.3 linux/amd64"* ]]
+    [[ "$output" == *"Installing Go ${latest} (latest version)"* ]]
+    [[ "$output" == *"Using Go version: go version ${latest} linux/amd64"* ]]
 
-    pushd ${CURRENT_DIR}
     run go version
-    popd
-
     [ "$status" -eq 0 ]
-    [[ "$output" == *"go version go1.13.3 linux/amd64"* ]]
+    [[ "$output" == *"go version ${latest} linux/amd64"* ]]
 }
 
-@test "use existing Go version from GO_VERSION" {
-    export GO_VERSION=1.12
+@test "use Go version from GO_VERSION" {
+    export GO_VERSION=1.10
     run /var/lib/tsuru/deploy
     [ "$status" -eq 0 ]
-    [[ "$output" != *"Installing Go"* ]]
-    [[ "$output" == *"Using Go version: go version go1.12.12 linux/amd64"* ]]
+    [[ "$output" == *"Installing Go go1.10 (exact match from \$GO_VERSION)"* ]]
+    [[ "$output" == *"Using Go version: go version go1.10 linux/amd64"* ]]
 
-    pushd ${CURRENT_DIR}
     run go version
-    popd
-
     [ "$status" -eq 0 ]
-    [[ "$output" == *"1.12.12"* ]]
+    [[ "$output" == *"go1.10"* ]]
     unset GO_VERSION
 }
 
-@test "use downloaded Go version from GO_VERSION" {
-    export GO_VERSION=1.11
+@test "use Go version from GO_VERSION with .x as patch" {
+    export GO_VERSION=1.10.x
     run /var/lib/tsuru/deploy
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Installing Go"* ]]
-    [[ "$output" == *"Using Go version: go version go1.11 linux/amd64"* ]]
+    [[ "$output" == *"Installing Go go1.10.8 (closest match from \$GO_VERSION=1.10.x)"* ]]
+    [[ "$output" == *"Using Go version: go version go1.10.8 linux/amd64"* ]]
 
-    pushd ${CURRENT_DIR}
     run go version
-    popd
-
     [ "$status" -eq 0 ]
-    [[ "$output" == *"1.11"* ]]
+    [[ "$output" == *"go1.10.8"* ]]
     unset GO_VERSION
 }
 
-@test "use existing version when download is not allowed" {
-    export GO_VERSION=1.9
-    export GO_DOWNLOAD_ALLOWED=false
+@test "use latest Go version from GO_VERSION with .x as minor" {
+    export GO_VERSION=1.x
     run /var/lib/tsuru/deploy
     [ "$status" -eq 0 ]
-    [[ "$output" != *"Installing Go"* ]]
-    [[ "$output" == *"Requested Go version is 1.9 but download is not allowed."* ]]
-    [[ "$output" == *"Using Go version: go version go1.13.3 linux/amd64"* ]]
+    [[ "$output" == *"Installing Go ${latest} (closest match from \$GO_VERSION=1.x)"* ]]
+    [[ "$output" == *"Using Go version: go version ${latest} linux/amd64"* ]]
 
-    pushd ${CURRENT_DIR}
     run go version
-    popd
-
     [ "$status" -eq 0 ]
-    [[ "$output" == *"1.13.3"* ]]
+    [[ "$output" == *"${latest}"* ]]
     unset GO_VERSION
-    unset GO_DOWNLOAD_ALLOWED
+}
+
+@test "reuse installed Go version" {
+    export GO_VERSION=1.x
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Installing Go ${latest} (closest match from \$GO_VERSION=1.x)"* ]]
+    [[ "$output" == *"Using Go version: go version ${latest} linux/amd64"* ]]
+
+    run go version
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"${latest}"* ]]
+
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Using already installed Go ${latest} (closest match from \$GO_VERSION=1.x)"* ]]
+    [[ "$output" == *"Using Go version: go version ${latest} linux/amd64"* ]]
+
+    unset GO_VERSION
 }
 
 @test "test project rootmain default procfile" {

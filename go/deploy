@@ -8,23 +8,60 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-version=$(find /go/bin -name "go${GO_VERSION}*" | sort -V | tail -n 1)
-if [[ -n "$version" ]]; then
-	sudo update-alternatives --set go $version
+GO_INSTALL_DIR="/home/application/go"
+GO_DOWNLOAD_URL=${GO_DOWNLOAD_URL:-"https://dl.google.com/go"}
+GO_RELEASES_URL=${GO_RELEASES_URL:-"https://golang.org/dl/?mode=json&include=all"}
+
+all_releases=$(curl -m10 -sSf ${GO_RELEASES_URL})
+versions=$(jq -r '.[].version' <<<${all_releases})
+
+# Try exact match first and fallback to closest version excluding non stable
+# releases.
+if grep -xF "go${GO_VERSION}" <<<${versions} >/dev/null; then
+	version_to_install="go${GO_VERSION}"
+	version_source="exact match from \$GO_VERSION"
 else
-	if [[ "$GO_DOWNLOAD_ALLOWED" == "false" ]]; then
-		echo "Requested Go version is ${GO_VERSION} but download is not allowed."
-		version=$(find /go/bin -name "go*" | sort -V | tail -n 1)
-		sudo update-alternatives --set go $version
-	else
-		echo "Installing Go ${GO_VERSION}..."
-		export GOPATH=/go
-		go get "golang.org/dl/go${GO_VERSION}"
-		$GOPATH/bin/go${GO_VERSION} download
-		sudo update-alternatives --install /usr/bin/go go $GOPATH/bin/go${GO_VERSION} 1
-		sudo update-alternatives --set go $GOPATH/bin/go${GO_VERSION}
-		export GOPATH=${APP_DIR}
+	escaped_version=$(sed 's/\./\\./g' <<<${GO_VERSION} | sed 's/\\\.x/\(\\..+|$\)/g')
+	stable_versions=$(egrep 'go[0-9.]+$' <<<${versions})
+	version_to_install=$(egrep "go${escaped_version}$" <<<${stable_versions} | sort -rV | head -n 1)
+	version_source="closest match from \$GO_VERSION=${GO_VERSION}"
+fi
+
+# Install latest version
+if [[ ${version_to_install} == "" ]]; then
+	if [[ $GO_VERSION != "" ]]; then
+		echo "Unable to find go version matching \$GO_VERSION=${GO_VERSION}."
 	fi
+	version_to_install=$(egrep 'go[0-9.]+$' <<<${versions} | sort -rV | head -n 1)
+	version_source="latest version"
+fi
+
+install_needed=1
+if [[ -x ${GO_INSTALL_DIR}/bin/go ]]; then
+	current_version=$(${GO_INSTALL_DIR}/bin/go version)
+	if [[ "${current_version}" == *" ${version_to_install} "* ]]; then
+		echo "Using already installed Go ${version_to_install} (${version_source})"
+		install_needed=0
+	fi
+fi
+
+if [[ ${install_needed} == 1 ]]; then
+	echo "Installing Go ${version_to_install} (${version_source})"
+
+	rm -rf ${GO_INSTALL_DIR}
+	mkdir -p ${GO_INSTALL_DIR}
+	download_url=${GO_DOWNLOAD_URL}/${version_to_install}.linux-amd64.tar.gz
+	if ! (curl -m 120 -sS --retry 3 -L "$download_url" | tar xz -C $(dirname ${GO_INSTALL_DIR})); then
+		echo "ERROR: Unable to download Go from ${download_url}."
+		exit 1
+	fi
+
+	rm -rf ${GO_INSTALL_DIR}/api/ \
+		${GO_INSTALL_DIR}/blog/ \
+		${GO_INSTALL_DIR}/doc/ \
+		${GO_INSTALL_DIR}/test/ \
+		${GO_INSTALL_DIR}/lib/ \
+		${GO_INSTALL_DIR}/misc/
 fi
 
 echo "Using Go version: $(go version)"
