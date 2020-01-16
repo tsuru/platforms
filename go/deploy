@@ -98,9 +98,9 @@ then
 	echo "Procfile not found. Using default Procfile"
 
 	echo "go build -o tsuru-app"
-	go build $GO_BUILD_VENDOR -i -o tsuru-app
+	go build $GO_BUILD_VENDOR -o tsuru-app
 else
-	go build $GO_BUILD_VENDOR -i 2>/dev/null || true
+	go build $GO_BUILD_VENDOR 2>/dev/null || true
 	go install $GO_BUILD_VENDOR ./...
 fi
 
