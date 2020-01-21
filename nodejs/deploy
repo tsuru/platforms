@@ -7,8 +7,60 @@
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
-if [ -n "${KEEP_NODE_MODULES}" ] && [ -d ${CURRENT_DIR}/node_modules ]; then
-	PLATFORM_EXTRA_RSYNC_ARGS="--filter \"protect node_modules/\""
+function calculate_deps_hash() {
+    local basepath=$1
+    set +e
+    pushd ${basepath} >/dev/null
+    tail -n +1 \
+        ./package.json \
+        ./package-lock.json \
+        ./yarn.lock \
+        2>/dev/null | sha256sum | awk '{print $1}'
+    popd >/dev/null
+    set -e
+}
+
+function archive_deps_hash() {
+    if [[ ! -f /home/application/archive.tar.gz ]]; then
+        return
+    fi
+    tmpdir=$(mktemp -d)
+    trap "rm -rf ${tmpdir}" EXIT
+    set +e
+    tar -C ${tmpdir} -xzf /home/application/archive.tar.gz package.json package-lock.json yarn.lock 2>/dev/null
+    set -e
+    calculate_deps_hash ${tmpdir}
+}
+
+function track_deps() {
+    mkdir -p /home/application/nodejs
+    set +e
+    cp ${CURRENT_DIR}/package.json \
+        ${CURRENT_DIR}/package-lock.json \
+        ${CURRENT_DIR}/yarn.lock \
+        /home/application/nodejs/ \
+        2>/dev/null
+    set -e
+}
+
+# If dependency files didn't change it's safe for us to protect the
+# `node_modules` directory from being removed by rsync. If dependency files
+# were updated it's safer to remove node_modules and reinstall everything.
+if [[ -d ${CURRENT_DIR}/node_modules ]]; then
+    old_deps_hash=$(calculate_deps_hash /home/application/nodejs)
+    new_deps_hash=$(archive_deps_hash)
+
+    if  [[ "${old_deps_hash}" == "${new_deps_hash}" ]]; then
+        keep=1
+        reason="Dependency files hash match"
+    elif [[ -n "${KEEP_NODE_MODULES}" ]] ; then
+        keep=1
+        reason="Environment variable \$KEEP_NODE_MODULES is set"
+    fi
+    if [[ $keep == 1 ]]; then
+        echo "${reason}, preserving old node_modules directory."
+        PLATFORM_EXTRA_RSYNC_ARGS='--filter "protect node_modules/"'
+    fi
 fi
 
 source ${SOURCE_DIR}/base/deploy
@@ -59,6 +111,8 @@ if [[ "$nvm_install_exit_code" != "0" ]]; then
     exit "${nvm_install_exit_code}"
 fi
 
+nvm cache clear
+
 rm -f ~/.nvm_bin
 ln -s $NVM_BIN ~/.nvm_bin
 
@@ -69,12 +123,23 @@ else
   PRODUCTION_FLAG=""
 fi
 
+track_deps
+
 if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; then
     echo "yarn.lock detected, using yarn to install node packages"
-    YARN_DEFAULT_VERSION="1.3.2"
+    YARN_DEFAULT_VERSION="1.21.1"
     yarn_bin=${NVM_BIN}/yarn
     if [ ! -f $yarn_bin ]; then
-    	YARN_VERSION=`CURRENT_DIR=${CURRENT_DIR} node -e 'var pkg = require(process.env.CURRENT_DIR+"/package.json"); console.log((pkg.engines && pkg.engines.yarn) ? pkg.engines.yarn.replace(" ", "") : "'${YARN_DEFAULT_VERSION}'")'`
+        package_version=$(node -e "
+        var pkg = require('${CURRENT_DIR}/package.json');
+        var options = ['engines', 'dependencies', 'devDependencies'];
+        for (var o of options) {
+            if (pkg[o] && pkg[o].yarn) {
+                console.log(pkg[o].yarn);
+                break;
+            }
+        }")
+        YARN_VERSION=${package_version:-$YARN_DEFAULT_VERSION}
         npm install -g yarn@${YARN_VERSION}
     fi
     if [ $NPM_REGISTRY ]; then
@@ -97,11 +162,14 @@ if [ -f "${CURRENT_DIR}/package.json" ] && [ -f "${CURRENT_DIR}/yarn.lock" ]; th
         exit $STATUS
       fi
     fi
+    yarn cache clean || true
     popd
 elif [ -f ${CURRENT_DIR}/package.json ] ; then
     if [ -f "${CURRENT_DIR}/package-lock.json" ]; then
-    	sed -i -E "s|https?://registry.npmjs.org|$NPM_REGISTRY|g" ${CURRENT_DIR}/package-lock.json
+        sed -i -E "s|https?://registry.npmjs.org|$NPM_REGISTRY|g" ${CURRENT_DIR}/package-lock.json
     fi
-    pushd $CURRENT_DIR && npm install ${PRODUCTION_FLAG}
+    pushd $CURRENT_DIR
+    npm install ${PRODUCTION_FLAG}
+    npm cache clean --force || true
     popd
 fi
