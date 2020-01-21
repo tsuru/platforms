@@ -14,8 +14,8 @@ setup() {
     rm -rf /home/ubuntu/.nvm
 }
 
-@test "defaults yarn 1.3.2 if yarn.lock present" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+@test "defaults yarn 1.21.1 if yarn.lock present" {
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -33,11 +33,11 @@ EOF
     [[ "$output" == *"yarn.lock detected, using yarn to install node packages"* ]]
 
     run /home/ubuntu/.nvm_bin/yarn --version
-    [[ "$output" == *"1.3.2"* ]]
+    [[ "$output" == *"1.21.1"* ]]
 }
 
 @test "installs yarn from package.json" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -61,8 +61,31 @@ EOF
     [[ "$output" == *"0.24.6"* ]]
 }
 
+@test "installs yarn from dependencies in package.json" {
+    cat <<EOF >>${CURRENT_DIR}/package.json
+{
+  "name": "hello-world",
+  "description": "hello world test on tsuru",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.x",
+    "yarn": "0.24.6"
+  }
+}
+EOF
+
+    touch ${CURRENT_DIR}/yarn.lock
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"yarn.lock detected, using yarn to install node packages"* ]]
+
+    run /home/ubuntu/.nvm_bin/yarn --version
+    [[ "$output" == *"0.24.6"* ]]
+}
+
 @test "breaks with invalid dependencies" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -84,7 +107,7 @@ EOF
 }
 
 @test "works with yarn versions without support to --non-interactive flag" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -127,7 +150,7 @@ EOF
 }
 
 @test "reads node version from package.json" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -155,7 +178,7 @@ EOF
 }
 
 @test "doesn't install dev dependencies with npm" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -178,7 +201,7 @@ EOF
 }
 
 @test "doesn't install dev dependencies with yarn" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -202,7 +225,7 @@ EOF
 }
 
 @test "doesn't install dev dependencies with npm and NPM_CONFIG_PRODUCTION=true" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -225,7 +248,7 @@ EOF
 }
 
 @test "doesn't install dev dependencies with yarn and NPM_CONFIG_PRODUCTION=true" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -249,7 +272,7 @@ EOF
 }
 
 @test "installs dev dependencies with npm and NPM_CONFIG_PRODUCTION=false" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -272,7 +295,7 @@ EOF
 }
 
 @test "installs dev dependencies with yarn and NPM_CONFIG_PRODUCTION=false" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -296,7 +319,7 @@ EOF
 }
 
 @test "replaces the default npmjs.org urls with NPM_REGISTRY" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -307,7 +330,7 @@ EOF
   }
 }
 EOF
-    cat <<EOF>>${CURRENT_DIR}/package-lock.json
+    cat <<EOF >>${CURRENT_DIR}/package-lock.json
 https://registry.npmjs.org/express
 EOF
     export NPM_REGISTRY=my-registry.example.com
@@ -316,7 +339,7 @@ EOF
 }
 
 @test "replaces the default yarnpkg.com urls with NPM_REGISTRY" {
-    cat <<EOF>>${CURRENT_DIR}/package.json
+    cat <<EOF >>${CURRENT_DIR}/package.json
 {
   "name": "hello-world",
   "description": "hello world test on tsuru",
@@ -327,7 +350,7 @@ EOF
   }
 }
 EOF
-    cat <<EOF>>${CURRENT_DIR}/yarn.lock
+    cat <<EOF >>${CURRENT_DIR}/yarn.lock
 https://registry.yarnpkg.com/express
 EOF
     export NPM_REGISTRY=my-registry.example.com
