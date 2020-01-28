@@ -16,6 +16,17 @@ setup() {
     [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start -DNO_DETACH "' ]
 }
 
+@test "sets correct ownership for generated Procfile allowing rewrites" {
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    run cat /home/application/current/Procfile
+    [ "$status" -eq 0 ]
+    [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start -DNO_DETACH "' ]
+    run stat -c '%U' /home/application/current/Procfile
+    [ "$status" -eq 0 ]
+    [[ "$output" == "ubuntu" ]]
+}
+
 @test "using php7.1 + apache-mod-php" {
     cat >/home/application/current/tsuru.yaml <<EOF
 php:
@@ -104,7 +115,7 @@ EOF
 EOF
     run /var/lib/tsuru/deploy
     [ "$status" -eq 0 ]
-    run su - ubuntu -c "cd /home/application/current && composer_phar show"
+    run sh -c "cd /home/application/current && composer_phar show"
     match="ehime/hello-world .+"
     [[ $output =~ $match ]]
 }

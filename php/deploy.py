@@ -67,29 +67,30 @@ class Manager(object):
         if self.interpretor is not None:
             self.interpretor.post_install()
 
+        self.update_alternatives(self.get_php_version())
+
+        if self.configuration.get('composer', True):
+            self.install_composer()
+
+    def create_procfile(self):
         # If there's no Procfile, create it
-        Procfile_path = os.path.join(self.application.get('directory'), 'Procfile')
+        procfile_path = os.path.join(self.application.get('directory'), 'Procfile')
         procfile_contents = None
-        if os.path.isfile(Procfile_path):
-            with open(Procfile_path, 'r') as f:
+        if os.path.isfile(procfile_path):
+            with open(procfile_path, 'r') as f:
                 web_match = re.search(r"^web:", f.read(), flags=re.MULTILINE)
                 if web_match is None:
                     f.seek(0)
                     procfile_contents = f.read()
 
-        if not os.path.isfile(Procfile_path) or procfile_contents:
-            with open(Procfile_path, 'w') as f:
+        if not os.path.isfile(procfile_path) or procfile_contents:
+            with open(procfile_path, 'w') as f:
                 f.write('web: /bin/bash -lc "sudo -E %s' % self.frontend.get_startup_cmd())
                 if self.interpretor is not None:
                     f.write(' && %s' % self.interpretor.get_startup_cmd(self.get_php_version()))
                 f.write(' "\n')
                 if procfile_contents:
                     f.write(procfile_contents)
-
-        self.update_alternatives(self.get_php_version())
-
-        if self.configuration.get('composer', True):
-            self.install_composer()
 
     def get_php_version(self):
         version = str(self.configuration.get('version', default_version))
@@ -121,6 +122,7 @@ class Manager(object):
         self.frontend.configure(self.interpretor)
 
     def setup_environment(self):
+        self.create_procfile()
         if self.interpretor is not None:
             self.interpretor.setup_environment()
 
