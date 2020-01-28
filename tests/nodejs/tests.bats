@@ -9,7 +9,6 @@ setup() {
     chown ubuntu /home/application/current
     export CURRENT_DIR=/home/application/current
     export PATH=/home/ubuntu/.nvm_bin:$PATH
-    su ubuntu
     rm -rf /home/ubuntu/.nvm_bin
     rm -rf /home/ubuntu/.nvm
 }

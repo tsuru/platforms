@@ -9,4 +9,4 @@ ADD common/* /tests/common/
 ADD https://github.com/sstephenson/bats/archive/master.tar.gz .
 RUN sudo mkdir ./bin && sudo tar -zxf master.tar.gz && sudo ./bats-master/install.sh .
 RUN echo "echo 'ran base deploy'" | sudo tee /var/lib/tsuru/base/deploy
-RUN sudo bin/bats common && sudo bin/bats .
+RUN bin/bats common && bin/bats .
