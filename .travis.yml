@@ -16,6 +16,7 @@ env:
     - PLATFORM=pypy
     - PLATFORM=python
     - PLATFORM=ruby
+    - PLATFORM=scratch
     - PLATFORM=static
 script:
   - make test platform=$PLATFORM
