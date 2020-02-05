@@ -8,7 +8,7 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
 apt-get update
-apt-get install -y --no-install-recommends curl jq
+apt-get install -y --no-install-recommends curl jq git
 
 cp ${SOURCE_DIR}/go/Procfile ${SOURCE_DIR}/default/Procfile
 echo "export GOPATH=${APP_DIR}" | tee -a ${HOME}/.profile /etc/profile >/dev/null
