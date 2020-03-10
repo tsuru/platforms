@@ -24,4 +24,7 @@ apt-get install -y --no-install-recommends \
         make \
         build-essential
 
+mkdir -p /app/.heroku
+ln -s /home/application/python /app/.heroku/python
+
 echo "export PATH=/home/application/python/bin:${PATH}" | tee -a ${HOME}/.profile /etc/profile >/dev/null

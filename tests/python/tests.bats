@@ -259,3 +259,19 @@ EOF
     [[ "$output" == *"Using pip version <10"* ]]
     unset PYTHON_PIP_VERSION
 }
+
+@test "can install uwsgi with python 3" {
+    echo "3.8" > ${CURRENT_DIR}/.python-version
+    echo "uwsgi==2.0.18" > ${CURRENT_DIR}/requirements.txt
+
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+
+    pushd ${CURRENT_DIR}
+    run pip freeze
+    popd
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"uWSGI"* ]]
+    rm ${CURRENT_DIR}/requirements.txt
+    rm ${CURRENT_DIR}/.python-version
+}
