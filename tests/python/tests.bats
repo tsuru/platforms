@@ -190,7 +190,7 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"3.7.9"* ]]
 
-    export PYTHON_VERSION=3
+    export PYTHON_VERSION=3.8.x
     run /var/lib/tsuru/deploy
     [ "$status" -eq 0 ]
     [[ "$output" == *"Using python version: 3.8.6 (PYTHON_VERSION environment variable (closest))"* ]]
@@ -198,6 +198,24 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"3.8.6"* ]]
+
+    export PYTHON_VERSION=3.8
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Using already installed python version: 3.8.6"* ]]
+    run python --version
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"3.8.6"* ]]
+
+    export PYTHON_VERSION=3
+    run /var/lib/tsuru/deploy
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Using python version: 3.9.0 (PYTHON_VERSION environment variable (closest))"* ]]
+    run python --version
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"3.9.0"* ]]
 
     export PYTHON_VERSION=3.5.x
     run /var/lib/tsuru/deploy
