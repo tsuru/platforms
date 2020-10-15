@@ -8,7 +8,7 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-PYTHON_REPO=${PYTHON_REPO:-https://lang-python.s3.amazonaws.com/heroku-18/runtimes}
+PYTHON_REPO=${PYTHON_REPO:-https://heroku-buildpack-python.s3.amazonaws.com/heroku-18/runtimes}
 GET_PIP_URL=${GET_PIP_URL:-https://bootstrap.pypa.io/get-pip.py}
 
 LATEST_38="3.8.1"
