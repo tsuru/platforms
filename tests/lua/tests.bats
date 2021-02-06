@@ -4,9 +4,12 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+load 'bats-support-master/load'
+load 'bats-assert-master/load'
+
 @test "installs lua" {
   run /usr/bin/lua -v
-  [ "$status" -eq 0 ]
+  assert_success
   [[ "$output" == *"Lua 5.3"* ]]
 }
 

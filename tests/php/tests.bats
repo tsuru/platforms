@@ -9,21 +9,24 @@ setup() {
     chown ubuntu /home/application/current
 }
 
+load 'bats-support-master/load'
+load 'bats-assert-master/load'
+
 @test "using default php(5.6) + apache-mod-php" {
     run /var/lib/tsuru/deploy
     run cat /home/application/current/Procfile
-    [ "$status" -eq 0 ]
+    assert_success
     [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start -DNO_DETACH "' ]
 }
 
 @test "sets correct ownership for generated Procfile allowing rewrites" {
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     run cat /home/application/current/Procfile
-    [ "$status" -eq 0 ]
+    assert_success
     [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start -DNO_DETACH "' ]
     run stat -c '%U' /home/application/current/Procfile
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == "ubuntu" ]]
 }
 
@@ -34,7 +37,7 @@ php:
 EOF
     run /var/lib/tsuru/deploy
     run ls /etc/apache2/mods-enabled/php*.conf
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == "/etc/apache2/mods-enabled/php7.1.conf" ]]
 }
 
@@ -45,7 +48,7 @@ php:
 EOF
     run /var/lib/tsuru/deploy
     run ls /etc/apache2/mods-enabled/php*.conf
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == "/etc/apache2/mods-enabled/php5.6.conf" ]]
 }
 
@@ -114,7 +117,7 @@ EOF
   }
 EOF
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     run sh -c "cd /home/application/current && composer_phar show"
     match="ehime/hello-world .+"
     [[ $output =~ $match ]]

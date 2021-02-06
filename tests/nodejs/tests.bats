@@ -13,6 +13,9 @@ setup() {
     rm -rf /home/ubuntu/.nvm
 }
 
+load 'bats-support-master/load'
+load 'bats-assert-master/load'
+
 @test "defaults yarn 1.21.1 if yarn.lock present" {
     cat <<EOF >>${CURRENT_DIR}/package.json
 {
@@ -28,7 +31,7 @@ EOF
 
     touch ${CURRENT_DIR}/yarn.lock
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"yarn.lock detected, using yarn to install node packages"* ]]
 
     run /home/ubuntu/.nvm_bin/yarn --version
@@ -53,7 +56,7 @@ EOF
 
     touch ${CURRENT_DIR}/yarn.lock
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"yarn.lock detected, using yarn to install node packages"* ]]
 
     run /home/ubuntu/.nvm_bin/yarn --version
@@ -76,7 +79,7 @@ EOF
 
     touch ${CURRENT_DIR}/yarn.lock
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"yarn.lock detected, using yarn to install node packages"* ]]
 
     run /home/ubuntu/.nvm_bin/yarn --version
@@ -123,7 +126,7 @@ EOF
 
     touch ${CURRENT_DIR}/yarn.lock
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"yarn.lock detected, using yarn to install node packages"* ]]
 
     run /home/ubuntu/.nvm_bin/yarn --version
@@ -134,7 +137,7 @@ EOF
     echo "v8.9.0" >${CURRENT_DIR}/.nvmrc
     touch ${CURRENT_DIR}/yarn.lock
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     run node --version
     [[ "$output" == "v8.9.0" ]]
 }
@@ -143,7 +146,7 @@ EOF
     echo "v8.9.1" >${CURRENT_DIR}/.node-version
     touch ${CURRENT_DIR}/yarn.lock
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     run node --version
     [[ "$output" == "v8.9.1" ]]
 }
@@ -162,7 +165,7 @@ EOF
 EOF
     touch ${CURRENT_DIR}/yarn.lock
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     run node --version
     [[ "$output" == "v8.9.2" ]]
 }
@@ -193,7 +196,7 @@ EOF
 EOF
 
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
 
     [ -d ${CURRENT_DIR}/node_modules/is-sorted ]
     [ ! -d ${CURRENT_DIR}/node_modules/leftpad ]
@@ -217,7 +220,7 @@ EOF
 
     touch ${CURRENT_DIR}/yarn.lock
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
 
     [ -d ${CURRENT_DIR}/node_modules/is-sorted ]
     [ ! -d ${CURRENT_DIR}/node_modules/leftpad ]
@@ -240,7 +243,7 @@ EOF
 EOF
 
     NPM_CONFIG_PRODUCTION=true run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
 
     [ -d ${CURRENT_DIR}/node_modules/is-sorted ]
     [ ! -d ${CURRENT_DIR}/node_modules/leftpad ]
@@ -264,7 +267,7 @@ EOF
 
     touch ${CURRENT_DIR}/yarn.lock
     NPM_CONFIG_PRODUCTION=true run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
 
     [ -d ${CURRENT_DIR}/node_modules/is-sorted ]
     [ ! -d ${CURRENT_DIR}/node_modules/leftpad ]
@@ -287,7 +290,7 @@ EOF
 EOF
 
     NPM_CONFIG_PRODUCTION=false run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
 
     [ -d ${CURRENT_DIR}/node_modules/is-sorted ]
     [ -d ${CURRENT_DIR}/node_modules/leftpad ]
@@ -311,7 +314,7 @@ EOF
 
     touch ${CURRENT_DIR}/yarn.lock
     NPM_CONFIG_PRODUCTION=false run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
 
     [ -d ${CURRENT_DIR}/node_modules/is-sorted ]
     [ -d ${CURRENT_DIR}/node_modules/leftpad ]

@@ -12,6 +12,9 @@ setup() {
     export PATH=/home/application/ruby/bin:${PATH}
 }
 
+load 'bats-support-master/load'
+load 'bats-assert-master/load'
+
 @test "installs ruby" {
     dpkg -s ruby | grep "install ok installed"
 }
@@ -23,7 +26,7 @@ setup() {
 @test "install ruby version 2.4.6 as default" {
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"2.4.6"* ]]
 }
 
@@ -31,7 +34,7 @@ setup() {
     export RUBY_VERSION="2.6.3"
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"2.6.3"* ]]
 }
 
@@ -54,7 +57,7 @@ setup() {
     echo "ruby-2.5.5" > ${CURRENT_DIR}/.ruby-version
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"2.5.5"* ]]
     rm ${CURRENT_DIR}/.ruby-version
 }
@@ -63,7 +66,7 @@ setup() {
     export RUBY_VERSION="2.6.0"
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/bundler --version
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == "Bundler version "* ]]
 }
 
@@ -88,12 +91,12 @@ BUNDLED WITH
 EOF
 
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"Installing hello-world"* ]]
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Using hello-world"* ]]
     run /home/application/ruby/bin/bundler --version
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == "Bundler version 1.13.7" ]]
 }
 
@@ -118,12 +121,12 @@ BUNDLED WITH
 EOF
 
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"Installing hello-world"* ]]
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Using hello-world"* ]]
     run /home/application/ruby/bin/bundler --version
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == "Bundler version 2.0.1" ]]
 }
 
@@ -145,11 +148,11 @@ DEPENDENCIES
 EOF
 
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"Installing hello-world"* ]]
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Using hello-world"* ]]
     run /home/application/ruby/bin/bundler --version
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == "Bundler version 2."* ]]
 }

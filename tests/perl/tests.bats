@@ -10,12 +10,15 @@ setup() {
     export CURRENT_DIR=/home/application/current
 }
 
+load 'bats-support-master/load'
+load 'bats-assert-master/load'
+
 @test "check if carton is installed" {
     pushd ${CURRENT_DIR}
     run carton -v
     popd
 
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"carton v1"* ]]
 }
 
@@ -28,6 +31,6 @@ setup() {
     run carton install
     popd
 
-    [ "$status" -eq 0 ]
+    assert_success
     rm ${CURRENT_DIR}/cpanfile
 }

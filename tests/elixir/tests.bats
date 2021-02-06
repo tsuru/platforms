@@ -10,6 +10,9 @@ setup() {
     export CURRENT_DIR=/home/application/current
 }
 
+load 'bats-support-master/load'
+load 'bats-assert-master/load'
+
 @test "install erlang" {
     dpkg -s esl-erlang | grep "install ok installed"
 }
@@ -18,7 +21,7 @@ setup() {
     export ERLANG_VERSION="19.2"
     run /var/lib/tsuru/deploy
     run bash -c 'cat /usr/lib/erlang/releases/*/OTP_VERSION | head -1'
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"19.2"* ]]
 }
 
@@ -39,7 +42,7 @@ setup() {
     run /var/lib/tsuru/deploy
     run elixir --version
     echo "$output"
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"Elixir 1.4.0"* ]]
 }
 
@@ -52,7 +55,7 @@ setup() {
 
 @test "mix is installed" {
     run bash -c 'ls /usr/local/bin/mix | echo "ok installed"'
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == "ok installed" ]]
 }
 
@@ -60,6 +63,6 @@ setup() {
     export ELIXIR_VERSION="1.5.2"
     run /var/lib/tsuru/deploy
     run /usr/local/bin/mix --version
-    [ "$status" -eq 0 ]
+    assert_success
     [[ "$output" == *"Mix 1.5.2"* ]]
 }

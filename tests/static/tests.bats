@@ -4,6 +4,9 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+load 'bats-support-master/load'
+load 'bats-assert-master/load'
+
 @test "installs nginx" {
     dpkg -s nginx | grep "install ok installed"
 }
@@ -21,7 +24,7 @@
 @test "deploys an customized nginx package" {
     export NGINX_PKG="nginx-extras"
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     dpkg -s nginx-extras | grep "install ok installed"
 }
 
@@ -35,6 +38,6 @@
 @test "deploy installs default nginx if env not set" {
     export NGINX_PKG=""
     run /var/lib/tsuru/deploy
-    [ "$status" -eq 0 ]
+    assert_success
     dpkg -s nginx | grep "install ok installed"
 }
