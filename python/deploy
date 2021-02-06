@@ -10,6 +10,7 @@ source ${SOURCE_DIR}/base/rc/config
 
 PYTHON_REPO=${PYTHON_REPO:-https://heroku-buildpack-python.s3.amazonaws.com/heroku-18/runtimes}
 GET_PIP_URL=${GET_PIP_URL:-https://bootstrap.pypa.io/get-pip.py}
+GET_PIP_VERSION_URL=${GET_PIP_VERSION_URL:-https://bootstrap.pypa.io/@VERSION@/get-pip.py}
 
 LATEST_39="3.9.0"
 LATEST_38="3.8.6"
@@ -112,6 +113,16 @@ function install_python() {
     fi
 
     hash -r
+
+    major_minor=""
+    if [[ ${PYTHON_VERSION} =~ [0-9]+\.[0-9]+ ]]; then
+        major_minor=${BASH_REMATCH[0]}
+
+        GET_PIP_VERSION_URL=${GET_PIP_VERSION_URL/@VERSION@/${major_minor}}
+        if curl -m 10 -o/dev/null -ILfs $GET_PIP_VERSION_URL; then
+            GET_PIP_URL=$GET_PIP_VERSION_URL
+        fi
+    fi
 
     # install pip
     if [[ "${PYTHON_PIP_VERSION}" ]]; then
