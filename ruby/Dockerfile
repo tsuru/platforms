@@ -8,3 +8,6 @@ RUN	sudo cp /var/lib/tsuru/ruby/deploy /var/lib/tsuru
 RUN set -ex; \
     sudo /var/lib/tsuru/ruby/install; \
     sudo rm -rf /var/lib/apt/lists/*
+ENV GEM_PATH=/home/application/ruby \
+    GEM_HOME=/home/application/ruby \
+    BUNDLE_APP_CONFIG=/home/application/ruby/.bundle/config
