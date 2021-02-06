@@ -1,0 +1,37 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+        - ballerina
+        - buildpack
+        - cordova
+        - elixir
+        - go
+        - java
+        - lua
+        - nodejs
+        - perl
+        - php
+        - play
+        - pypy
+        - python
+        - ruby
+        - scratch
+        - static
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - run: make test platform=${{ matrix.platform }}
+      shell: bash
+    
+  # deploy:
+  #   if: github.event_name != 'pull_request'
+  #   needs: [test]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
