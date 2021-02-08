@@ -5,8 +5,14 @@
 # license that can be found in the LICENSE file.
 
 SOURCE_DIR=/var/lib/tsuru
-source ${SOURCE_DIR}/base/deploy
-source ${SOURCE_DIR}/base/rc/config
+
+if [[ -f ${SOURCE_DIR}/base/deploy ]]; then
+    source ${SOURCE_DIR}/base/deploy
+fi
+
+if [[ -f ${SOURCE_DIR}/base/rc/config ]]; then
+    source ${SOURCE_DIR}/base/rc/config
+fi
 
 echo "BUILDPACK: $BUILDPACK_URL"
 
