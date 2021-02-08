@@ -1,7 +1,7 @@
 platforms
 =========
 
-[![Build Status](https://travis-ci.org/tsuru/platforms.png?branch=master)](https://travis-ci.org/tsuru/platforms)
+[![Actions Status](https://github.com/tsuru/platforms/workflows/CI/badge.svg)](https://github.com/tsuru/platforms/actions)
 
 Source for official Docker images of tsuru platforms.
 
