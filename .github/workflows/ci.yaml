@@ -4,6 +4,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         platform:
         - ballerina
@@ -17,7 +18,6 @@ jobs:
         - perl
         - php
         - play
-        - pypy
         - python
         - ruby
         - scratch
@@ -28,10 +28,30 @@ jobs:
 
     - run: make test platform=${{ matrix.platform }}
       shell: bash
-    
-  # deploy:
-  #   if: github.event_name != 'pull_request'
-  #   needs: [test]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
+
+    - uses: docker/login-action@v1
+      if: github.event_name != 'pull_request'
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - run: |
+        ref="${GITHUB_REF##*/}"
+        img="tsuru/${{ matrix.platform }}"
+        tags="${img}:${ref}"
+        if [[ ${ref} == "master" ]] || [[ ${ref} == "main" ]]; then
+          tags="${img}:latest"
+        elif [[ ${ref} =~ ${{ matrix.platform }}-([0-9.]+) ]]; then
+          tags=${img}:${BASH_REMATCH[1]},${img}:latest
+        fi
+        echo "::set-output name=tag::${tags}"
+      if: github.event_name != 'pull_request'
+      id: tags
+      shell: bash
+
+    - uses: docker/build-push-action@v2
+      if: github.event_name != 'pull_request' && steps.tags.outputs.tag != ''
+      with:
+        context: ./${{ matrix.platform }}
+        push: true
+        tags: ${{ steps.tags.outputs.tag }}
