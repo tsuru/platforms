@@ -10,7 +10,7 @@ source ${SOURCE_DIR}/base/rc/config
 
 PYTHON_REPO=${PYTHON_REPO:-https://heroku-buildpack-python.s3.amazonaws.com/heroku-18/runtimes}
 GET_PIP_URL=${GET_PIP_URL:-https://bootstrap.pypa.io/get-pip.py}
-GET_PIP_VERSION_URL=${GET_PIP_VERSION_URL:-https://bootstrap.pypa.io/@VERSION@/get-pip.py}
+GET_PIP_VERSION_URL=${GET_PIP_VERSION_URL:-https://bootstrap.pypa.io/pip/@VERSION@/get-pip.py}
 
 LATEST_39="3.9.0"
 LATEST_38="3.8.6"
