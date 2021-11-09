@@ -134,6 +134,18 @@ EOF
     rm ${CURRENT_DIR}/Pipfile*
 }
 
+@test "install from Pipfile.lock with custom pipenv" {
+    export PYTHON_PIPENV_VERSION=2021.5.29
+    cp Pipfile Pipfile.lock ${CURRENT_DIR}/
+
+    run /var/lib/tsuru/deploy
+    assert_success
+    [[ "$output" == *"Using pipenv version ==2021.5.29"* ]]
+
+    rm ${CURRENT_DIR}/Pipfile*
+    unset PYTHON_PIPENV_VERSION
+}
+
 @test "change python version" {
     run /var/lib/tsuru/deploy
     assert_success

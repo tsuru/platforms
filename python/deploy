@@ -151,7 +151,17 @@ fi
 pushd "$CURRENT_DIR"
 if [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
     echo "Pipfile.lock detected, using 'pipenv install --system --deploy' to install dependencies"
-    pip install pipenv
+    PIPENV_VERSION_SPEC=""
+    if [[ "${PYTHON_PIPENV_VERSION}" != "" ]]; then
+        PIPENV_VERSION_SPEC="${PYTHON_PIPENV_VERSION}"
+        if [[ "$PYTHON_PIPENV_VERSION" =~ ^[0-9] ]]; then
+            PIPENV_VERSION_SPEC="==${PYTHON_PIPENV_VERSION}"
+        fi
+        echo "Using pipenv version ${PIPENV_VERSION_SPEC}"
+    else
+        echo "Using latest pipenv version"
+    fi
+    pip install pipenv${PIPENV_VERSION_SPEC}
     pipenv install --system --deploy
 elif [ -f "${CURRENT_DIR}/requirements.txt" ]; then
     echo "requirements.txt detected, using 'pip install -r ./requirements.txt' to install dependencies"
