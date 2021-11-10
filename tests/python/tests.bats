@@ -142,6 +142,10 @@ EOF
     assert_success
     [[ "$output" == *"Using pipenv version ==2021.5.29"* ]]
 
+    run pipenv --version
+    assert_success
+    [[ "$output" == *"version 2021.5.29"* ]]
+
     rm ${CURRENT_DIR}/Pipfile*
     unset PYTHON_PIPENV_VERSION
 }
