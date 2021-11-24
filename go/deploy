@@ -10,7 +10,7 @@ source ${SOURCE_DIR}/base/rc/config
 
 GO_INSTALL_DIR="/home/application/go"
 GO_DOWNLOAD_URL=${GO_DOWNLOAD_URL:-"https://dl.google.com/go"}
-GO_RELEASES_URL=${GO_RELEASES_URL:-"https://golang.org/dl/?mode=json&include=all"}
+GO_RELEASES_URL=${GO_RELEASES_URL:-"https://go.dev/dl/?mode=json&include=all"}
 
 all_releases=$(curl -m10 -sSf ${GO_RELEASES_URL})
 versions=$(jq -r '.[].version' <<<${all_releases})

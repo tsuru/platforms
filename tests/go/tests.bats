@@ -4,7 +4,7 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-latest=$(curl -sS -f https://golang.org/dl/?mode=json | jq -r '.[0].version')
+latest=$(curl -sS -f https://go.dev/dl/?mode=json | jq -r '.[0].version')
 
 setup() {
     rm -rf /home/application/current && mkdir /home/application/current
