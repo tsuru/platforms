@@ -104,23 +104,26 @@ load 'bats-assert-master/load'
     run /var/lib/tsuru/deploy
     assert_success
 
-    [ -x ${CURRENT_DIR}/current ]
-    run ${CURRENT_DIR}/current
+    [ -x ${CURRENT_DIR}/rootmain ]
+    run ${CURRENT_DIR}/rootmain
     assert_success
     [[ "$output" == *"ok"* ]]
 
-    [ -x /home/application/bin/current ]
-    run /home/application/bin/current
+    [ -x /home/application/bin/rootmain ]
+    run /home/application/bin/rootmain
     assert_success
     [[ "$output" == *"ok"* ]]
 }
 
 @test "test project selfreferencing default procfile" {
     cp -a ./fixtures/selfreferencing/* ${CURRENT_DIR}/
+    # Making sure that Go module is not going to match the internal package name "github.com/tsuru/foo"
+    echo "module foo" > ${CURRENT_DIR}/go.mod
+
     touch /home/application/.default_procfile
     run /var/lib/tsuru/deploy
     [ "$status" -eq 1 ]
-    [[ "$output" == *"cannot find package \"github.com/tsuru/foo/api\""* ]]
+    [[ "$output" == *"no required module provides package github.com/tsuru/foo/api"* ]]
 }
 
 @test "test project selfreferencing default procfile with GO_PKG_PATH" {
