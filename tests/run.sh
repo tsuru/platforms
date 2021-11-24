@@ -6,6 +6,8 @@
 
 set -e
 
+DOCKER=${DOCKER:-docker}
+
 parent_path=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
 
 cd "$parent_path"
@@ -21,7 +23,7 @@ function run_test {
     echo "Testing $plat platform..."
     sed "s/{PLATFORM}/$plat/g" Dockerfile.template > ./$plat/Dockerfile
     cp -r common ./$plat/common
-    docker build -t platform-$plat ../$plat && docker build -t tests-$plat --no-cache ./$plat
+    ${DOCKER} build -t platform-$plat ../$plat && ${DOCKER} build -t tests-$plat --no-cache ./$plat
     rm ./$plat/Dockerfile && rm -rf ./$plat/common
 }
 
