@@ -8,10 +8,12 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
 apt-get update
+export DEBIAN_FRONTEND=noninteractive
 apt-get install -y --no-install-recommends \
             openjdk-11-jdk \
             maven \
-            tomcat8
+            tomcat8 \
+            tzdata
 
 cp $SOURCE_DIR/java/Procfile $SOURCE_DIR/default/Procfile
 

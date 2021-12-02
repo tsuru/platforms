@@ -8,12 +8,14 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
 apt-get update
+export DEBIAN_FRONTEND=noninteractive
 apt-get install -y --no-install-recommends \
         make \
         gcc \
         build-essential \
         libreadline7 \
-        libreadline-dev
+        libreadline-dev \
+        tzdata
 
 curl -R -O http://www.lua.org/ftp/lua-5.3.3.tar.gz
 tar zxf lua-5.3.3.tar.gz

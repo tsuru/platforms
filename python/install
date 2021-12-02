@@ -11,6 +11,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
 
+export DEBIAN_FRONTEND=noninteractive
 apt-get install -y --no-install-recommends \
         curl \
         libssl1.0.0 \
@@ -22,6 +23,7 @@ apt-get install -y --no-install-recommends \
         libreadline7 \
         libexpat1 \
         make \
+        tzdata \
         build-essential
 
 mkdir -p /app/.heroku

@@ -7,4 +7,5 @@
 curl -LO http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb && dpkg -i erlang-solutions_1.0_all.deb
 
 apt-get update
-apt-get install -y --no-install-recommends esl-erlang elixir libssl-dev
+export DEBIAN_FRONTEND=noninteractive
+apt-get install -y --no-install-recommends esl-erlang elixir libssl-dev tzdata

@@ -10,7 +10,7 @@ hhvm_repo="deb http://dl.hhvm.com/ubuntu ${UBUNTU_RELEASE} main"
 curl https://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
 add_repository "${hhvm_repo}"
 
-packages=("nginx-core" "hhvm" "python" "python-yaml" "git" "apache2")
+packages=("nginx-core" "hhvm" "python" "python-yaml" "git" "apache2" "tzdata")
 for version in $PHP_VERSIONS
 do
     packages+=("php${version}" "php${version}-fpm" "libapache2-mod-php${version}")

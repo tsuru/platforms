@@ -9,4 +9,5 @@ source ${SOURCE_DIR}/base/rc/config
 
 add_repository ppa:pypy/ppa
 apt-get update
-apt-get install -y --no-install-recommends carton make
+export DEBIAN_FRONTEND=noninteractive
+apt-get install -y --no-install-recommends carton make tzdata
