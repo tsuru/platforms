@@ -11,12 +11,12 @@ apt-get update
 apt-get install -y --no-install-recommends \
             openjdk-11-jdk \
             maven \
-            tomcat8
+            tomcat9
 
 cp $SOURCE_DIR/java/Procfile $SOURCE_DIR/default/Procfile
 
-rm -rf /var/lib/tomcat8/webapps
-ln -s ${CURRENT_DIR} /var/lib/tomcat8/webapps
-mkdir -p /usr/share/tomcat8/common/classes /usr/share/tomcat8/server/classes /usr/share/tomcat8/shared/classes
-chown -R ${USER}:${USER} /etc/tomcat8 /var/lib/tomcat8 /var/cache/tomcat8 /var/log/tomcat8 /usr/share/tomcat8
-sed -i 's/8080/8888/' /etc/tomcat8/server.xml
+rm -rf /var/lib/tomcat9/webapps
+ln -s ${CURRENT_DIR} /var/lib/tomcat9/webapps
+mkdir -p /usr/share/tomcat9/common/classes /usr/share/tomcat9/server/classes /usr/share/tomcat9/shared/classes
+chown -R ${USER}:${USER} /etc/tomcat9 /var/lib/tomcat9 /var/cache/tomcat9 /var/log/tomcat9 /usr/share/tomcat9
+sed -i 's/8080/8888/' /etc/tomcat9/server.xml
