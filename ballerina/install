@@ -3,14 +3,8 @@
 # Copyright 2019 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
+set -eu -o pipefail
 
-SOURCE_DIR=/var/lib/tsuru
-source ${SOURCE_DIR}/base/rc/config
-
-apt-get update
-apt-get install -y --no-install-recommends 
-
-curl -R -O https://dist.ballerina.io/downloads/0.991.0/ballerina-linux-installer-x64-0.991.0.deb
-dpkg -i ballerina-linux-installer-x64-0.991.0.deb
-apt-get autoremove -y
-rm -f ballerina-linux-installer-x64-0.991.0.deb
+curl -fsSL -o /tmp/ballerina.deb https://dist.ballerina.io/downloads/2201.0.3/ballerina-2201.0.3-swan-lake-linux-x64.deb
+dpkg -i /tmp/ballerina.deb
+rm -f /tmp/ballerina.deb
