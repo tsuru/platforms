@@ -18,68 +18,68 @@ versions=$(jq -r '.[].version' <<<${all_releases})
 # Try exact match first and fallback to closest version excluding non stable
 # releases.
 if grep -xF "go${GO_VERSION}" <<<${versions} >/dev/null; then
-	version_to_install="go${GO_VERSION}"
-	version_source="exact match from \$GO_VERSION"
+  version_to_install="go${GO_VERSION}"
+  version_source="exact match from \$GO_VERSION"
 else
-	escaped_version=$(sed 's/\./\\./g' <<<${GO_VERSION} | sed 's/\\\.x/\(\\..+|$\)/g')
-	stable_versions=$(egrep 'go[0-9.]+$' <<<${versions})
-	version_to_install=$(egrep "go${escaped_version}$" <<<${stable_versions} | sort -rV | head -n 1)
-	version_source="closest match from \$GO_VERSION=${GO_VERSION}"
+  escaped_version=$(sed 's/\./\\./g' <<<${GO_VERSION} | sed 's/\\\.x/\(\\..+|$\)/g')
+  stable_versions=$(egrep 'go[0-9.]+$' <<<${versions})
+  version_to_install=$(egrep "go${escaped_version}$" <<<${stable_versions} | sort -rV | head -n 1)
+  version_source="closest match from \$GO_VERSION=${GO_VERSION}"
 fi
 
 # Install latest version
 if [[ ${version_to_install} == "" ]]; then
-	if [[ $GO_VERSION != "" ]]; then
-		echo "Unable to find go version matching \$GO_VERSION=${GO_VERSION}."
-	fi
-	version_to_install=$(egrep 'go[0-9.]+$' <<<${versions} | sort -rV | head -n 1)
-	version_source="latest version"
+  if [[ $GO_VERSION != "" ]]; then
+    echo "Unable to find go version matching \$GO_VERSION=${GO_VERSION}."
+  fi
+  version_to_install=$(egrep 'go[0-9.]+$' <<<${versions} | sort -rV | head -n 1)
+  version_source="latest version"
 fi
 
 install_needed=1
 if [[ -x ${GO_INSTALL_DIR}/bin/go ]]; then
-	current_version=$(${GO_INSTALL_DIR}/bin/go version)
-	if [[ "${current_version}" == *" ${version_to_install} "* ]]; then
-		echo "Using already installed Go ${version_to_install} (${version_source})"
-		install_needed=0
-	fi
+  current_version=$(${GO_INSTALL_DIR}/bin/go version)
+  if [[ "${current_version}" == *" ${version_to_install} "* ]]; then
+    echo "Using already installed Go ${version_to_install} (${version_source})"
+    install_needed=0
+  fi
 fi
 
 if [[ ${install_needed} == 1 ]]; then
-	echo "Installing Go ${version_to_install} (${version_source})"
+  echo "Installing Go ${version_to_install} (${version_source})"
 
-	rm -rf ${GO_INSTALL_DIR}
-	version_dir=${GO_INSTALL_DIR}_${version_to_install}
-	rm -rf ${version_dir}
-	mkdir -p ${version_dir}
-	download_url=${GO_DOWNLOAD_URL}/${version_to_install}.linux-amd64.tar.gz
-	if ! (curl -m 120 -sS --retry 3 -L "$download_url" | tar xz -C ${version_dir}); then
-		echo "ERROR: Unable to download Go from ${download_url}."
-		exit 1
-	fi
+  rm -rf ${GO_INSTALL_DIR}
+  version_dir=${GO_INSTALL_DIR}_${version_to_install}
+  rm -rf ${version_dir}
+  mkdir -p ${version_dir}
+  download_url=${GO_DOWNLOAD_URL}/${version_to_install}.linux-amd64.tar.gz
+  if ! (curl -m 120 -sS --retry 3 -L "$download_url" | tar xz -C ${version_dir}); then
+    echo "ERROR: Unable to download Go from ${download_url}."
+    exit 1
+  fi
 
-	rm -rf ${version_dir}/api/ \
-		${version_dir}/blog/ \
-		${version_dir}/doc/ \
-		${version_dir}/test/ \
-		${version_dir}/lib/ \
-		${version_dir}/misc/
+  rm -rf ${version_dir}/api/ \
+    ${version_dir}/blog/ \
+    ${version_dir}/doc/ \
+    ${version_dir}/test/ \
+    ${version_dir}/lib/ \
+    ${version_dir}/misc/
 
-	ln -s ${version_dir}/go ${GO_INSTALL_DIR}
-	hash -r
+  ln -s ${version_dir}/go ${GO_INSTALL_DIR}
+  hash -r
 fi
 
 echo "Using Go version: $(go version)"
 
 if [ -z $(find ${APP_DIR}/current -name "*.go" -print -quit) ]; then
-	exit 0
+  exit 0
 fi
 
 APP_PATH=${APP_DIR}/src/current
 
 if [ -n  "${GO_PKG_PATH}" ]
 then
-	APP_PATH=${APP_DIR}/src/${GO_PKG_PATH}
+  APP_PATH=${APP_DIR}/src/${GO_PKG_PATH}
 fi
 
 mkdir -p ${APP_PATH}
@@ -95,18 +95,18 @@ go get -d .
 set -e
 
 if [ -f ${APP_DIR}/current/go.mod ] && [ -d ${APP_DIR}/current/vendor ]; then
-	GO_BUILD_VENDOR="-mod=vendor"
+  GO_BUILD_VENDOR="-mod=vendor"
 fi
 
 if [ -f ${APP_DIR}/.default_procfile ]
 then
-	echo "Procfile not found. Using default Procfile"
+  echo "Procfile not found. Using default Procfile"
 
-	echo "go build -o tsuru-app"
-	go build $GO_BUILD_VENDOR -o tsuru-app
+  echo "go build -o tsuru-app"
+  go build $GO_BUILD_VENDOR -o tsuru-app
 else
-	go build $GO_BUILD_VENDOR 2>/dev/null || true
-	go install $GO_BUILD_VENDOR ./...
+  go build $GO_BUILD_VENDOR 2>/dev/null || true
+  go install $GO_BUILD_VENDOR ./...
 fi
 
 popd >/dev/null 2>&1

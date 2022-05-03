@@ -12,4 +12,4 @@ apt-get install -y --no-install-recommends curl jq git
 
 cp ${SOURCE_DIR}/go/Procfile ${SOURCE_DIR}/default/Procfile
 echo "export GOPATH=${APP_DIR}" | tee -a ${HOME}/.profile /etc/profile >/dev/null
-echo 'export PATH=$GOPATH/bin:/home/application/go/bin:$PATH' | tee -a ${HOME}/.profile /etc/profile >/dev/null
+echo "export PATH=${APP_DIR}/bin:/home/application/go/bin:${PATH}" | tee -a ${HOME}/.profile /etc/profile >/dev/null
