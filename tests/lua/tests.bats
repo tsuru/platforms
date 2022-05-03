@@ -10,7 +10,7 @@ load 'bats-assert-master/load'
 @test "installs lua" {
   run /usr/bin/lua -v
   assert_success
-  [[ "$output" == *"Lua 5.3"* ]]
+  [[ "$output" == *"Lua 5.4"* ]]
 }
 
 @test "install luarocks" {
