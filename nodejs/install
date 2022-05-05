@@ -3,14 +3,15 @@
 # Copyright 2015 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
+set -euf -o pipefail
 
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.7/install.sh | NVM_DIR=/etc/nvm bash
+curl -fsSLo- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | sudo -E -u ${USER} bash
 
-cat >> ${HOME}/.profile <<EOF
-if [ -e ${HOME}/.nvm_bin ]; then
-	export PATH="${HOME}/.nvm_bin:$PATH"
-fi
+cat >> ~/.profile <<-EOF
+# loads nvm in dash as well
+export NVM_DIR="\${HOME}/.nvm"
+[ -s "\${NVM_DIR}/nvm.sh" ] && \. "\${NVM_DIR}/nvm.sh"
 EOF

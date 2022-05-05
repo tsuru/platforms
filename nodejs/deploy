@@ -89,11 +89,11 @@ elif [ $NVM_NODEJS_ORG_MIRROR ]; then
     echo "disturl = $NVM_NODEJS_ORG_MIRROR" >> ~/.npmrc
 fi
 
-export NVM_DIR=${HOME}/.nvm
+export NVM_DIR=${NVM_DIR:-${HOME}/.nvm}
 [ ! -e ${NVM_DIR} ] && mkdir -p ${NVM_DIR}
 
 set +e
-. /etc/nvm/nvm.sh
+. ${NVM_DIR}/nvm.sh
 nvm_source_exit_code="$?"
 set -e
 

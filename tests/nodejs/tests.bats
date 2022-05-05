@@ -10,11 +10,20 @@ setup() {
     export CURRENT_DIR=/home/application/current
     export PATH=/home/ubuntu/.nvm_bin:$PATH
     rm -rf /home/ubuntu/.nvm_bin
-    rm -rf /home/ubuntu/.nvm
+    rm -rf /home/ubuntu/.nvm/versions
+    rm -rf /home/ubuntu/.nvm/.cache
+    rm -rf /home/ubuntu/.nvm/alias
 }
 
 load 'bats-support-master/load'
 load 'bats-assert-master/load'
+
+@test 'ensure NVM version' {
+  source /home/ubuntu/.nvm/nvm.sh
+  run nvm --version
+  assert_success
+  assert_output '0.39.1'
+}
 
 @test "defaults yarn 1.21.1 if yarn.lock present" {
     cat <<EOF >>${CURRENT_DIR}/package.json
