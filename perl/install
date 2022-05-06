@@ -6,6 +6,7 @@
 
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
+source ${SOURCE_DIR}/base/rc/os_dependencies
 
 add_repository ppa:pypy/ppa
 apt-get update
