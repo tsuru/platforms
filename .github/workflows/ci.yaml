@@ -9,7 +9,6 @@ jobs:
         platform:
         - ballerina
         - buildpack
-        - cordova
         - elixir
         - go
         - java
@@ -17,7 +16,6 @@ jobs:
         - nodejs
         - perl
         - php
-        - play
         - python
         - ruby
         - scratch
