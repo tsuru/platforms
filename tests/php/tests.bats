@@ -12,6 +12,12 @@ setup() {
 load 'bats-support-master/load'
 load 'bats-assert-master/load'
 
+@test "ensure composer version" {
+    run composer_phar --version
+    assert_success
+    assert_output --partial "2.2.12"
+}
+
 @test "using default php(5.6) + apache-mod-php" {
     run /var/lib/tsuru/deploy
     run cat /home/application/current/Procfile

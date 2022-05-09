@@ -1,13 +1,19 @@
 #!/bin/bash -e
 
+# Copyright 2022 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+set -eu -o pipefail
+
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
+source ${SOURCE_DIR}/base/rc/os_dependencies
 
 PHP_VERSIONS="5.6 7.0 7.1 7.2"
 
 add_repository ppa:ondrej/php
 hhvm_repo="deb http://dl.hhvm.com/ubuntu ${UBUNTU_RELEASE} main"
-curl https://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
+curl -fsSL https://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
 add_repository "${hhvm_repo}"
 
 packages=("nginx-core" "hhvm" "python" "python-yaml" "git" "apache2")
@@ -21,5 +27,8 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y --force-yes "${packages[@]}"
 
-curl -s -L http://getcomposer.org/composer.phar -o /usr/local/bin/composer_phar
+# Pinning composer on 2.2.x as composer 2.3+ dropped support for < PHP 7.2.5.
+# See more: https://github.com/composer/composer/blob/main/CHANGELOG.md
+COMPOSER_VERSION=2.2.12
+curl -fsSL "https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar" -o /usr/local/bin/composer_phar
 chmod +x /usr/local/bin/composer_phar
