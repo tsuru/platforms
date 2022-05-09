@@ -5,6 +5,5 @@
 # license that can be found in the LICENSE file.
 
 SOURCE_DIR=/var/lib/tsuru
-source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
-
+source ${SOURCE_DIR}/base/deploy
