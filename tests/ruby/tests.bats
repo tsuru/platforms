@@ -154,5 +154,5 @@ EOF
     [[ "$output" == *"Using hello-world"* ]]
     run /home/application/ruby/bin/bundler --version
     assert_success
-    [[ "$output" == "Bundler version 2."* ]]
+    assert_output --partial "Bundler version 2."
 }
