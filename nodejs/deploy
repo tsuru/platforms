@@ -65,7 +65,7 @@ fi
 
 source ${SOURCE_DIR}/base/deploy
 
-NODE_VERSION=stable
+NODE_VERSION=--lts
 
 if [ -f ${CURRENT_DIR}/.nvmrc ]; then
     TMP_VERSION=$(cat ${CURRENT_DIR}/.nvmrc)
