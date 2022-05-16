@@ -22,7 +22,7 @@ something like:
 Code deployment
 ---------------
 
-If you just run a ``git push`` of your code, tsuru will try to download all of
+If you just run a ``tsuru app deploy`` of your code, tsuru will try to download all of
 your dependencies using ``go get`` and build your application. You can
 customize this behavior, see the next section for more details.
 
@@ -36,7 +36,7 @@ Suppose that you have this code structure:
 	% git commit -m "add my webserver"
 	% git push tsuru master
 
-After invoking ``git push``, tsuru will receive your code and tell the platform
+After invoking ``tsuru app deploy``, tsuru will receive your code and tell the platform
 to follow the setup process, that will:
 
 - download all the dependencies using ``go get``
