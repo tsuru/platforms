@@ -4,7 +4,7 @@ The Perl platform supports Perl 5.18.2 (on Ubuntu 14.04 LTS) or Perl 5.22.1 (on 
 
 ## Code deployment
 
-If you just run a ``git push``  or ``tsuru app-deploy`` of your code, tsuru will try
+If you just run a ``tsuru app deploy`` of your code, tsuru will try
 to download all of your depencies using ``cpanfile`` or ``cpanfile.snapshot``.
 
 ## Code deployment with dependencies
@@ -23,6 +23,6 @@ each line represents one dependency, here's an example:
 
 ### Using [carton](https://metacpan.org/pod/Carton) + cpanfile.snapshot
 
-After invokin ``git push`` or ``tsuru app-deploy``, tsuru will receive your code and tell the platform
+After invokin ``tsuru app deploy``, tsuru will receive your code and tell the platform
 to install all the depencies using ``carton install --cached --deployment``.
 
