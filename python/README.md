@@ -30,7 +30,7 @@ a ``PYTHON_PIP_VERSION`` environment variable. It accepts a specific version (``
 
 ## Code deployment
 
-If you just run a ``git push``  or ``tsuru app-deploy`` of your code, tsuru will try
+If you just run a ``tsuru app deploy`` of your code, tsuru will try
 to download all of your depencies using ``requirements.txt`` or ``setup script``.
 You can customize this behavior, see the next section for more details.
 
@@ -69,6 +69,6 @@ You can also define the setup script to list your dependencies, here's an exampl
 		],
 	)
 
-After invoking ``git push`` or ``tsuru app-deploy``, tsuru will receive your code and tell the platform
+After invoking ``tsuru app-deploy``, tsuru will receive your code and tell the platform
 to install all the dependencies using ``pipenv install --system --deploy``, ``pip install -r requirements.txt``
 or ``pip instal -e ./``.
