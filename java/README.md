@@ -17,6 +17,6 @@ tomcat, if you don't it will start with 128MB.
 
 ##Code deployment
 
-If you just run a ``git push`` or ``tsuru app-deploy`` of your code,
+If you just run a ``tsuru app-deploy`` of your code,
 tsuru will try to download all of your dependencies using ``maven``
 and build your application.
