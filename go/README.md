@@ -17,7 +17,7 @@ something like:
 	% GOOS=linux GOARCH=amd64 go build -o myapp main.go
 	% cat Procfile
 	web: ./myapp
-	% tsuru app-deploy -a [app-name] myapp Procfile
+	% tsuru app deploy -a [app-name] myapp Procfile
 
 Code deployment
 ---------------
@@ -32,9 +32,7 @@ Suppose that you have this code structure:
 	main.go
 	% cat main.go
 	# some code that starts a "hello world" webserver
-	% git add main.go
-	% git commit -m "add my webserver"
-	% git push tsuru master
+	% tsuru app deploy -a [app-name] .
 
 After invoking ``tsuru app deploy``, tsuru will receive your code and tell the platform
 to follow the setup process, that will:
@@ -64,7 +62,7 @@ customize the execution of your application, here's an example:
 	    - go build -o $HOME/myapp src/main.go
 	% cat Procfile
 	web: $HOME/myapp -host 0.0.0.0 -port $PORT
-	% git push tsuru master
+	% tsuru app deploy -a [app-name] .
 
 At this point, tsuru will parse the tsuru.yaml file and invoke the build hooks
 to build your application, and then use the command specified in the Procfile
