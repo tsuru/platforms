@@ -11,7 +11,5 @@ source ${SOURCE_DIR}/base/rc/config
 curl -fsSLo- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | sudo -E -u ${USER} bash
 
 cat >> ~/.profile <<-EOF
-# loads nvm in dash as well
-export NVM_DIR="\${HOME}/.nvm"
-[ -s "\${NVM_DIR}/nvm.sh" ] && \. "\${NVM_DIR}/nvm.sh"
+export PATH=${PATH}:${HOME}/.nvm_bin
 EOF
