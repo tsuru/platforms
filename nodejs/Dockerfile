@@ -5,6 +5,6 @@
 FROM tsuru/base-platform:20.04
 COPY . /var/lib/tsuru/nodejs
 RUN set -ex \
-    && sudo /var/lib/tsuru/nodejs/install \
+    && /var/lib/tsuru/nodejs/install \
     && sudo rm -rf /var/lib/tsuru/nodejs/install /var/lib/apt/lists/* \
     && sudo ln -sf /var/lib/tsuru/nodejs/deploy /var/lib/tsuru/deploy
