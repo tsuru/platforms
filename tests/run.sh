@@ -7,6 +7,7 @@
 set -e
 
 DOCKER=${DOCKER:-docker}
+NO_REBUILD=$2
 
 parent_path=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
 
@@ -23,7 +24,11 @@ function run_test {
     echo "Testing $plat platform..."
     sed "s/{PLATFORM}/$plat/g" Dockerfile.template > ./$plat/Dockerfile
     cp -r common ./$plat/common
-    ${DOCKER} build -t platform-$plat ../$plat && ${DOCKER} build -t tests-$plat --no-cache ./$plat
+    if [ -z ${NO_REBUILD} ]; then
+        ${DOCKER} build -t platform-$plat ../$plat && ${DOCKER} build --progress plain -t tests-$plat --no-cache ./$plat
+    else
+        ${DOCKER} build --progress plain -t tests-$plat --no-cache ./$plat
+    fi
     rm ./$plat/Dockerfile && rm -rf ./$plat/common
 }
 
