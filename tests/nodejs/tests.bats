@@ -333,18 +333,18 @@ EOF
     cp ./fixtures/package.json ${CURRENT_DIR}/package.json
     cp ./fixtures/package-lock.json ${CURRENT_DIR}/package-lock.json
  
-    export NPM_REGISTRY=my-registry.example.com
+    export NPM_REGISTRY=https://yarn.npmjs.org
     run /var/lib/tsuru/deploy
-    assert_failure
-    [[ `cat ${CURRENT_DIR}/package-lock.json` == *"my-registry.example.com/express"* ]]
+    assert_success
+    [[ `cat ${CURRENT_DIR}/package-lock.json` == *"yarn.npmjs.org/express"* ]]
 }
 
 @test "replaces the default yarnpkg.com urls with NPM_REGISTRY" {
     cp ./fixtures/package.json ${CURRENT_DIR}/package.json
     cp ./fixtures/yarn.lock ${CURRENT_DIR}/yarn.lock
 
-    export NPM_REGISTRY=my-registry.example.com
+    export NPM_REGISTRY=https://yarn.npmjs.org
     run /var/lib/tsuru/deploy
-    assert_failure
-    [[ `cat ${CURRENT_DIR}/yarn.lock` == *"my-registry.example.com/express"* ]]
+    assert_success
+    [[ `cat ${CURRENT_DIR}/yarn.lock` == *"yarn.npmjs.org/express"* ]]
 }
