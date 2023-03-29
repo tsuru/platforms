@@ -4,6 +4,7 @@ nginx_config_file=$1
 
 echo "Validating nginx configuration..."
 
+[ -f /var/lib/nginx/nginx.pid ] && rm /var/lib/nginx/nginx.pid
 nginx -c ${nginx_config_file} -t
 
 grep -q "port_in_redirect\s\+off;" ${nginx_config_file} || echo "'port_in_redirect off' is mandatory on nginx.conf"
