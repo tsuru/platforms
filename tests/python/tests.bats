@@ -221,48 +221,48 @@ EOF
     export PYTHON_VERSION=3.7.x
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using python version: 3.7.13 (PYTHON_VERSION environment variable (closest))"* ]]
+    [[ "$output" == *"Using python version: 3.7.16 (PYTHON_VERSION environment variable (closest))"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.7.13"* ]]
+    [[ "$output" == *"3.7.16"* ]]
 
     export PYTHON_VERSION=3.7
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using already installed python version: 3.7.13"* ]]
+    [[ "$output" == *"Using already installed python version: 3.7.16"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.7.13"* ]]
+    [[ "$output" == *"3.7.16"* ]]
 
     export PYTHON_VERSION=3.8.x
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using python version: 3.8.13 (PYTHON_VERSION environment variable (closest))"* ]]
+    [[ "$output" == *"Using python version: 3.8.16 (PYTHON_VERSION environment variable (closest))"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.8.13"* ]]
+    [[ "$output" == *"3.8.16"* ]]
 
     export PYTHON_VERSION=3.8
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using already installed python version: 3.8.13"* ]]
+    [[ "$output" == *"Using already installed python version: 3.8.16"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.8.13"* ]]
+    [[ "$output" == *"3.8.16"* ]]
 
     export PYTHON_VERSION=3
     run /var/lib/tsuru/deploy
     assert_success
 
-    [[ "$output" == *"Using python version: 3.10.4 (PYTHON_VERSION environment variable (closest))"* ]]
+    [[ "$output" == *"Using python version: 3.11.3 (PYTHON_VERSION environment variable (closest))"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.10.4"* ]]
+    [[ "$output" == *"3.11.3"* ]]
 
     export PYTHON_VERSION=3.5.x
     run /var/lib/tsuru/deploy
