@@ -28,3 +28,4 @@ mkdir -p /app/.heroku
 ln -s /home/application/python /app/.heroku/python
 
 echo "export PATH=/home/application/python/bin:${PATH}" | tee -a ${HOME}/.profile /etc/profile >/dev/null
+echo "/home/application/python/lib" | tee -a /etc/ld.so.conf.d/python.conf

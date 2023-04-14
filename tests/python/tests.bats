@@ -42,6 +42,21 @@ load 'bats-assert-master/load'
     [[ "$output" == *"3.5.10"* ]]
 }
 
+@test "testing python compiled using dynamic shared lib" {
+    echo "3.11.0" > ${CURRENT_DIR}/.python-version
+    run /var/lib/tsuru/deploy
+    assert_success
+    [[ "$output" == *"Using python version: 3.11.0"* ]]
+
+    pushd ${CURRENT_DIR}
+    run python --version
+    popd
+
+    assert_success
+    [[ "$output" == *"3.11.0"* ]]
+}
+
+
 @test "parse python version from PYTHON_VERSION" {
     export PYTHON_VERSION=3.5.10
     run /var/lib/tsuru/deploy
