@@ -28,7 +28,7 @@ load 'bats-assert-master/load'
     assert_success
 }
 
-@test "set 3.8 as default python version" {
+@test "set 3.6 as default python version" {
     export PYTHON_VERSION_DEFAULT=3.6.15
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Using python version: 3.6.15"* ]]
