@@ -15,31 +15,45 @@ setup() {
 load 'bats-support-master/load'
 load 'bats-assert-master/load'
 
-@test "use python version 2.7 as default" {
+@test "use python version 3.11 as default" {
     run /var/lib/tsuru/deploy
-    [[ "$output" == *"Using python version: 2.7.18"* ]]
+    [[ "$output" == *"Using python version: 3.11.3"* ]]
     assert_success
 
     run python --version
     assert_success
-    [[ "$output" == *"2.7.18"* ]]
+    [[ "$output" == *"3.11.3"* ]]
+
+    run pip freeze
+    assert_success
+}
+
+@test "set 3.8 as default python version" {
+    export PYTHON_VERSION_DEFAULT=3.6.15
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using python version: 3.6.15"* ]]
+    assert_success
+
+    run python --version
+    assert_success
+    [[ "$output" == *"3.6.15"* ]]
 
     run pip freeze
     assert_success
 }
 
 @test "parse python version from .python-version" {
-    echo "3.5.10" > ${CURRENT_DIR}/.python-version
+    echo "3.6.15" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using python version: 3.5.10"* ]]
+    [[ "$output" == *"Using python version: 3.6.15"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.5.10"* ]]
+    [[ "$output" == *"3.6.15"* ]]
 }
 
 @test "testing python compiled using dynamic shared lib" {
@@ -58,48 +72,48 @@ load 'bats-assert-master/load'
 
 
 @test "parse python version from PYTHON_VERSION" {
-    export PYTHON_VERSION=3.5.10
+    export PYTHON_VERSION=3.6.15
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using python version: 3.5.10"* ]]
+    [[ "$output" == *"Using python version: 3.6.15"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.5.10"* ]]
+    [[ "$output" == *"3.6.15"* ]]
     unset PYTHON_VERSION
 }
 
-@test "use python version 2.7 as default with invalid .python-version" {
+@test "use python version 3.11 as default with invalid .python-version" {
     echo "xyz" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
     assert_success
     [[ "$output" == *"Python version 'xyz' (.python-version file) is not supported"* ]]
-    [[ "$output" == *"Using python version: 2.7.18"* ]]
+    [[ "$output" == *"Using python version: 3.11.3"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"2.7.18"* ]]
+    [[ "$output" == *"3.11.3"* ]]
 }
 
-@test "use python version 2.7 as default with invalid PYTHON_VERSION" {
+@test "use python version 3.11 as default with invalid PYTHON_VERSION" {
     export PYTHON_VERSION=abc
     run /var/lib/tsuru/deploy
     assert_success
     [[ "$output" == *"Python version 'abc' (PYTHON_VERSION environment variable) is not supported"* ]]
-    [[ "$output" == *"Using python version: 2.7.18"* ]]
+    [[ "$output" == *"Using python version: 3.11.3"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"2.7.18"* ]]
+    [[ "$output" == *"3.11.3"* ]]
     unset PYTHON_VERSION
 }
 
@@ -171,41 +185,41 @@ EOF
     run python --version
 
     assert_success
-    [[ "$output" == *"2.7.18"* ]]
+    [[ "$output" == *"3.11.3"* ]]
 
-    export PYTHON_VERSION=3.5.10
+    export PYTHON_VERSION=3.6.15
     run /var/lib/tsuru/deploy
     assert_success
     run python --version
 
     assert_success
-    [[ "$output" == *"3.5.10"* ]]
+    [[ "$output" == *"3.6.15"* ]]
     unset PYTHON_VERSION
 }
 
 @test "reuses already installed python version" {
-    echo "3.5.10" > ${CURRENT_DIR}/.python-version
+    echo "3.6.15" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using python version: 3.5.10"* ]]
+    [[ "$output" == *"Using python version: 3.6.15"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.5.10"* ]]
+    [[ "$output" == *"3.6.15"* ]]
 
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using already installed python version: 3.5.10"* ]]
+    [[ "$output" == *"Using already installed python version: 3.6.15"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.5.10"* ]]
+    [[ "$output" == *"3.6.15"* ]]
 }
 
 @test "change python version to closest version" {
@@ -264,14 +278,14 @@ EOF
     assert_success
     [[ "$output" == *"3.11.3"* ]]
 
-    export PYTHON_VERSION=3.5.x
+    export PYTHON_VERSION=3.6.x
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using python version: 3.5.10 (PYTHON_VERSION environment variable (closest))"* ]]
+    [[ "$output" == *"Using python version: 3.6.15 (PYTHON_VERSION environment variable (closest))"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.5.10"* ]]
+    [[ "$output" == *"3.6.15"* ]]
 
     export PYTHON_VERSION=pypy2.7
     run /var/lib/tsuru/deploy

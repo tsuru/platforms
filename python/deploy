@@ -8,7 +8,7 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-PYTHON_REPO=${PYTHON_REPO:-https://heroku-buildpack-python.s3.amazonaws.com/heroku-18/runtimes}
+PYTHON_REPO=${PYTHON_REPO:-https://heroku-buildpack-python.s3.amazonaws.com/heroku-20/runtimes}
 GET_PIP_URL=${GET_PIP_URL:-https://bootstrap.pypa.io/get-pip.py}
 GET_PIP_VERSION_URL=${GET_PIP_VERSION_URL:-https://bootstrap.pypa.io/pip/@VERSION@/get-pip.py}
 
@@ -19,12 +19,11 @@ LATEST_38="3.8.16"
 LATEST_37="3.7.16"
 LATEST_36="3.6.15"
 LATEST_35="3.5.10"
-LATEST_34="3.4.10"
 LATEST_27="2.7.18"
 PYPY_36="pypy3.6-7.3.2"
 PYPY_27="pypy2.7-7.3.2"
-LATEST_PYTHON_VERSIONS=(${LATEST_311} ${LATEST_310} ${LATEST_39} ${LATEST_38} ${LATEST_37} ${LATEST_36} ${LATEST_35} ${LATEST_34} ${LATEST_27} ${PYPY_36} ${PYPY_27})
-PYTHON_VERSION_DEFAULT="${LATEST_27}"
+LATEST_PYTHON_VERSIONS=(${LATEST_311} ${LATEST_310} ${LATEST_39} ${LATEST_38} ${LATEST_37} ${LATEST_36} ${LATEST_35} ${LATEST_27} ${PYPY_36} ${PYPY_27})
+PYTHON_VERSION_DEFAULT="${PYTOH_VERSION_DEFAULT:-${LATEST_311}}"
 VERSION_ORIGIN="default"
 PYTHON_BASE_DIR="/home/application/python"
 INSTALLED_PYTHON_FILE="${PYTHON_BASE_DIR}/.installed-version"
