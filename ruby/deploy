@@ -13,8 +13,8 @@ fi
 
 source ${SOURCE_DIR}/base/deploy
 
-if [ -f ${CURRENT_DIR}/Gemfile ]; then
-    RUBY_VERSION=$(/usr/bin/ruby /var/lib/tsuru/ruby/ruby_version_eval.rb ${CURRENT_DIR}/Gemfile 2>/dev/null || echo "")
+if [ -f ${CURRENT_DIR}/Gemfile.lock ]; then
+    RUBY_VERSION=$(awk '/^RUBY VERSION/{getline; gsub(/p[0-9]+/, "", $2); print $2}' ${CURRENT_DIR}/Gemfile.lock || echo "")
 fi
 
 if [ -f ${CURRENT_DIR}/.ruby-version -a "${RUBY_VERSION}" == "" ]; then
@@ -26,11 +26,11 @@ fi
 
 echo "gem: --no-rdoc --no-ri" > ~/.gemrc
 
-RUBY_VERSION=${RUBY_VERSION:-2.4.6}
+RUBY_VERSION=${RUBY_VERSION:-2.7.7}
 
 echo "-- Using ruby version: $RUBY_VERSION --"
 
-RUBY_REPO=${RUBY_REPO:-https://heroku-buildpack-ruby.s3.amazonaws.com/heroku-18}
+RUBY_REPO=${RUBY_REPO:-https://heroku-buildpack-ruby.s3.amazonaws.com/heroku-20}
 
 RUBY_TARGET="$RUBY_REPO/ruby-$RUBY_VERSION.tgz"
 
@@ -75,7 +75,6 @@ fi
 
 BUNDLER_VERSION=$(get_bundler_version $RUBY_VERSION)
 if [ "$BUNDLER_VERSION" != "" ]; then
-    yes | gem uninstall -a bundler
     if [ -z "$GEM_SOURCE" ]; then
         gem install bundler --force -v "$BUNDLER_VERSION"
     else
