@@ -22,12 +22,12 @@ jobs:
         - static
     steps:
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - run: make test platform=${{ matrix.platform }}
       shell: bash
 
-    - uses: docker/login-action@v1
+    - uses: docker/login-action@v3
       if: github.event_name != 'pull_request'
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -47,9 +47,12 @@ jobs:
       id: tags
       shell: bash
 
-    - uses: docker/build-push-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    - uses: docker/build-push-action@v5
       if: github.event_name != 'pull_request' && steps.tags.outputs.tag != ''
       with:
         context: ./${{ matrix.platform }}
         push: true
         tags: ${{ steps.tags.outputs.tag }}
+        platforms: linux/amd64,linux/arm64
