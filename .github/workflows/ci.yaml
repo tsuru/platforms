@@ -4,6 +4,42 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: true
+      matrix:
+        platform:
+        - ballerina
+        - buildpack
+        - elixir
+        - go
+        - java
+        - lua
+        - nodejs
+        - perl
+        - php
+        - python
+        - ruby
+        - scratch
+        - static
+        arch:
+        - amd64
+        - aarch64
+    steps:
+    - uses: actions/checkout@v4
+    - name: run tests on amd64
+      if: matrix.arch == 'amd64'
+      run: make test platform=${{ matrix.platform }}
+      shell: bash
+    - name: run tests on aarch64
+      uses: pguyot/arm-runner-action@v2
+      if: matrix.arch == 'aarch64'
+      with:
+        base_image: raspios_lite_arm64:latest
+        commands: make test platform=${{ matrix.platform }}
+        shell: bash
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
       fail-fast: false
       matrix:
         platform:
@@ -21,18 +57,12 @@ jobs:
         - scratch
         - static
     steps:
-
     - uses: actions/checkout@v4
-
-    - run: make test platform=${{ matrix.platform }}
-      shell: bash
-
     - uses: docker/login-action@v3
       if: github.event_name != 'pull_request'
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
     - run: |
         ref="${GITHUB_REF##*/}"
         img="tsuru/${{ matrix.platform }}"
