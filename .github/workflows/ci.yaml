@@ -37,6 +37,7 @@ jobs:
         commands: make test platform=${{ matrix.platform }}
         shell: bash
   publish:
+    if: github.repository == 'tsuru/platforms' && github.event_name != 'pull_request'
     needs: test
     runs-on: ubuntu-latest
     strategy:
