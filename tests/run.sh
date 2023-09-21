@@ -25,9 +25,9 @@ function run_test {
     sed "s/{PLATFORM}/$plat/g" Dockerfile.template > ./$plat/Dockerfile
     cp -r common ./$plat/common
     if [ -z ${NO_REBUILD} ]; then
-        ${DOCKER} build --platform linux/amd64 -t platform-$plat ../$plat && ${DOCKER} build --platform linux/amd64 --progress plain -t tests-$plat --no-cache ./$plat
+        ${DOCKER} build  -t platform-$plat ../$plat && ${DOCKER} build --progress plain -t tests-$plat --no-cache ./$plat
     else
-        ${DOCKER} build --platform linux/amd64 --progress plain -t tests-$plat --no-cache ./$plat
+        ${DOCKER} build --progress plain -t tests-$plat --no-cache ./$plat
     fi
     rm ./$plat/Dockerfile && rm -rf ./$plat/common
 }
