@@ -21,8 +21,8 @@ jobs:
         - static
         runners:
         - ubuntu-latest
-        - self-hosted, linux, ARM64
-    runs-on: [${{ matrix.runners }}]
+        - ARM64
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
     - name: run tests on amd64
