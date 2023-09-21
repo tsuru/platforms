@@ -19,7 +19,7 @@ jobs:
         - ruby
         - scratch
         - static
-        runners:
+        os:
         - ubuntu-latest
         - ARM64
     runs-on: ${{ matrix.os }}
