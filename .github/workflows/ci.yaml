@@ -19,10 +19,7 @@ jobs:
         - ruby
         - scratch
         - static
-        os:
-        - ubuntu-latest
-        - ARM64
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: run tests
@@ -79,4 +76,4 @@ jobs:
         context: ./${{ matrix.platform }}
         push: true
         tags: ${{ steps.tags.outputs.tag }}
-        platforms: linux/amd64,linux/arm64
+        platforms: linux/amd64
