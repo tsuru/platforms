@@ -179,8 +179,6 @@ EOF
 }
 
 @test "install from Pipfile.lock with custom pipenv" {
-    export PYTHON_REPO=${PYTHON_REPO:-https://heroku-buildpack-python.s3.amazonaws.com/heroku-18/runtimes}
-    export PYTHON_VERSION=2.7.18
     export PYTHON_PIPENV_VERSION=2021.5.29
     cp Pipfile Pipfile.lock ${CURRENT_DIR}/
 
