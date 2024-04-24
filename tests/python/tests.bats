@@ -15,7 +15,21 @@ setup() {
 load 'bats-support-master/load'
 load 'bats-assert-master/load'
 
+@test "use python version 3.12.0 as default" {
+    run /var/lib/tsuru/deploy
+    [[ "$output" == *"Using python version: 3.12.0"* ]]
+    assert_success
+
+    run python --version
+    assert_success
+    [[ "$output" == *"3.12.0"* ]]
+
+    run pip freeze
+    assert_success
+}
+
 @test "use python version 3.11 as default" {
+    export PYTHON_VERSION_DEFAULT=3.11.3
     run /var/lib/tsuru/deploy
     [[ "$output" == *"Using python version: 3.11.3"* ]]
     assert_success
@@ -87,6 +101,7 @@ load 'bats-assert-master/load'
 }
 
 @test "use python version 3.11 as default with invalid .python-version" {
+    export PYTHON_VERSION=3.11.3
     echo "xyz" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
     assert_success
@@ -164,6 +179,8 @@ EOF
 }
 
 @test "install from Pipfile.lock with custom pipenv" {
+    export PYTHON_REPO=${PYTHON_REPO:-https://heroku-buildpack-python.s3.amazonaws.com/heroku-18/runtimes}
+    export PYTHON_VERSION=2.7.18
     export PYTHON_PIPENV_VERSION=2021.5.29
     cp Pipfile Pipfile.lock ${CURRENT_DIR}/
 
@@ -180,6 +197,7 @@ EOF
 }
 
 @test "change python version" {
+    export PYTHON_VERSION=3.11.3
     run /var/lib/tsuru/deploy
     assert_success
     run python --version
@@ -273,6 +291,7 @@ EOF
     assert_success
 
     [[ "$output" == *"Using python version: 3.11.3 (PYTHON_VERSION environment variable (closest))"* ]]
+    export PYTHON_VERSION=3.11.3
     run python --version
 
     assert_success
