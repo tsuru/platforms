@@ -100,35 +100,35 @@ load 'bats-assert-master/load'
     unset PYTHON_VERSION
 }
 
-@test "use python version 3.11 as default with invalid .python-version" {
+@test "use python version 3.12 as default with invalid .python-version" {
     export PYTHON_VERSION=3.11.3
     echo "xyz" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
     assert_success
     [[ "$output" == *"Python version 'xyz' (.python-version file) is not supported"* ]]
-    [[ "$output" == *"Using python version: 3.11.3"* ]]
+    [[ "$output" == *"Using python version: 3.12.0"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.11.3"* ]]
+    [[ "$output" == *"3.12.0"* ]]
 }
 
-@test "use python version 3.11 as default with invalid PYTHON_VERSION" {
+@test "use python version 3.12 as default with invalid PYTHON_VERSION" {
     export PYTHON_VERSION=abc
     run /var/lib/tsuru/deploy
     assert_success
     [[ "$output" == *"Python version 'abc' (PYTHON_VERSION environment variable) is not supported"* ]]
-    [[ "$output" == *"Using python version: 3.11.3"* ]]
+    [[ "$output" == *"Using python version: 3.12.0"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.11.3"* ]]
+    [[ "$output" == *"3.12.0"* ]]
     unset PYTHON_VERSION
 }
 
@@ -179,16 +179,16 @@ EOF
 }
 
 @test "install from Pipfile.lock with custom pipenv" {
-    export PYTHON_PIPENV_VERSION=2021.5.29
+    export PYTHON_PIPENV_VERSION=2023.12.1
     cp Pipfile Pipfile.lock ${CURRENT_DIR}/
 
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using pipenv version ==2021.5.29"* ]]
+    [[ "$output" == *"Using pipenv version ==2023.12.1"* ]]
 
     run pipenv --version
     assert_success
-    [[ "$output" == *"version 2021.5.29"* ]]
+    [[ "$output" == *"version 2023.12.1"* ]]
 
     rm ${CURRENT_DIR}/Pipfile*
     unset PYTHON_PIPENV_VERSION
