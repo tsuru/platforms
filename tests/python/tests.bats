@@ -288,7 +288,7 @@ EOF
     run /var/lib/tsuru/deploy
     assert_success
 
-    [[ "$output" == *"Using python version: 3.11.3 (PYTHON_VERSION environment variable (closest))"* ]]
+    [[ "$output" == *"Using python version: 3.12.0 (PYTHON_VERSION environment variable (closest))"* ]]
     export PYTHON_VERSION=3.11.3
     run python --version
 
