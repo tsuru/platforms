@@ -289,11 +289,11 @@ EOF
     assert_success
 
     [[ "$output" == *"Using python version: 3.12.0 (PYTHON_VERSION environment variable (closest))"* ]]
-    export PYTHON_VERSION=3.11.3
+    export PYTHON_VERSION=3.12.0
     run python --version
 
     assert_success
-    [[ "$output" == *"3.11.3"* ]]
+    [[ "$output" == *"3.12.0"* ]]
 
     export PYTHON_VERSION=3.6.x
     run /var/lib/tsuru/deploy
