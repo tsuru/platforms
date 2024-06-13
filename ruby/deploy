@@ -30,7 +30,7 @@ RUBY_VERSION=${RUBY_VERSION:-2.7.7}
 
 echo "-- Using ruby version: $RUBY_VERSION --"
 
-RUBY_REPO=${RUBY_REPO:-https://heroku-buildpack-ruby.s3.amazonaws.com/heroku-20}
+RUBY_REPO=${RUBY_REPO:-https://heroku-buildpack-ruby.s3.amazonaws.com/heroku-24}
 
 RUBY_TARGET="$RUBY_REPO/ruby-$RUBY_VERSION.tgz"
 
