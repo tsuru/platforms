@@ -14,5 +14,5 @@ load 'bats-assert-master/load'
 }
 
 @test "install luarocks" {
-  luarocks --help | grep LuaRocks | grep "a module deployment system for Lua"
+  luarocks --help | grep LuaRocks | grep "the Lua package manager"
 }
