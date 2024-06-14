@@ -5,9 +5,5 @@
 # license that can be found in the LICENSE file.
 set -eu -o pipefail
 
-curl -fsSL -o /tmp/erlang.deb https://packages.erlang-solutions.com/erlang-solutions_2.0_all.deb
-dpkg -i /tmp/erlang.deb
-rm /tmp/erlang.deb
-
 apt-get update
-apt-get install -y --no-install-recommends esl-erlang elixir
+apt-get install -y --no-install-recommends elixir
