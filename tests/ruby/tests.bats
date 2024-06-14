@@ -75,10 +75,10 @@ DEPENDENCIES
   hello-world (= 1.2.0)
 
 RUBY VERSION
-   ruby 3.2.1p146
+   ruby 3.2.1p123
 
 BUNDLED WITH
-   2.0.1
+   2.1.0
 EOF
 
     run /var/lib/tsuru/deploy
@@ -103,7 +103,7 @@ DEPENDENCIES
   hello-world (= 1.2.0)
 
 BUNDLED WITH
-   2.0.1
+   2.1.4
 EOF
 
     run /var/lib/tsuru/deploy
@@ -133,7 +133,7 @@ DEPENDENCIES
   hello-world (= 1.2.0)
 
 BUNDLED WITH
-   2.0.1
+   2.1.4
 EOF
 
     run /var/lib/tsuru/deploy
