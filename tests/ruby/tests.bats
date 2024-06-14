@@ -19,19 +19,19 @@ load 'bats-assert-master/load'
     dpkg -s build-essential | grep "install ok installed"
 }
 
-@test "install ruby version 2.7.7 as default" {
+@test "install ruby version 3.1.6 as default" {
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
     assert_success
-    [[ "$output" == *"2.7.7"* ]]
+    [[ "$output" == *"3.1.6"* ]]
 }
 
 @test "install specific ruby version" {
-    export RUBY_VERSION="2.6.6"
+    export RUBY_VERSION="3.2.1"
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
     assert_success
-    [[ "$output" == *"2.6.6"* ]]
+    [[ "$output" == *"3.2.1"* ]]
 }
 
 @test "deploy fails on invalid ruby version" {
@@ -50,18 +50,18 @@ load 'bats-assert-master/load'
 }
 
 @test "parse ruby version from .ruby-version" {
-    echo "ruby-2.6.9" > ${CURRENT_DIR}/.ruby-version
+    echo "ruby-3.2.2" > ${CURRENT_DIR}/.ruby-version
     run /var/lib/tsuru/deploy
     run /home/application/ruby/bin/ruby --version
     assert_success
-    [[ "$output" == *"2.6.9"* ]]
+    [[ "$output" == *"3.2.2"* ]]
     rm ${CURRENT_DIR}/.ruby-version
 }
 
-@test "detect ruby version 2.6.6 on Gemfile" {
+@test "detect ruby version 3.2.1 on Gemfile" {
     echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
     echo "gem 'hello-world', '1.2.0'" >> ${CURRENT_DIR}/Gemfile
-    echo "ruby '2.6.6'" >> ${CURRENT_DIR}/Gemfile
+    echo "ruby '3.2.1'" >> ${CURRENT_DIR}/Gemfile
     cat <<EOF>${CURRENT_DIR}/Gemfile.lock
 GEM
   remote: https://rubygems.org/
@@ -75,7 +75,7 @@ DEPENDENCIES
   hello-world (= 1.2.0)
 
 RUBY VERSION
-   ruby 2.6.6p146
+   ruby 3.2.1p146
 
 BUNDLED WITH
    2.0.1
@@ -83,11 +83,11 @@ EOF
 
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"-- Using ruby version: 2.6.6 --"* ]]
+    [[ "$output" == *"-- Using ruby version: 3.2.1 --"* ]]
 }
 
 @test "bundle install when provide Gemfile and reuse already installed gem" {
-    echo "ruby-2.7.5" > ${CURRENT_DIR}/.ruby-version
+    echo "ruby-3.2.2" > ${CURRENT_DIR}/.ruby-version
     echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
     echo "gem 'hello-world', '1.2.0'" >> ${CURRENT_DIR}/Gemfile
     cat <<EOF>${CURRENT_DIR}/Gemfile.lock
@@ -117,7 +117,7 @@ EOF
 }
 
 @test "using bundle inside Gemfile.lock and ignore bundle vendoring version for ruby >= 2.6" {
-    echo "ruby-2.6.6" > ${CURRENT_DIR}/.ruby-version
+    echo "ruby-3.2.1" > ${CURRENT_DIR}/.ruby-version
     echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
     echo "gem 'hello-world', '1.2.0'" >> ${CURRENT_DIR}/Gemfile
     cat <<EOF>${CURRENT_DIR}/Gemfile.lock
@@ -147,7 +147,7 @@ EOF
 }
 
 @test "bundle install when provide Gemfile with no bundled with section" {
-    echo "ruby-2.7.4" > ${CURRENT_DIR}/.ruby-version
+    echo "ruby-3.1.2" > ${CURRENT_DIR}/.ruby-version
     echo "source 'https://rubygems.org'" > ${CURRENT_DIR}/Gemfile
     echo "gem 'hello-world', '1.2.0'" >> ${CURRENT_DIR}/Gemfile
     cat <<EOF>${CURRENT_DIR}/Gemfile.lock

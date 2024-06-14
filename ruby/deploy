@@ -26,7 +26,7 @@ fi
 
 echo "gem: --no-rdoc --no-ri" > ~/.gemrc
 
-RUBY_VERSION=${RUBY_VERSION:-2.7.7}
+RUBY_VERSION=${RUBY_VERSION:-3.1.6}
 
 echo "-- Using ruby version: $RUBY_VERSION --"
 
