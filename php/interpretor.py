@@ -7,8 +7,8 @@
 import os
 import shutil
 import subprocess
-from .utils import replace
-from .vars import php_versions
+from utils import replace
+from vars import php_versions
 
 class Interpretor(object):
     def __init__(self, configuration, application):

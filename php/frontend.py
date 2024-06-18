@@ -6,8 +6,8 @@
 
 import os
 import shutil
-from .utils import replace
-from .vars import php_versions, default_version
+from utils import replace
+from vars import php_versions, default_version
 
 class Frontend(object):
     def __init__(self, configuration, application):
