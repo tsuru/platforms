@@ -17,6 +17,11 @@ Currently, php supported versions are:
 - 5.6
 - 7.0
 - 7.1
+- 7.2
+- 8.0
+- 8.1
+- 8.2
+- 8.3
 
 ## Front ends
 
@@ -58,7 +63,6 @@ php:
 The following PHP interpretors are supported:
 
 - `fpm`: PHP-FPM
-- `hhvm`: HipHop Virtual Machine
 
 You can chose between them by setting the `php.interpretor.name` parameter:
 ```yml
@@ -86,10 +90,6 @@ php:
 
 - `ini_file`: The relative path of your `php.ini` file in your project, that will replace the default one
 - `extensions`: A list of php extensions you need
-
-## `hhvm` options
-
-- `ini_file`: The relative path of your `php.ini` file in your project, that will replace the default one
 
 ## General options
 

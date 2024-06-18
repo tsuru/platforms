@@ -9,14 +9,11 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 source ${SOURCE_DIR}/base/rc/os_dependencies
 
-PHP_VERSIONS="5.6 7.0 7.1 7.2"
+PHP_VERSIONS="5.6 7.0 7.1 7.2 8.0 8.1 8.2 8.3"
 
 add_repository ppa:ondrej/php
-hhvm_repo="deb http://dl.hhvm.com/ubuntu ${UBUNTU_RELEASE} main"
-curl -fsSL https://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
-add_repository "${hhvm_repo}"
 
-packages=("nginx-core" "hhvm" "python" "python-yaml" "git" "apache2")
+packages=("nginx-core" "python3" "python3-yaml" "git" "apache2")
 for version in $PHP_VERSIONS
 do
     packages+=("php${version}" "php${version}-fpm" "libapache2-mod-php${version}")

@@ -167,5 +167,4 @@ interpretors = {
     'fpm': FPM,
     'fpm54': FPM,
     'fpm55': FPM,
-    'hhvm': HHVM
 }
