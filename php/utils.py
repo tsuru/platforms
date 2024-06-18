@@ -22,8 +22,8 @@ def replace(source_file_path, pattern, substring):
 
 def parse_env(configuration):
     return dict(
-        os.environ.items() +
-        parse_envs_from_configuration(configuration).items()
+        list(os.environ.items()) +
+        list(parse_envs_from_configuration(configuration).items())
     )
 
 

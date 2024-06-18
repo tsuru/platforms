@@ -6,8 +6,8 @@
 
 import os
 import shutil
-from utils import replace
-from vars import php_versions, default_version
+from .utils import replace
+from .vars import php_versions, default_version
 
 class Frontend(object):
     def __init__(self, configuration, application):
@@ -38,7 +38,7 @@ class Apache(Frontend):
         # Set apache virtual host
         vhost_directory = '/etc/apache2/sites-enabled'
         confs_directory = '/etc/apache2/conf-available'
-        map(os.unlink, [os.path.join(vhost_directory, f) for f in os.listdir(vhost_directory)])
+        list(map(os.unlink, [os.path.join(vhost_directory, f) for f in os.listdir(vhost_directory)]))
         vhost_path = os.path.join(vhost_directory, 'tsuru-vhost.conf')
         security_dst_file = os.path.join(confs_directory, 'security.conf')
         shutil.copyfile(self.get_vhost_filepath(), vhost_path)
@@ -76,7 +76,7 @@ class Apache(Frontend):
             if not os.path.exists(directory):
                 os.makedirs(directory)
 
-        map(os.unlink, [os.path.join(logs_directory, f) for f in os.listdir(logs_directory)])
+        list(map(os.unlink, [os.path.join(logs_directory, f) for f in os.listdir(logs_directory)]))
         for log_file in ['access.log', 'error.log']:
             log_file_path = os.path.join(logs_directory, log_file)
             open(log_file_path, 'a').close()
@@ -138,7 +138,7 @@ class Nginx(Frontend):
         if not os.path.exists(logs_directory):
             os.makedirs(logs_directory)
 
-        map(os.unlink, [os.path.join(logs_directory, f) for f in os.listdir(logs_directory)])
+        list(map(os.unlink, [os.path.join(logs_directory, f) for f in os.listdir(logs_directory)]))
         for log_file in ['access.log', 'error.log']:
             log_file_path = os.path.join(logs_directory, log_file)
             open(log_file_path, 'a').close()
