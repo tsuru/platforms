@@ -13,7 +13,7 @@ apt-get update
 
 apt-get install -y --no-install-recommends \
         curl \
-        libssl1.1 \
+        libssl3 \
         zlib1g \
         libbz2-1.0 \
         libsqlite3-0 \
