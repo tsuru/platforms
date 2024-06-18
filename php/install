@@ -13,7 +13,7 @@ PHP_VERSIONS="5.6 7.0 7.1 7.2 8.0 8.1 8.2 8.3"
 
 add_repository ppa:ondrej/php
 
-packages=("nginx-core" "python3" "python3-yaml" "git" "apache2")
+packages=("nginx-core" "python3" "python3-yaml" "git" "apache2" "python-is-python3")
 for version in $PHP_VERSIONS
 do
     packages+=("php${version}" "php${version}-fpm" "libapache2-mod-php${version}")
