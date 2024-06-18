@@ -141,7 +141,7 @@ EOF
     run /var/lib/tsuru/deploy
     for version in 5.6 7.0 7.1; do
         run bash -c "egrep '(FOO|BAR)' /etc/php/${version}/fpm/environment.conf | tr '\n' ' '"
-        [ "$output" = "env[BAR] = 1 env[FOO] = 2 " ]
+        [ "$output" = "env[FOO] = 1 env[BAR] = 2 " ]
     done
 }
 
