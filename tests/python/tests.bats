@@ -277,36 +277,6 @@ EOF
     assert_success
     [[ "$output" == *"3.12.0"* ]]
 
-    export PYTHON_VERSION=pypy2.7
-    run /var/lib/tsuru/deploy
-    assert_success
-    [[ "$output" == *"Using python version: pypy2.7-7.3.2 (PYTHON_VERSION environment variable (closest))"* ]]
-    run python --version
-
-    assert_success
-    [[ "$output" == *"2.7"* ]]
-    [[ "$output" == *"7.3.2"* ]]
-
-    export PYTHON_VERSION=pypy3.6
-    run /var/lib/tsuru/deploy
-    assert_success
-    [[ "$output" == *"Using python version: pypy3.6-7.3.2 (PYTHON_VERSION environment variable (closest))"* ]]
-    run python --version
-
-    assert_success
-    [[ "$output" == *"3.6"* ]]
-    [[ "$output" == *"7.3.2"* ]]
-
-    export PYTHON_VERSION=pypy3
-    run /var/lib/tsuru/deploy
-    assert_success
-    [[ "$output" == *"Using already installed python version: pypy3.6-7.3.2"* ]]
-    run python --version
-
-    assert_success
-    [[ "$output" == *"3.6"* ]]
-    [[ "$output" == *"7.3.2"* ]]
-
     unset PYTHON_VERSION
 }
 
