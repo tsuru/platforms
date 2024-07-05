@@ -235,7 +235,7 @@ EOF
     popd
 
     assert_success
-    [[ "$output" == *"3.6.15"* ]]
+    [[ "$output" == *"3.9.15"* ]]
 }
 
 @test "change python version to closest version" {
@@ -257,14 +257,14 @@ EOF
     assert_success
     [[ "$output" == *"3.10.11"* ]]
 
-    export PYTHON_VERSION=3.11
+    export PYTHON_VERSION=3.10
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using already installed python version: 3.11.3"* ]]
+    [[ "$output" == *"Using already installed python version: 3.10.11"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.11.3"* ]]
+    [[ "$output" == *"3.10.11"* ]]
 
     export PYTHON_VERSION=3
     run /var/lib/tsuru/deploy
@@ -334,7 +334,7 @@ EOF
 
 @test "can install uwsgi with python 3" {
     echo "3.10" > ${CURRENT_DIR}/.python-version
-    echo "uwsgi==2.0.18" > ${CURRENT_DIR}/requirements.txt
+    echo "uwsgi==2.0.26" > ${CURRENT_DIR}/requirements.txt
 
     run /var/lib/tsuru/deploy
     assert_success
