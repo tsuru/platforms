@@ -8,7 +8,6 @@ jobs:
         platform:
         - ballerina
         - buildpack
-        - elixir
         - go
         - java
         - lua
@@ -35,7 +34,6 @@ jobs:
         platform:
         - ballerina
         - buildpack
-        - elixir
         - go
         - java
         - lua
