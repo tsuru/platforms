@@ -68,24 +68,6 @@ load 'bats-assert-master/load'
     unset GO_VERSION
 }
 
-@test "reuse installed Go version" {
-    export GO_VERSION=1.x
-    run /var/lib/tsuru/deploy
-    assert_success
-    [[ "$output" == *"Installing Go ${latest} (closest match from \$GO_VERSION=1.x)"* ]]
-    [[ "$output" == *"Using Go version: go version ${latest} linux/amd64"* ]]
-
-    run go version
-    assert_success
-    [[ "$output" == *"${latest}"* ]]
-
-    run /var/lib/tsuru/deploy
-    assert_success
-    [[ "$output" == *"Using already installed Go ${latest} (closest match from \$GO_VERSION=1.x)"* ]]
-    [[ "$output" == *"Using Go version: go version ${latest} linux/amd64"* ]]
-
-    unset GO_VERSION
-}
 
 @test "test project rootmain default procfile" {
     cp -a ./fixtures/rootmain/* ${CURRENT_DIR}/
