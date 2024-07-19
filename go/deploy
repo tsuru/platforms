@@ -103,6 +103,6 @@ fi
 go clean -cache
 go clean -modcache
 
-rm -rf ${GO_INSTALL_DIR}
+rm -rf ${version_dir}
 
 popd >/dev/null 2>&1
