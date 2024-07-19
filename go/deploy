@@ -36,38 +36,29 @@ if [[ ${version_to_install} == "" ]]; then
   version_source="latest version"
 fi
 
-install_needed=1
-if [[ -x ${GO_INSTALL_DIR}/bin/go ]]; then
-  current_version=$(${GO_INSTALL_DIR}/bin/go version)
-  if [[ "${current_version}" == *" ${version_to_install} "* ]]; then
-    echo "Using already installed Go ${version_to_install} (${version_source})"
-    install_needed=0
-  fi
+
+echo "Installing Go ${version_to_install} (${version_source})"
+
+rm -rf ${GO_INSTALL_DIR}
+version_dir=${GO_INSTALL_DIR}_${version_to_install}
+rm -rf ${version_dir}
+mkdir -p ${version_dir}
+download_url=${GO_DOWNLOAD_URL}/${version_to_install}.linux-amd64.tar.gz
+
+if ! (curl -m 120 -sS --retry 3 -L "$download_url" | tar xz -C ${version_dir}); then
+  echo "ERROR: Unable to download Go from ${download_url}."
+  exit 1
 fi
 
-if [[ ${install_needed} == 1 ]]; then
-  echo "Installing Go ${version_to_install} (${version_source})"
+rm -rf ${version_dir}/api/ \
+  ${version_dir}/blog/ \
+  ${version_dir}/doc/ \
+  ${version_dir}/test/ \
+  ${version_dir}/lib/ \
+  ${version_dir}/misc/
 
-  rm -rf ${GO_INSTALL_DIR}
-  version_dir=${GO_INSTALL_DIR}_${version_to_install}
-  rm -rf ${version_dir}
-  mkdir -p ${version_dir}
-  download_url=${GO_DOWNLOAD_URL}/${version_to_install}.linux-amd64.tar.gz
-  if ! (curl -m 120 -sS --retry 3 -L "$download_url" | tar xz -C ${version_dir}); then
-    echo "ERROR: Unable to download Go from ${download_url}."
-    exit 1
-  fi
-
-  rm -rf ${version_dir}/api/ \
-    ${version_dir}/blog/ \
-    ${version_dir}/doc/ \
-    ${version_dir}/test/ \
-    ${version_dir}/lib/ \
-    ${version_dir}/misc/
-
-  ln -s ${version_dir}/go ${GO_INSTALL_DIR}
-  hash -r
-fi
+ln -s ${version_dir}/go ${GO_INSTALL_DIR}
+hash -r
 
 echo "Using Go version: $(go version)"
 
@@ -108,5 +99,10 @@ else
   go build $GO_BUILD_VENDOR 2>/dev/null || true
   go install $GO_BUILD_VENDOR ./...
 fi
+
+go clean -cache
+go clean -modcache
+
+rm -rf ${GO_INSTALL_DIR}
 
 popd >/dev/null 2>&1
