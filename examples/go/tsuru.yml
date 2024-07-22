@@ -1,5 +1,2 @@
-hooks:
-  build:
-    - go run web.go -h
 healthcheck:
   path: /
