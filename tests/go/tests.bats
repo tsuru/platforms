@@ -184,3 +184,16 @@ load 'bats-assert-master/load'
     assert_success
     [[ "$output" == *"compiled using vendor"* ]]
 }
+
+
+@test "test project with multiple processes" {
+    cp -a ./fixtures/multipleprocesses/* ${CURRENT_DIR}/
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    [ -f /home/application/bin/api ]
+    [ -s /home/application/bin/api ]
+
+    [ -f /home/application/bin/worker ]
+    [ -s /home/application/bin/worker ]
+}
