@@ -113,6 +113,11 @@ fi
 
 nvm cache clear
 
+# removing default alias - fix X.Y.* wildcard bug on subsequents deploys
+if [[ -f ~/.nvm/alias/default ]]; then
+    rm ~/.nvm/alias/default
+fi
+
 rm -f ~/.nvm_bin
 ln -s $NVM_BIN ~/.nvm_bin
 

@@ -8,7 +8,7 @@ set -euf -o pipefail
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 
-curl -fsSLo- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | sudo -E -u ${USER} bash
+curl -fsSLo- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | sudo -E -u ${USER} bash
 
 cat >> ~/.profile <<-EOF
 export PATH=${PATH}:${HOME}/.nvm_bin
