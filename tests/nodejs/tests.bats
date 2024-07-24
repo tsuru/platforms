@@ -22,7 +22,7 @@ load 'bats-assert-master/load'
   source /home/ubuntu/.nvm/nvm.sh
   run nvm --version
   assert_success
-  assert_output '0.39.1'
+  assert_output '0.39.7'
 }
 
 @test "defaults yarn 1.21.1 if yarn.lock present" {
