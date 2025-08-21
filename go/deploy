@@ -82,7 +82,10 @@ pushd ${APP_PATH} >/dev/null 2>&1
 # do not fail if the application is not go gettable
 set +e
 # check if version is 1.17+ and use go mod download if it is
-if [[ $(go version | awk '{print $3}' | cut -d. -f1) -ge 1 ]] && [[ $(go version | awk '{print $3}' | cut -d. -f2) -ge 17 ]]; then
+go_version=$(go version | awk '{print $3}' | sed 's/go//')
+major=$(echo $go_version | cut -d. -f1)
+minor=$(echo $go_version | cut -d. -f2)
+if [[ $major -gt 1 ]] || ([[ $major -eq 1 ]] && [[ $minor -ge 17 ]]); then
   go mod download
 else
   go get -d .
