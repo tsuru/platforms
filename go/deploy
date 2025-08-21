@@ -68,8 +68,7 @@ fi
 
 APP_PATH=${APP_DIR}/src/current
 
-if [ -n  "${GO_PKG_PATH}" ]
-then
+if [ -n "${GO_PKG_PATH}" ]; then
   APP_PATH=${APP_DIR}/src/${GO_PKG_PATH}
 fi
 
@@ -82,7 +81,15 @@ pushd ${APP_PATH} >/dev/null 2>&1
 
 # do not fail if the application is not go gettable
 set +e
-go get -d .
+# check if version is 1.17+ and use go mod download if it is
+go_version=$(go version | awk '{print $3}' | sed 's/go//')
+major=$(echo $go_version | cut -d. -f1)
+minor=$(echo $go_version | cut -d. -f2)
+if [[ $major -gt 1 ]] || ([[ $major -eq 1 ]] && [[ $minor -ge 17 ]]); then
+  go mod download
+else
+  go get -d .
+fi
 set -e
 
 if [ -f ${APP_DIR}/current/go.mod ] && [ -d ${APP_DIR}/current/vendor ]; then
