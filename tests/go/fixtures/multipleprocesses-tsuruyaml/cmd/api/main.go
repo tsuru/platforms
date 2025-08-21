@@ -10,7 +10,6 @@ func main() {
     http.HandleFunc("/", hello)
     http.HandleFunc("/healthcheck", healthcheck)
 
-
     port := os.Getenv("PORT")
     if port == "" {
         port = "8888"
