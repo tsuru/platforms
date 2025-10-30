@@ -15,6 +15,15 @@ GO_RELEASES_URL=${GO_RELEASES_URL:-"https://go.dev/dl/?mode=json&include=all"}
 all_releases=$(curl -m10 -sSf ${GO_RELEASES_URL})
 versions=$(jq -r '.[].version' <<<${all_releases})
 
+# If GO_VERSION is not set, try to read version from go.mod
+if [[ -z "${GO_VERSION}" ]] && [[ -f "${APP_DIR}/current/go.mod" ]]; then
+  GO_MOD_VERSION=$(grep -E '^go [0-9]+\.[0-9]+' "${APP_DIR}/current/go.mod" | awk '{print $2}')
+  if [[ -n "${GO_MOD_VERSION}" ]]; then
+    GO_VERSION="${GO_MOD_VERSION}"
+    echo "Detected Go version ${GO_VERSION} from go.mod file"
+  fi
+fi
+
 # Try exact match first and fallback to closest version excluding non stable
 # releases.
 if grep -xF "go${GO_VERSION}" <<<${versions} >/dev/null; then
