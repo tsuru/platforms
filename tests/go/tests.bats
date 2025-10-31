@@ -213,7 +213,7 @@ load 'bats-assert-master/load'
   cp -a ./fixtures/gomod-version/* ${CURRENT_DIR}/
   run /var/lib/tsuru/deploy
   assert_success
-  [[ "$output" == *"Go version 1.10"* ]]
+  [[ "$output" == *"Go version 1.19"* ]]
   [[ "$output" == *"go.mod file"* ]]
 
   [ -x ${CURRENT_DIR}/gomodversion ]
@@ -236,4 +236,3 @@ load 'bats-assert-master/load'
   [[ "$output" == *"ok"* ]]
   unset GO_VERSION
 }
-
