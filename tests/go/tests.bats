@@ -208,3 +208,32 @@ load 'bats-assert-master/load'
   [ -s /home/application/bin/worker ]
 }
 
+@test "use Go version from go.mod when GO_VERSION is not set" {
+  unset GO_VERSION
+  cp -a ./fixtures/gomod-version/* ${CURRENT_DIR}/
+  run /var/lib/tsuru/deploy
+  assert_success
+  [[ "$output" == *"Go version 1.10"* ]]
+  [[ "$output" == *"go.mod file"* ]]
+
+  [ -x ${CURRENT_DIR}/gomodversion ]
+  run ${CURRENT_DIR}/gomodversion
+  assert_success
+  [[ "$output" == *"ok"* ]]
+}
+
+@test "GO_VERSION overrides go.mod version" {
+  cp -a ./fixtures/gomod-version/* ${CURRENT_DIR}/
+  export GO_VERSION=1.x
+  run /var/lib/tsuru/deploy
+  assert_success
+  [[ "$output" != *"Detected Go version"* ]]
+  [[ "$output" == *"closest match from \$GO_VERSION=1.x"* ]]
+
+  [ -x ${CURRENT_DIR}/gomodversion ]
+  run ${CURRENT_DIR}/gomodversion
+  assert_success
+  [[ "$output" == *"ok"* ]]
+  unset GO_VERSION
+}
+
