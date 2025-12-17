@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# Copyright 2017 tsuru authors. All rights reserved.
+# Copyright 2025 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -15,14 +15,14 @@ setup() {
 load 'bats-support-master/load'
 load 'bats-assert-master/load'
 
-@test "use python version 3.12.0 as default" {
+@test "use python version 3.14.2 as default" {
     run /var/lib/tsuru/deploy
-    [[ "$output" == *"Using python version: 3.12.0"* ]]
+    [[ "$output" == *"Using python version: 3.14.2"* ]]
     assert_success
 
     run python --version
     assert_success
-    [[ "$output" == *"3.12.0"* ]]
+    [[ "$output" == *"3.14.2"* ]]
 
     run pip freeze
     assert_success
@@ -100,35 +100,35 @@ load 'bats-assert-master/load'
     unset PYTHON_VERSION
 }
 
-@test "use python version 3.12 as default with invalid .python-version" {
+@test "use python version 3.14.2 as default with invalid .python-version" {
     export PYTHON_VERSION=3.11.3
     echo "xyz" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
     assert_success
     [[ "$output" == *"Python version 'xyz' (.python-version file) is not supported"* ]]
-    [[ "$output" == *"Using python version: 3.12.0"* ]]
+    [[ "$output" == *"Using python version: 3.14.2"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.12.0"* ]]
+    [[ "$output" == *"3.14.2"* ]]
 }
 
-@test "use python version 3.12 as default with invalid PYTHON_VERSION" {
+@test "use python version 3.14.2 as default with invalid PYTHON_VERSION" {
     export PYTHON_VERSION=abc
     run /var/lib/tsuru/deploy
     assert_success
     [[ "$output" == *"Python version 'abc' (PYTHON_VERSION environment variable) is not supported"* ]]
-    [[ "$output" == *"Using python version: 3.12.0"* ]]
+    [[ "$output" == *"Using python version: 3.14.2"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.12.0"* ]]
+    [[ "$output" == *"3.14.2"* ]]
     unset PYTHON_VERSION
 }
 
@@ -242,40 +242,40 @@ EOF
     export PYTHON_VERSION=3.9.x
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using python version: 3.9.16 (PYTHON_VERSION environment variable (closest))"* ]]
+    [[ "$output" == *"Using python version: 3.9.25 (PYTHON_VERSION environment variable (closest))"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.9.16"* ]]
+    [[ "$output" == *"3.9.25"* ]]
 
     export PYTHON_VERSION=3.10.x
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using python version: 3.10.11 (PYTHON_VERSION environment variable (closest))"* ]]
+    [[ "$output" == *"Using python version: 3.10.19 (PYTHON_VERSION environment variable (closest))"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.10.11"* ]]
+    [[ "$output" == *"3.10.19"* ]]
 
     export PYTHON_VERSION=3.10
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using already installed python version: 3.10.11"* ]]
+    [[ "$output" == *"Using already installed python version: 3.10.19"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.10.11"* ]]
+    [[ "$output" == *"3.10.19"* ]]
 
     export PYTHON_VERSION=3
     run /var/lib/tsuru/deploy
     assert_success
 
-    [[ "$output" == *"Using python version: 3.12.0 (PYTHON_VERSION environment variable (closest))"* ]]
-    export PYTHON_VERSION=3.12.0
+    [[ "$output" == *"Using python version: 3.14.2 (PYTHON_VERSION environment variable (closest))"* ]]
+    export PYTHON_VERSION=3.14.2
     run python --version
 
     assert_success
-    [[ "$output" == *"3.12.0"* ]]
+    [[ "$output" == *"3.14.2"* ]]
 
     unset PYTHON_VERSION
 }

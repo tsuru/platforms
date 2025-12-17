@@ -1,6 +1,6 @@
 #!/bin/bash -el
 
-# Copyright 2015 tsuru authors. All rights reserved.
+# Copyright 2025 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -8,20 +8,29 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
 
-PYTHON_REPO=${PYTHON_REPO:-https://heroku-buildpack-python.s3.amazonaws.com/heroku-22/runtimes}
+PYTHON_REPO=${PYTHON_REPO:-https://heroku-buildpack-python.s3.amazonaws.com}
 GET_PIP_URL=${GET_PIP_URL:-https://bootstrap.pypa.io/get-pip.py}
 GET_PIP_VERSION_URL=${GET_PIP_VERSION_URL:-https://bootstrap.pypa.io/pip/@VERSION@/get-pip.py}
 
-LATEST_312="3.12.0"
-LATEST_311="3.11.3"
-LATEST_310="3.10.11"
-LATEST_39="3.9.16"
-LATEST_38="3.8.16"
-LATEST_37="3.7.16"
-LATEST_36="3.6.15"
-LATEST_35="3.5.10"
-LATEST_PYTHON_VERSIONS=(${LATEST_312} ${LATEST_311} ${LATEST_310} ${LATEST_39} ${LATEST_38} ${LATEST_37} ${LATEST_36} ${LATEST_35})
-PYTHON_VERSION_DEFAULT="${PYTHON_VERSION_DEFAULT:-${LATEST_312}}"
+# Load latest Python versions from file generated during install
+PYTHON_VERSIONS_FILE="${SOURCE_DIR}/python/latest_versions.sh"
+if [ -f "$PYTHON_VERSIONS_FILE" ]; then
+    source "$PYTHON_VERSIONS_FILE"
+else
+    echo "ERROR: Python versions file not found at $PYTHON_VERSIONS_FILE"
+    echo "This file should have been generated during platform installation."
+    exit 1
+fi
+ARCH=$(uname -m)
+if [ "$ARCH" == "x86_64" ]; then
+    ARCH="amd64"
+elif [ "$ARCH" == "aarch64" ]; then
+    ARCH="arm64"
+fi
+UBUNTU_RELEASE=$(. /etc/os-release && echo $VERSION_ID)
+# Extract all LATEST_* versions from the sourced file and sort them in descending order
+LATEST_PYTHON_VERSIONS=($(grep -oE 'LATEST_[0-9]+="[^"]+"' "$PYTHON_VERSIONS_FILE" | cut -d'"' -f2 | sort -Vr))
+PYTHON_VERSION_DEFAULT="${PYTHON_VERSION_DEFAULT:-${LATEST_PYTHON_VERSIONS[0]}}"
 VERSION_ORIGIN="default"
 PYTHON_BASE_DIR="/home/application/python"
 INSTALLED_PYTHON_FILE="${PYTHON_BASE_DIR}/.installed-version"
@@ -73,7 +82,7 @@ function install_python() {
         DOWNLOAD_VERSION="python-${DOWNLOAD_VERSION}"
     fi
 
-    DOWNLOAD_URL="${PYTHON_REPO}/${DOWNLOAD_VERSION}.tar.gz"
+    DOWNLOAD_URL="${PYTHON_REPO}/${DOWNLOAD_VERSION}-ubuntu-${UBUNTU_RELEASE}-${ARCH}.tar.zst"
     if ! curl -m 10 -o/dev/null -ILfs $DOWNLOAD_URL; then
         # The exact requested version returned an http error so it's probably
         # not available, let's try finding the closest one.
@@ -100,13 +109,13 @@ function install_python() {
     if [[ ${DOWNLOAD_VERSION} =~ ^[0-9]\..* ]]; then
         DOWNLOAD_VERSION="python-${DOWNLOAD_VERSION}"
     fi
-    DOWNLOAD_URL="${PYTHON_REPO}/${DOWNLOAD_VERSION}.tar.gz"
+    DOWNLOAD_URL="${PYTHON_REPO}/${DOWNLOAD_VERSION}-ubuntu-${UBUNTU_RELEASE}-${ARCH}.tar.zst"
 
     # install python binaries
     rm -rf "${PYTHON_BASE_DIR}"
     mkdir -p "${PYTHON_BASE_DIR}"
     echo "-- Using python version: ${PYTHON_VERSION} (${VERSION_ORIGIN}) from $DOWNLOAD_URL --"
-    if ! (curl -m 120 -sS --retry 3 -L "$DOWNLOAD_URL" | tar xz -C "${PYTHON_BASE_DIR}"); then
+    if ! (curl -m 120 -sS --retry 3 -L "$DOWNLOAD_URL" | tar --zstd -x -C "${PYTHON_BASE_DIR}"); then
         echo "ERROR: python version $PYTHON_VERSION is not supported."
         exit 1
     fi
@@ -151,6 +160,18 @@ fi
 pushd "$CURRENT_DIR"
 if [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
     echo "Pipfile.lock detected, using 'pipenv install --system --deploy' to install dependencies"
+
+    # Check if Pipfile.lock specifies a Python version
+    if [ -z "${PYTHON_VERSION}" ] || [ "${VERSION_ORIGIN}" == "default" ]; then
+        PIPFILE_PYTHON_VERSION=$(python -c "import json; f=open('${CURRENT_DIR}/Pipfile.lock'); data=json.load(f); print(data.get('_meta', {}).get('requires', {}).get('python_version', ''))" 2>/dev/null || echo "")
+        if [ -n "${PIPFILE_PYTHON_VERSION}" ]; then
+            PYTHON_VERSION="${PIPFILE_PYTHON_VERSION}"
+            VERSION_ORIGIN="Pipfile.lock"
+            echo "Python version ${PYTHON_VERSION} detected from Pipfile.lock"
+            install_python
+        fi
+    fi
+
     PIPENV_VERSION_SPEC=""
     if [[ "${PYTHON_PIPENV_VERSION}" != "" ]]; then
         PIPENV_VERSION_SPEC="${PYTHON_PIPENV_VERSION}"
