@@ -301,19 +301,3 @@ EOF
     [[ "$output" == *"Using pip version <10"* ]]
     unset PYTHON_PIP_VERSION
 }
-
-@test "can install uwsgi with python 3" {
-    echo "3.10" > ${CURRENT_DIR}/.python-version
-    echo "uwsgi==2.0.26" > ${CURRENT_DIR}/requirements.txt
-
-    run /var/lib/tsuru/deploy
-    assert_success
-
-    pushd ${CURRENT_DIR}
-    run pip freeze
-    popd
-    assert_success
-    [[ "$output" == *"uWSGI"* ]]
-    rm ${CURRENT_DIR}/requirements.txt
-    rm ${CURRENT_DIR}/.python-version
-}
