@@ -15,14 +15,19 @@ setup() {
 load 'bats-support-master/load'
 load 'bats-assert-master/load'
 
-@test "use python version 3.14.2 as default" {
+@test "use latest python version as default" {
+    # Get the first LATEST_* version from the latest_versions.sh file
+    source /var/lib/tsuru/python/latest_versions.sh
+    LATEST_PYTHON_VERSIONS=($(grep -oE 'LATEST_[0-9]+="[^"]+"' /var/lib/tsuru/python/latest_versions.sh | cut -d'"' -f2 | sort -Vr))
+    EXPECTED_VERSION="${LATEST_PYTHON_VERSIONS[0]}"
+
     run /var/lib/tsuru/deploy
-    [[ "$output" == *"Using python version: 3.14.2"* ]]
+    [[ "$output" == *"Using python version: ${EXPECTED_VERSION}"* ]]
     assert_success
 
     run python --version
     assert_success
-    [[ "$output" == *"3.14.2"* ]]
+    [[ "$output" == *"${EXPECTED_VERSION}"* ]]
 
     run pip freeze
     assert_success
@@ -100,35 +105,45 @@ load 'bats-assert-master/load'
     unset PYTHON_VERSION
 }
 
-@test "use python version 3.14.2 as default with invalid .python-version" {
+@test "use latest python version as default with invalid .python-version" {
+    # Get the first LATEST_* version from the latest_versions.sh file
+    source /var/lib/tsuru/python/latest_versions.sh
+    LATEST_PYTHON_VERSIONS=($(grep -oE 'LATEST_[0-9]+="[^"]+"' /var/lib/tsuru/python/latest_versions.sh | cut -d'"' -f2 | sort -Vr))
+    EXPECTED_VERSION="${LATEST_PYTHON_VERSIONS[0]}"
+
     unset PYTHON_VERSION
     echo "xyz" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
     assert_success
     [[ "$output" == *"Python version 'xyz' (.python-version file) is not supported"* ]]
-    [[ "$output" == *"Using python version: 3.14.2"* ]]
+    [[ "$output" == *"Using python version: ${EXPECTED_VERSION}"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.14.2"* ]]
+    [[ "$output" == *"${EXPECTED_VERSION}"* ]]
 }
 
-@test "use python version 3.14.2 as default with invalid PYTHON_VERSION" {
+@test "use latest python version as default with invalid PYTHON_VERSION" {
+    # Get the first LATEST_* version from the latest_versions.sh file
+    source /var/lib/tsuru/python/latest_versions.sh
+    LATEST_PYTHON_VERSIONS=($(grep -oE 'LATEST_[0-9]+="[^"]+"' /var/lib/tsuru/python/latest_versions.sh | cut -d'"' -f2 | sort -Vr))
+    EXPECTED_VERSION="${LATEST_PYTHON_VERSIONS[0]}"
+
     export PYTHON_VERSION=abc
     run /var/lib/tsuru/deploy
     assert_success
     [[ "$output" == *"Python version 'abc' (PYTHON_VERSION environment variable) is not supported"* ]]
-    [[ "$output" == *"Using python version: 3.14.2"* ]]
+    [[ "$output" == *"Using python version: ${EXPECTED_VERSION}"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.14.2"* ]]
+    [[ "$output" == *"${EXPECTED_VERSION}"* ]]
     unset PYTHON_VERSION
 }
 
