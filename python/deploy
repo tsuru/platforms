@@ -44,6 +44,11 @@ fi
 
 # Set version based on priority: Pipfile.lock > PYTHON_VERSION env var > .python-version file > default
 # Pipfile.lock has highest priority because pipenv will fail if versions don't match
+# Warn if both Pipfile.lock and PYTHON_VERSION are set and specify different versions
+if [ -n "${PIPFILE_PYTHON_VERSION}" ] && [ -n "${PYTHON_VERSION}" ] && [ "${PIPFILE_PYTHON_VERSION}" != "${PYTHON_VERSION}" ]; then
+    >&2 echo "WARNING: PYTHON_VERSION environment variable (${PYTHON_VERSION}) differs from Pipfile.lock python_version (${PIPFILE_PYTHON_VERSION})."
+    >&2 echo "         Pipfile.lock takes precedence. Update Pipfile.lock or unset PYTHON_VERSION to silence this warning."
+fi
 if [ -n "${PIPFILE_PYTHON_VERSION}" ]; then
     PYTHON_VERSION="${PIPFILE_PYTHON_VERSION}"
     VERSION_ORIGIN="Pipfile.lock"
