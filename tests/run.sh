@@ -25,7 +25,7 @@ function run_test {
     sed "s/{PLATFORM}/$plat/g" Dockerfile.template > ./$plat/Dockerfile
     cp -r common ./$plat/common
     BUILDKIT_ARGS=""
-    if [ "${DOCKER_BUILDKIT}" != "0" ]; then
+    if [ -n "${DOCKER_BUILDKIT}" ] && [ "${DOCKER_BUILDKIT}" != "0" ]; then
         BUILDKIT_ARGS=" --progress plain"
     fi
     if [ -z ${NO_REBUILD} ]; then
