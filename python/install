@@ -21,7 +21,8 @@ apt-get install -y --no-install-recommends \
         libexpat1 \
         make \
         build-essential \
-        zstd
+        zstd \
+        jq
 
 mkdir -p /app/.heroku
 ln -s /home/application/python /app/.heroku/python
@@ -35,8 +36,18 @@ mkdir -p "${SOURCE_DIR}/python"
 
 echo "Fetching latest Python versions from python.org..."
 
-# Fetch all releases from python.org API
-RELEASES=$(curl -sS --retry 3 https://www.python.org/api/v2/downloads/release/)
+# Fetch all releases from python.org API with proper error handling
+if ! RELEASES=$(curl -sS --retry 3 --fail --max-time 30 https://www.python.org/api/v2/downloads/release/); then
+    echo "ERROR: Failed to fetch Python versions from python.org API"
+    echo "This may be due to network issues or API unavailability"
+    exit 1
+fi
+
+# Validate that we received valid JSON data
+if [ -z "$RELEASES" ] || ! echo "$RELEASES" | grep -q '"name":"Python'; then
+    echo "ERROR: Invalid or empty response from python.org API"
+    exit 1
+fi
 
 # Extract versions, filter only Python 3.x releases, sort and get latest for each minor version
 {
@@ -44,10 +55,10 @@ RELEASES=$(curl -sS --retry 3 https://www.python.org/api/v2/downloads/release/)
     echo "# Generated at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
     echo ""
 
-    # Process releases to extract versions
-    echo "$RELEASES" | grep -oE '"name":"Python [0-9]+\.[0-9]+\.[0-9]+"' | \
-        sed 's/"name":"Python \([0-9.]*\)"/\1/' | \
-        grep -E '^3\.' | \
+    # Use jq to parse JSON and extract Python 3.x stable versions (exclude alpha/beta/rc)
+    echo "$RELEASES" | jq -r '.[] | select(.name | startswith("Python 3.")) | .name' | \
+        sed 's/Python //' | \
+        grep -v -E '(a|b|rc)' | \
         sort -Vr | \
         awk -F'.' '!seen[$1"."$2]++ { printf("LATEST_%s%s=\"%s.%s.%s\"\n", $1, $2, $1, $2, $3) }'
 } > "$PYTHON_VERSIONS_FILE"

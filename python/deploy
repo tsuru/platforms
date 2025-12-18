@@ -35,18 +35,28 @@ VERSION_ORIGIN="default"
 PYTHON_BASE_DIR="/home/application/python"
 INSTALLED_PYTHON_FILE="${PYTHON_BASE_DIR}/.installed-version"
 
-if [ -n "${PYTHON_VERSION}" ]; then
-    VERSION_ORIGIN="PYTHON_VERSION environment variable"
-else
-    PYTHON_VERSION="${PYTHON_VERSION_DEFAULT}"
+# Check if Pipfile.lock specifies a Python version first
+PIPFILE_PYTHON_VERSION=""
+if [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
+    # Use jq to parse JSON instead of Python
+    PIPFILE_PYTHON_VERSION=$(jq -r '._meta.requires.python_version // empty' "${CURRENT_DIR}/Pipfile.lock" 2>/dev/null || echo "")
 fi
 
-if [ -f "${CURRENT_DIR}/.python-version" ]; then
+# Set version based on priority: Pipfile.lock > PYTHON_VERSION env var > .python-version file > default
+# Pipfile.lock has highest priority because pipenv will fail if versions don't match
+if [ -n "${PIPFILE_PYTHON_VERSION}" ]; then
+    PYTHON_VERSION="${PIPFILE_PYTHON_VERSION}"
+    VERSION_ORIGIN="Pipfile.lock"
+elif [ -n "${PYTHON_VERSION}" ]; then
+    VERSION_ORIGIN="PYTHON_VERSION environment variable"
+elif [ -f "${CURRENT_DIR}/.python-version" ]; then
     tmp_version=$(cat "${CURRENT_DIR}/.python-version")
     if [ -n "${tmp_version}" ]; then
         PYTHON_VERSION=${tmp_version}
         VERSION_ORIGIN=".python-version file"
     fi
+else
+    PYTHON_VERSION="${PYTHON_VERSION_DEFAULT}"
 fi
 
 INSTALL_PYTHON=1
@@ -160,17 +170,6 @@ fi
 pushd "$CURRENT_DIR"
 if [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
     echo "Pipfile.lock detected, using 'pipenv install --system --deploy' to install dependencies"
-
-    # Check if Pipfile.lock specifies a Python version
-    if [ -z "${PYTHON_VERSION}" ] || [ "${VERSION_ORIGIN}" == "default" ]; then
-        PIPFILE_PYTHON_VERSION=$(python -c "import json; f=open('${CURRENT_DIR}/Pipfile.lock'); data=json.load(f); print(data.get('_meta', {}).get('requires', {}).get('python_version', ''))" 2>/dev/null || echo "")
-        if [ -n "${PIPFILE_PYTHON_VERSION}" ]; then
-            PYTHON_VERSION="${PIPFILE_PYTHON_VERSION}"
-            VERSION_ORIGIN="Pipfile.lock"
-            echo "Python version ${PYTHON_VERSION} detected from Pipfile.lock"
-            install_python
-        fi
-    fi
 
     PIPENV_VERSION_SPEC=""
     if [[ "${PYTHON_PIPENV_VERSION}" != "" ]]; then

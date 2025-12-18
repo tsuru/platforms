@@ -7,8 +7,8 @@ with pip, either by `Pipfile.lock`, `requirements.txt` or `setup.py`.
 
 You can define which python version you want using one of the following methods (in priority order):
 
-1. **PYTHON_VERSION environment variable** - set via `tsuru env-set`
-2. **Pipfile.lock** - if present, the `python_version` field in `_meta.requires` will be used
+1. **Pipfile.lock** - if present, the `python_version` field in `_meta.requires` will be used (highest priority to avoid pipenv conflicts)
+2. **PYTHON_VERSION environment variable** - set via `tsuru env-set`
 3. **.python-version file** - a file in your project root containing the version number
 4. **Default version** - if none of the above are specified, the latest Python 3.x version will be used
 
