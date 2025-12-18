@@ -164,7 +164,7 @@ EOF
 }
 
 @test "install from Pipfile.lock" {
-    unset PYTHON_VERSION
+    export PYTHON_VERSION=3.14
     cp Pipfile Pipfile.lock ${CURRENT_DIR}/
 
     run /var/lib/tsuru/deploy
@@ -180,6 +180,34 @@ EOF
 
     assert_success
     [[ "$output" == *"3.10"* ]]
+
+    pushd ${CURRENT_DIR}
+    run pip freeze
+    popd
+
+    assert_success
+    [[ "$output" == *"msgpack-python"* ]]
+    rm ${CURRENT_DIR}/Pipfile*
+}
+
+@test "install from Pipfile.lock using python_full_version" {
+    export PYTHON_VERSION=3.14
+    cp Pipfile ${CURRENT_DIR}/
+    cp Pipfile_fullversion.lock ${CURRENT_DIR}/Pipfile.lock
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    # Should use Python 3.10.5 from Pipfile.lock
+    [[ "$output" == *"Using python version: 3.10.5"* ]]
+    [[ "$output" == *"(Pipfile.lock)"* ]]
+
+    pushd ${CURRENT_DIR}
+    run python --version
+    popd
+
+    assert_success
+    [[ "$output" == *"3.10.5"* ]]
 
     pushd ${CURRENT_DIR}
     run pip freeze

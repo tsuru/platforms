@@ -39,7 +39,7 @@ INSTALLED_PYTHON_FILE="${PYTHON_BASE_DIR}/.installed-version"
 PIPFILE_PYTHON_VERSION=""
 if [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
     # Use jq to parse JSON instead of Python
-    PIPFILE_PYTHON_VERSION=$(jq -r '._meta.requires.python_version // empty' "${CURRENT_DIR}/Pipfile.lock" 2>/dev/null || echo "")
+    PIPFILE_PYTHON_VERSION=$(jq -r '._meta.requires.python_full_version // ._meta.requires.python_version // empty' "${CURRENT_DIR}/Pipfile.lock" 2>/dev/null || echo "")
 fi
 
 # Set version based on priority: Pipfile.lock > PYTHON_VERSION env var > .python-version file > default

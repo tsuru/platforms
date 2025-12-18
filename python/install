@@ -56,7 +56,7 @@ fi
     echo ""
 
     # Use jq to parse JSON and extract Python 3.x stable versions (exclude alpha/beta/rc)
-    echo "$RELEASES" | jq -r '.[] | select(.name | startswith("Python 3.")) | .name' | \
+    echo "$RELEASES" | jq -r '.[] | select(.name | test("^Python 3\\.[0-9]+\\.[0-9]+$")) | .name' | \
         sed 's/Python //' | \
         grep -v -E '(a|b|rc)' | \
         sort -Vr | \
