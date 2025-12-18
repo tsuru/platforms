@@ -1,31 +1,29 @@
 # Python platform
 
-The Python platform uses python `3.11.3` by default and get your dependencies
+The Python platform uses python `3.14.2` by default (based on Ubuntu 24.04) and gets your dependencies
 with pip, either by `Pipfile.lock`, `requirements.txt` or `setup.py`.
 
-You can define which python version you want using `.python-version`, always
-use full versions.
+## Defining Python version
 
-ex:
+You can define which python version you want using one of the following methods (in priority order):
+
+1. **Pipfile.lock** - if present, the `python_version` field in `_meta.requires` will be used (highest priority to avoid pipenv conflicts)
+2. **PYTHON_VERSION environment variable** - set via `tsuru env-set`
+3. **.python-version file** - a file in your project root containing the version number
+4. **Default version** - if none of the above are specified, the latest Python 3.x version will be used
+
+Always use full version numbers (e.g., `3.14.2`) or partial versions (e.g., `3.14` for latest 3.14.x, or `3.14.x`).
+
+Example `.python-version` file:
 ```
-3.11.3
+3.14.2
 ```
 
-Available python versions:
-- 2.7.14
-- 3.5.10
-- 3.6.15
-- 3.7.16
-- 3.8.16
-- 3.9.16
-- 3.10.11
-- 3.11.3
-- pypy2.7-7.3.2
-- pypy3.6-7.3.2
+## Available Python versions
 
-when adding new releases, we will retain previous version on the series to
-allow time for users update their apps. e,g: when 3.6.3 is released, we will
-remove 3.6.1.
+Python versions are automatically fetched from [python.org](https://www.python.org) during platform installation, ensuring the latest releases are always available. The platform supports all actively maintained Python 3.x versions.
+
+To see the exact versions available in your platform installation, check the generated versions file at `/var/lib/tsuru/python/latest_versions.sh` on the platform image.
 
 ## Setting pip version
 

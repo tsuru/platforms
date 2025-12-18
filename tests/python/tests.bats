@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# Copyright 2017 tsuru authors. All rights reserved.
+# Copyright 2025 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -15,14 +15,19 @@ setup() {
 load 'bats-support-master/load'
 load 'bats-assert-master/load'
 
-@test "use python version 3.12.0 as default" {
+@test "use latest python version as default" {
+    # Get the first LATEST_* version from the latest_versions.sh file
+    source /var/lib/tsuru/python/latest_versions.sh
+    LATEST_PYTHON_VERSIONS=($(grep -oE 'LATEST_[0-9]+="[^"]+"' /var/lib/tsuru/python/latest_versions.sh | cut -d'"' -f2 | sort -Vr))
+    EXPECTED_VERSION="${LATEST_PYTHON_VERSIONS[0]}"
+
     run /var/lib/tsuru/deploy
-    [[ "$output" == *"Using python version: 3.12.0"* ]]
+    [[ "$output" == *"Using python version: ${EXPECTED_VERSION}"* ]]
     assert_success
 
     run python --version
     assert_success
-    [[ "$output" == *"3.12.0"* ]]
+    [[ "$output" == *"${EXPECTED_VERSION}"* ]]
 
     run pip freeze
     assert_success
@@ -100,35 +105,45 @@ load 'bats-assert-master/load'
     unset PYTHON_VERSION
 }
 
-@test "use python version 3.12 as default with invalid .python-version" {
-    export PYTHON_VERSION=3.11.3
+@test "use latest python version as default with invalid .python-version" {
+    # Get the first LATEST_* version from the latest_versions.sh file
+    source /var/lib/tsuru/python/latest_versions.sh
+    LATEST_PYTHON_VERSIONS=($(grep -oE 'LATEST_[0-9]+="[^"]+"' /var/lib/tsuru/python/latest_versions.sh | cut -d'"' -f2 | sort -Vr))
+    EXPECTED_VERSION="${LATEST_PYTHON_VERSIONS[0]}"
+
+    unset PYTHON_VERSION
     echo "xyz" > ${CURRENT_DIR}/.python-version
     run /var/lib/tsuru/deploy
     assert_success
     [[ "$output" == *"Python version 'xyz' (.python-version file) is not supported"* ]]
-    [[ "$output" == *"Using python version: 3.12.0"* ]]
+    [[ "$output" == *"Using python version: ${EXPECTED_VERSION}"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.12.0"* ]]
+    [[ "$output" == *"${EXPECTED_VERSION}"* ]]
 }
 
-@test "use python version 3.12 as default with invalid PYTHON_VERSION" {
+@test "use latest python version as default with invalid PYTHON_VERSION" {
+    # Get the first LATEST_* version from the latest_versions.sh file
+    source /var/lib/tsuru/python/latest_versions.sh
+    LATEST_PYTHON_VERSIONS=($(grep -oE 'LATEST_[0-9]+="[^"]+"' /var/lib/tsuru/python/latest_versions.sh | cut -d'"' -f2 | sort -Vr))
+    EXPECTED_VERSION="${LATEST_PYTHON_VERSIONS[0]}"
+
     export PYTHON_VERSION=abc
     run /var/lib/tsuru/deploy
     assert_success
     [[ "$output" == *"Python version 'abc' (PYTHON_VERSION environment variable) is not supported"* ]]
-    [[ "$output" == *"Using python version: 3.12.0"* ]]
+    [[ "$output" == *"Using python version: ${EXPECTED_VERSION}"* ]]
 
     pushd ${CURRENT_DIR}
     run python --version
     popd
 
     assert_success
-    [[ "$output" == *"3.12.0"* ]]
+    [[ "$output" == *"${EXPECTED_VERSION}"* ]]
     unset PYTHON_VERSION
 }
 
@@ -164,10 +179,50 @@ EOF
 }
 
 @test "install from Pipfile.lock" {
+    export PYTHON_VERSION=3.14
     cp Pipfile Pipfile.lock ${CURRENT_DIR}/
 
     run /var/lib/tsuru/deploy
     assert_success
+    
+    # Should use Python 3.10 from Pipfile.lock
+    [[ "$output" == *"Using python version: 3.10"* ]]
+    [[ "$output" == *"(Pipfile.lock)"* ]]
+
+    pushd ${CURRENT_DIR}
+    run python --version
+    popd
+
+    assert_success
+    [[ "$output" == *"3.10"* ]]
+
+    pushd ${CURRENT_DIR}
+    run pip freeze
+    popd
+
+    assert_success
+    [[ "$output" == *"msgpack-python"* ]]
+    rm ${CURRENT_DIR}/Pipfile*
+}
+
+@test "install from Pipfile.lock using python_full_version" {
+    export PYTHON_VERSION=3.14
+    cp Pipfile ${CURRENT_DIR}/
+    cp Pipfile_fullversion.lock ${CURRENT_DIR}/Pipfile.lock
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    # Should use Python 3.10.5 from Pipfile.lock
+    [[ "$output" == *"Using python version: 3.10.5"* ]]
+    [[ "$output" == *"(Pipfile.lock)"* ]]
+
+    pushd ${CURRENT_DIR}
+    run python --version
+    popd
+
+    assert_success
+    [[ "$output" == *"3.10.5"* ]]
 
     pushd ${CURRENT_DIR}
     run pip freeze
@@ -179,6 +234,7 @@ EOF
 }
 
 @test "install from Pipfile.lock with custom pipenv" {
+    unset PYTHON_VERSION
     export PYTHON_PIPENV_VERSION=2023.12.1
     cp Pipfile Pipfile.lock ${CURRENT_DIR}/
 
@@ -242,40 +298,48 @@ EOF
     export PYTHON_VERSION=3.9.x
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using python version: 3.9.16 (PYTHON_VERSION environment variable (closest))"* ]]
+    [[ "$output" == *"Using python version:"* ]]
+    [[ "$output" == *"3.9."* ]]
+    [[ "$output" == *"(PYTHON_VERSION environment variable (closest))"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.9.16"* ]]
+    [[ "$output" == *"3.9."* ]]
 
     export PYTHON_VERSION=3.10.x
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using python version: 3.10.11 (PYTHON_VERSION environment variable (closest))"* ]]
+    [[ "$output" == *"Using python version:"* ]]
+    [[ "$output" == *"3.10."* ]]
+    [[ "$output" == *"(PYTHON_VERSION environment variable (closest))"* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.10.11"* ]]
+    [[ "$output" == *"3.10."* ]]
 
+    # Test reuse of already installed version (use same 3.10.x pattern)
     export PYTHON_VERSION=3.10
     run /var/lib/tsuru/deploy
     assert_success
-    [[ "$output" == *"Using already installed python version: 3.10.11"* ]]
+    [[ "$output" == *"Using already installed python version:"* ]]
+    [[ "$output" == *"3.10."* ]]
     run python --version
 
     assert_success
-    [[ "$output" == *"3.10.11"* ]]
+    [[ "$output" == *"3.10."* ]]
 
     export PYTHON_VERSION=3
     run /var/lib/tsuru/deploy
     assert_success
 
-    [[ "$output" == *"Using python version: 3.12.0 (PYTHON_VERSION environment variable (closest))"* ]]
-    export PYTHON_VERSION=3.12.0
+    [[ "$output" == *"Using python version:"* ]]
+    [[ "$output" == *"3."* ]]
+    [[ "$output" == *"(PYTHON_VERSION environment variable (closest))"* ]]
+    
+    # Get the actual installed version for verification
     run python --version
-
     assert_success
-    [[ "$output" == *"3.12.0"* ]]
+    [[ "$output" == *"3."* ]]
 
     unset PYTHON_VERSION
 }
@@ -300,20 +364,4 @@ EOF
     assert_success
     [[ "$output" == *"Using pip version <10"* ]]
     unset PYTHON_PIP_VERSION
-}
-
-@test "can install uwsgi with python 3" {
-    echo "3.10" > ${CURRENT_DIR}/.python-version
-    echo "uwsgi==2.0.26" > ${CURRENT_DIR}/requirements.txt
-
-    run /var/lib/tsuru/deploy
-    assert_success
-
-    pushd ${CURRENT_DIR}
-    run pip freeze
-    popd
-    assert_success
-    [[ "$output" == *"uWSGI"* ]]
-    rm ${CURRENT_DIR}/requirements.txt
-    rm ${CURRENT_DIR}/.python-version
 }

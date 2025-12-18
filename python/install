@@ -17,15 +17,54 @@ apt-get install -y --no-install-recommends \
         zlib1g \
         libbz2-1.0 \
         libsqlite3-0 \
-        libncurses5 \
-        libncursesw5 \
         libreadline8 \
         libexpat1 \
         make \
-        build-essential
+        build-essential \
+        zstd \
+        jq
 
 mkdir -p /app/.heroku
 ln -s /home/application/python /app/.heroku/python
 
 echo "export PATH=/home/application/python/bin:${PATH}" | tee -a ${HOME}/.profile /etc/profile >/dev/null
 echo "/home/application/python/lib" | tee -a /etc/ld.so.conf.d/python.conf
+
+# Fetch latest Python versions from python.org API and generate versions file
+PYTHON_VERSIONS_FILE="${SOURCE_DIR}/python/latest_versions.sh"
+mkdir -p "${SOURCE_DIR}/python"
+
+echo "Fetching latest Python versions from python.org..."
+
+# Fetch all releases from python.org API with proper error handling
+if ! RELEASES=$(curl -sS --retry 3 --fail --max-time 30 https://www.python.org/api/v2/downloads/release/); then
+    echo "ERROR: Failed to fetch Python versions from python.org API"
+    echo "This may be due to network issues or API unavailability"
+    exit 1
+fi
+
+# Validate that we received valid JSON data
+if [ -z "$RELEASES" ] || ! echo "$RELEASES" | grep -q '"name":"Python'; then
+    echo "ERROR: Invalid or empty response from python.org API"
+    exit 1
+fi
+
+# Extract versions, filter only Python 3.x releases, sort and get latest for each minor version
+{
+    echo "# Latest Python versions (auto-generated from python.org API)"
+    echo "# Generated at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+    echo ""
+
+    # Use jq to parse JSON and extract Python 3.x stable versions (exclude alpha/beta/rc)
+    echo "$RELEASES" | jq -r '.[] | select(.name | test("^Python 3\\.[0-9]+\\.[0-9]+$")) | .name' | \
+        sed 's/Python //' | \
+        grep -v -E '(a|b|rc)' | \
+        sort -Vr | \
+        awk -F'.' '!seen[$1"."$2]++ { printf("LATEST_%s%s=\"%s.%s.%s\"\n", $1, $2, $1, $2, $3) }'
+} > "$PYTHON_VERSIONS_FILE"
+
+# Ensure the file is readable
+chmod 644 "$PYTHON_VERSIONS_FILE"
+
+echo "Python versions file generated at: $PYTHON_VERSIONS_FILE"
+cat "$PYTHON_VERSIONS_FILE"
