@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-FROM tsuru/base-platform:22.04
+FROM tsuru/base-platform:24.04
 COPY . /var/lib/tsuru/ruby
 RUN set -ex \
     && sudo /var/lib/tsuru/ruby/install \

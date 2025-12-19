@@ -11,6 +11,13 @@ if [ -d ${CURRENT_DIR}/vendor ]; then
     PLATFORM_EXTRA_RSYNC_ARGS=${PLATFORM_EXTRA_RSYNC_ARGS---exclude vendor/bundle}
 fi
 
+ARCH=$(uname -m)
+if [ "$ARCH" == "x86_64" ]; then
+    ARCH="amd64"
+elif [ "$ARCH" == "aarch64" ]; then
+    ARCH="arm64"
+fi
+
 source ${SOURCE_DIR}/base/deploy
 
 if [ -f ${CURRENT_DIR}/Gemfile.lock ]; then
@@ -30,9 +37,9 @@ RUBY_VERSION=${RUBY_VERSION:-3.1.6}
 
 echo "-- Using ruby version: $RUBY_VERSION --"
 
-RUBY_REPO=${RUBY_REPO:-https://heroku-buildpack-ruby.s3.amazonaws.com/heroku-22}
+RUBY_REPO=${RUBY_REPO:-https://heroku-buildpack-ruby.s3.amazonaws.com/heroku-24}
 
-RUBY_TARGET="$RUBY_REPO/ruby-$RUBY_VERSION.tgz"
+RUBY_TARGET="${RUBY_REPO}/${ARCH}/ruby-${RUBY_VERSION}.tgz"
 
 # Install Ruby
 INSTALL_RUBY=1
