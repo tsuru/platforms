@@ -76,7 +76,7 @@ jobs:
       if: github.event_name != 'pull_request' && steps.tags.outputs.tag != ''
       with:
         context: ./${{ matrix.platform }}
-        push: true
+        push: false
         tags: ${{ steps.tags.outputs.tag }}
         platforms: linux/${{ matrix.arch }}
   manifest:
