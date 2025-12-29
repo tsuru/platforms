@@ -4,6 +4,10 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+# Set JAVA_HOME for Ballerina
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-arm64
+export PATH=$PATH:/usr/local/bin
+
 SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/deploy
 source ${SOURCE_DIR}/base/rc/config
