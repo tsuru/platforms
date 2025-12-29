@@ -21,7 +21,7 @@ jobs:
         arch:
         - amd64
         - arm64
-    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm64' || 'ubuntu-24.04' }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     steps:
     - uses: actions/checkout@v4
     - name: run tests
@@ -30,7 +30,7 @@ jobs:
   publish:
     if: github.repository == 'tsuru/platforms' && github.event_name != 'pull_request'
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
