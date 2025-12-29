@@ -1,8 +1,8 @@
-# Copyright 2015 tsuru authors. All rights reserved.
+# Copyright 2025 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-FROM tsuru/base-platform:22.04
+FROM tsuru/base-platform:24.04
 COPY . /var/lib/tsuru/php
 RUN set -ex \
     && sudo /var/lib/tsuru/php/install \
