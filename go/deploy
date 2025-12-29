@@ -1,6 +1,6 @@
 #!/bin/bash -el
 
-# Copyright 2015 tsuru authors. All rights reserved.
+# Copyright 2025 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -11,6 +11,13 @@ source ${SOURCE_DIR}/base/rc/config
 GO_INSTALL_DIR="/home/application/go"
 GO_DOWNLOAD_URL=${GO_DOWNLOAD_URL:-"https://dl.google.com/go"}
 GO_RELEASES_URL=${GO_RELEASES_URL:-"https://go.dev/dl/?mode=json&include=all"}
+
+ARCH=$(uname -m)
+if [ "$ARCH" == "x86_64" ]; then
+    ARCH="amd64"
+elif [ "$ARCH" == "aarch64" ]; then
+    ARCH="arm64"
+fi
 
 all_releases=$(curl -m10 -sSf ${GO_RELEASES_URL})
 versions=$(jq -r '.[].version' <<<${all_releases})
@@ -52,7 +59,7 @@ rm -rf ${GO_INSTALL_DIR}
 version_dir=${GO_INSTALL_DIR}_${version_to_install}
 rm -rf ${version_dir}
 mkdir -p ${version_dir}
-download_url=${GO_DOWNLOAD_URL}/${version_to_install}.linux-amd64.tar.gz
+download_url=${GO_DOWNLOAD_URL}/${version_to_install}.linux-${ARCH}.tar.gz
 
 if ! (curl -m 120 -sS --retry 3 -L "$download_url" | tar xz -C ${version_dir}); then
   echo "ERROR: Unable to download Go from ${download_url}."
