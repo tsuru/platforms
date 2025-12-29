@@ -7,6 +7,9 @@ set -eu -o pipefail
 
 BALLERINA_VERSION=2201.13.1
 
+# Detect architecture
+ARCH=$(dpkg --print-architecture)
+
 # Install Java 21 and unzip (required by Ballerina)
 apt-get update
 apt-get install -y --no-install-recommends openjdk-21-jdk-headless unzip
@@ -21,10 +24,10 @@ rm -f /tmp/ballerina.zip
 # Create wrapper script for bal that sets JAVA_HOME
 cat > /usr/local/bin/bal <<BAL_WRAPPER
 #!/bin/bash
-export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-arm64
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-${ARCH}
 exec /opt/ballerina-${BALLERINA_VERSION}-swan-lake/bin/bal "\$@"
 BAL_WRAPPER
 chmod +x /usr/local/bin/bal
 
 # Set JAVA_HOME environment variable for system-wide use
-echo "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-arm64" >> /etc/environment
+echo "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-${ARCH}" >> /etc/environment
