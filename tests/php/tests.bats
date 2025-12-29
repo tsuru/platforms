@@ -18,7 +18,7 @@ load 'bats-assert-master/load'
     assert_output --partial "2.2.12"
 }
 
-@test "using default php(5.6) + apache-mod-php" {
+@test "using default php(8.2) + apache-mod-php" {
     run /var/lib/tsuru/deploy
     run cat /home/application/current/Procfile
     assert_success
@@ -36,15 +36,15 @@ load 'bats-assert-master/load'
     [[ "$output" == "ubuntu" ]]
 }
 
-@test "using php7.1 + apache-mod-php" {
+@test "using php8.2 + apache-mod-php" {
     cat >/home/application/current/tsuru.yaml <<EOF
 php:
-  version: 7.1
+  version: 8.2
 EOF
     run /var/lib/tsuru/deploy
     run ls /etc/apache2/mods-enabled/php*.conf
     assert_success
-    [[ "$output" == "/etc/apache2/mods-enabled/php7.1.conf" ]]
+    [[ "$output" == "/etc/apache2/mods-enabled/php8.2.conf" ]]
 }
 
 @test "using invalid version backs to default_version" {
@@ -55,36 +55,36 @@ EOF
     run /var/lib/tsuru/deploy
     run ls /etc/apache2/mods-enabled/php*.conf
     assert_success
-    [[ "$output" == "/etc/apache2/mods-enabled/php5.6.conf" ]]
+    [[ "$output" == "/etc/apache2/mods-enabled/php8.2.conf" ]]
 }
 
-@test "using old fpm format and default frontend" {
+@test "using fpm and default frontend" {
     cat >/home/application/current/tsuru.yaml <<EOF
 php:
   interpretor:
-    name: fpm54
+    name: fpm
 EOF
     run /var/lib/tsuru/deploy
     run cat /home/application/current/Procfile
-    [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start && /usr/sbin/php-fpm5.6 --fpm-config /etc/php/5.6/fpm/php-fpm.conf "' ]
+    [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start && /usr/sbin/php-fpm8.2 --fpm-config /etc/php/8.2/fpm/php-fpm.conf "' ]
 }
 
-@test "php 7.0 using fpm and default frontend" {
+@test "php 8.2 using fpm and default frontend" {
   cat >/home/application/current/tsuru.yaml <<EOF
 php:
-  version: 7.0
+  version: 8.2
   interpretor:
     name: fpm
 EOF
   run /var/lib/tsuru/deploy
   run cat /home/application/current/Procfile
-  [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start && /usr/sbin/php-fpm7.0 --fpm-config /etc/php/7.0/fpm/php-fpm.conf "' ]
+  [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start && /usr/sbin/php-fpm8.2 --fpm-config /etc/php/8.2/fpm/php-fpm.conf "' ]
 }
 
-@test "php 7.0 using fpm and nginx as frontend" {
+@test "php 8.3 using fpm and nginx as frontend" {
   cat >/home/application/current/tsuru.yaml <<EOF
 php:
-  version: 7.0
+  version: 8.3
   interpretor:
     name: fpm
   frontend:
@@ -92,25 +92,25 @@ php:
 EOF
   run /var/lib/tsuru/deploy
   run cat /home/application/current/Procfile
-  [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/nginx && /usr/sbin/php-fpm7.0 --fpm-config /etc/php/7.0/fpm/php-fpm.conf "' ]
+  [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/nginx && /usr/sbin/php-fpm8.3 --fpm-config /etc/php/8.3/fpm/php-fpm.conf "' ]
 }
 
-@test "php 7.1 using fpm, apache2 as frontend and old php5-mysql module format" {
+@test "php 8.2 using fpm, apache2 as frontend and mysql extension" {
   cat >/home/application/current/tsuru.yaml <<EOF
 php:
-  version: 7.1
+  version: 8.2
   interpretor:
     name: fpm
     options:
       extensions:
-        - php5-mysql
+        - mysql
   frontend:
     name: apache
 EOF
   run /var/lib/tsuru/deploy
   run cat /home/application/current/Procfile
-  [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start && /usr/sbin/php-fpm7.1 --fpm-config /etc/php/7.1/fpm/php-fpm.conf "' ]
-  run bash -c 'dpkg -s php7.1-mysql | grep Status'
+  [ "$output" == 'web: /bin/bash -lc "sudo -E /usr/sbin/apache2 -d /etc/apache2 -k start && /usr/sbin/php-fpm8.2 --fpm-config /etc/php/8.2/fpm/php-fpm.conf "' ]
+  run bash -c 'dpkg -s php8.2-mysql | grep Status'
   [ "$output" == 'Status: install ok installed' ]
 }
 
@@ -132,21 +132,21 @@ EOF
 @test "generate environment.conf for all php-fpm versions" {
   cat >/home/application/current/tsuru.yaml <<EOF
 php:
-  version: 7.1
+  version: 8.2
   interpretor:
     name: fpm
 EOF
     export FOO=1
     export BAR=2
     run /var/lib/tsuru/deploy
-    for version in 5.6 7.0 7.1; do
+    for version in 8.2 8.2 8.3; do
         run bash -c "egrep '(FOO|BAR)' /etc/php/${version}/fpm/environment.conf | tr '\n' ' '"
         [ "$output" = "env[FOO] = 1 env[BAR] = 2 " ]
     done
 }
 
 @test "update-alternatives for php and phar" {
-    for version in 5.6 7.0 7.1; do
+    for version in 8.2 8.2 8.3; do
       cat >/home/application/current/tsuru.yaml <<EOF
 php:
   version: ${version}

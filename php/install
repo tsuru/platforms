@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-# Copyright 2022 tsuru authors. All rights reserved.
+# Copyright 2025 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 set -eu -o pipefail
@@ -9,7 +9,7 @@ SOURCE_DIR=/var/lib/tsuru
 source ${SOURCE_DIR}/base/rc/config
 source ${SOURCE_DIR}/base/rc/os_dependencies
 
-PHP_VERSIONS="5.6 7.0 7.1 7.2 8.0 8.1 8.2 8.3"
+PHP_VERSIONS="8.2 8.3 8.4 8.5"
 
 add_repository ppa:ondrej/php
 
