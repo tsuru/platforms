@@ -183,7 +183,7 @@ def load_file(working_dir="/home/application/current"):
 
 
 def load_configuration():
-    result = yaml.load(load_file())
+    result = yaml.load(load_file(), Loader=yaml.SafeLoader)
     if result:
         return result.get('php', {})
 
