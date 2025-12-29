@@ -7,4 +7,4 @@ COPY . /var/lib/tsuru/java
 RUN set -ex \
     && sudo /var/lib/tsuru/java/install \
     && sudo rm -rf /var/lib/tsuru/java/install /var/lib/apt/lists/* \
-    && sudo ln -sf /var/lib/tsuru/base/deploy /var/lib/tsuru/deploy
+    && sudo ln -sf /var/lib/tsuru/java/deploy /var/lib/tsuru/deploy
