@@ -30,6 +30,58 @@ jobs:
   publish:
     if: github.repository == 'tsuru/platforms' && github.event_name != 'pull_request'
     needs: test
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - ballerina
+        - buildpack
+        - go
+        - java
+        - lua
+        - nodejs
+        - perl
+        - php
+        - python
+        - ruby
+        - scratch
+        - static
+        arch:
+        - amd64
+        - arm64
+    steps:
+    - uses: actions/checkout@v4
+    - uses: docker/login-action@v3
+      if: github.event_name != 'pull_request'
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - run: |
+        ref="${GITHUB_REF##*/}"
+        img="tsuru/${{ matrix.platform }}"
+        tags=""
+        if [[ ${ref} == "master" ]] || [[ ${ref} == "main" ]]; then
+          tags="${img}:latest-${{ matrix.arch }}"
+        elif [[ ${ref} =~ ^${{ matrix.platform }}-([0-9.]+)$ ]]; then
+          tags=${img}:${BASH_REMATCH[1]}-${{ matrix.arch }},${img}:latest-${{ matrix.arch }}
+        fi
+        echo "::set-output name=tag::${tags}"
+      if: github.event_name != 'pull_request'
+      id: tags
+      shell: bash
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    - uses: docker/build-push-action@v5
+      if: github.event_name != 'pull_request' && steps.tags.outputs.tag != ''
+      with:
+        context: ./${{ matrix.platform }}
+        push: true
+        tags: ${{ steps.tags.outputs.tag }}
+        platforms: linux/${{ matrix.arch }}
+  manifest:
+    if: github.repository == 'tsuru/platforms' && github.event_name != 'pull_request'
+    needs: publish
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -50,31 +102,23 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: docker/login-action@v3
-      if: github.event_name != 'pull_request'
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - run: |
         ref="${GITHUB_REF##*/}"
         img="tsuru/${{ matrix.platform }}"
-        tags=""
         if [[ ${ref} == "master" ]] || [[ ${ref} == "main" ]]; then
-          tags="${img}:latest"
+          docker buildx imagetools create -t ${img}:latest \
+            ${img}:latest-amd64 \
+            ${img}:latest-arm64
         elif [[ ${ref} =~ ^${{ matrix.platform }}-([0-9.]+)$ ]]; then
-          tags=${img}:${BASH_REMATCH[1]},${img}:latest
+          version=${BASH_REMATCH[1]}
+          docker buildx imagetools create -t ${img}:${version} \
+            ${img}:${version}-amd64 \
+            ${img}:${version}-arm64
+          docker buildx imagetools create -t ${img}:latest \
+            ${img}:latest-amd64 \
+            ${img}:latest-arm64
         fi
-        echo "::set-output name=tag::${tags}"
-      if: github.event_name != 'pull_request'
-      id: tags
       shell: bash
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - uses: docker/build-push-action@v5
-      if: github.event_name != 'pull_request' && steps.tags.outputs.tag != ''
-      with:
-        context: ./${{ matrix.platform }}
-        push: true
-        tags: ${{ steps.tags.outputs.tag }}
-        platforms: linux/amd64,linux/arm64
