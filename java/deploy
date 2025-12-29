@@ -1,0 +1,21 @@
+#!/bin/bash -le
+
+# Copyright 2025 tsuru authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+SOURCE_DIR=/var/lib/tsuru
+source ${SOURCE_DIR}/base/deploy
+source ${SOURCE_DIR}/base/rc/config
+
+if [ -f ${CURRENT_DIR}/pom.xml ]; then
+  echo "-- Building Maven project --"
+  pushd ${CURRENT_DIR} >/dev/null 2>&1
+  mvn clean package
+  popd >/dev/null 2>&1
+elif [ -f ${CURRENT_DIR}/build.gradle ]; then
+  echo "-- Building Gradle project --"
+  pushd ${CURRENT_DIR} >/dev/null 2>&1
+  gradle build
+  popd >/dev/null 2>&1
+fi
