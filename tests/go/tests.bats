@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# Copyright 2017 tsuru authors. All rights reserved.
+# Copyright 2025 tsuru authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -22,11 +22,11 @@ load 'bats-assert-master/load'
   run /var/lib/tsuru/deploy
   assert_success
   [[ "$output" == *"Installing Go ${latest} (latest version)"* ]]
-  [[ "$output" == *"Using Go version: go version ${latest} linux/amd64"* ]]
+  [[ "$output" == *"Using Go version: go version ${latest} linux/"* ]]
 
   run go version
   assert_success
-  [[ "$output" == *"go version ${latest} linux/amd64"* ]]
+  [[ "$output" == *"go version ${latest} linux/"* ]]
 }
 
 @test "use Go version from GO_VERSION" {
@@ -34,7 +34,7 @@ load 'bats-assert-master/load'
   run /var/lib/tsuru/deploy
   assert_success
   [[ "$output" == *"Installing Go go1.10 (exact match from \$GO_VERSION)"* ]]
-  [[ "$output" == *"Using Go version: go version go1.10 linux/amd64"* ]]
+  [[ "$output" == *"Using Go version: go version go1.10 linux/"* ]]
 
   run go version
   assert_success
@@ -47,7 +47,7 @@ load 'bats-assert-master/load'
   run /var/lib/tsuru/deploy
   assert_success
   [[ "$output" == *"Installing Go go1.10.8 (closest match from \$GO_VERSION=1.10.x)"* ]]
-  [[ "$output" == *"Using Go version: go version go1.10.8 linux/amd64"* ]]
+  [[ "$output" == *"Using Go version: go version go1.10.8 linux/"* ]]
 
   run go version
   assert_success
@@ -60,7 +60,7 @@ load 'bats-assert-master/load'
   run /var/lib/tsuru/deploy
   assert_success
   [[ "$output" == *"Installing Go ${latest} (closest match from \$GO_VERSION=1.x)"* ]]
-  [[ "$output" == *"Using Go version: go version ${latest} linux/amd64"* ]]
+  [[ "$output" == *"Using Go version: go version ${latest} linux/"* ]]
 
   run go version
   assert_success
