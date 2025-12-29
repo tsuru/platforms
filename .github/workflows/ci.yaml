@@ -57,6 +57,23 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - name: Cache Docker base image
+      uses: actions/cache@v4
+      with:
+        path: /tmp/docker-cache
+        key: docker-base-platform-24.04-${{ matrix.arch }}
+    - name: Load cached base image
+      run: |
+        if [ -f /tmp/docker-cache/base-platform-24.04.tar ]; then
+          docker load -i /tmp/docker-cache/base-platform-24.04.tar
+          echo "Base image loaded from cache"
+        else
+          docker pull tsuru/base-platform:24.04
+          mkdir -p /tmp/docker-cache
+          docker save tsuru/base-platform:24.04 -o /tmp/docker-cache/base-platform-24.04.tar
+          echo "Base image pulled and cached"
+        fi
+      shell: bash
     - run: |
         ref="${GITHUB_REF##*/}"
         img="tsuru/${{ matrix.platform }}"
