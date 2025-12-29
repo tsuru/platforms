@@ -6,5 +6,5 @@
 
 XMX=${JAVA_MAX_MEMORY-128}
 
-mkdir -p /tmp/tomcat9-tomcat9-tmp
-java -Djava.util.logging.config.file=/var/lib/tomcat9/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.awt.headless=true -Xmx${XMX}m -XX:+UseConcMarkSweepGC -classpath /usr/share/tomcat9/bin/bootstrap.jar:/usr/share/tomcat9/bin/tomcat-juli.jar -Dcatalina.base=/var/lib/tomcat9 -Dcatalina.home=/usr/share/tomcat9 -Djava.io.tmpdir=/tmp/tomcat9-tomcat9-tmp org.apache.catalina.startup.Bootstrap start
+mkdir -p /tmp/tomcat10-tomcat10-tmp
+java -Djava.util.logging.config.file=/var/lib/tomcat10/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.awt.headless=true -Xmx${XMX}m -XX:+UseG1GC -classpath /usr/share/tomcat10/bin/bootstrap.jar:/usr/share/tomcat10/bin/tomcat-juli.jar -Dcatalina.base=/var/lib/tomcat10 -Dcatalina.home=/usr/share/tomcat10 -Djava.io.tmpdir=/tmp/tomcat10-tomcat10-tmp org.apache.catalina.startup.Bootstrap start
