@@ -18,7 +18,10 @@ jobs:
         - ruby
         - scratch
         - static
-    runs-on: ubuntu-latest
+        arch:
+        - amd64
+        - arm64
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm64' || 'ubuntu-24.04' }}
     steps:
     - uses: actions/checkout@v4
     - name: run tests
@@ -74,4 +77,4 @@ jobs:
         context: ./${{ matrix.platform }}
         push: true
         tags: ${{ steps.tags.outputs.tag }}
-        platforms: linux/amd64
+        platforms: linux/amd64,linux/arm64

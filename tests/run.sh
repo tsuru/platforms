@@ -29,9 +29,9 @@ function run_test {
         BUILDKIT_ARGS=" --progress plain"
     fi
     if [ -z ${NO_REBUILD} ]; then
-        ${DOCKER} build --platform linux/amd64 -t platform-$plat ../$plat && ${DOCKER} build ${BUILDKIT_ARGS} -t tests-$plat --no-cache ./$plat
+        ${DOCKER} build -t platform-$plat ../$plat && ${DOCKER} build ${BUILDKIT_ARGS} -t tests-$plat --no-cache ./$plat
     else
-        ${DOCKER} build --platform linux/amd64 ${BUILDKIT_ARGS} -t tests-$plat --no-cache ./$plat
+        ${DOCKER} build  ${BUILDKIT_ARGS} -t tests-$plat --no-cache ./$plat
     fi
     rm ./$plat/Dockerfile && rm -rf ./$plat/common
 }
