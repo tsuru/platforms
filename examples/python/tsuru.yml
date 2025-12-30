@@ -1,5 +1,5 @@
 hooks:
   build:
-    - python hook.py
+    - python3 hook.py
 healthcheck:
   path: /

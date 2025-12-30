@@ -19,8 +19,9 @@ echo "BUILDPACK: $BUILDPACK_URL"
 cd $CURRENT_DIR
 sudo /bin/sh -c "rm -rf /app && mkdir /app && cp -a . /app"
 sudo -E ${SOURCE_DIR}/buildpack/build
-sudo chown -R ${USER}:${USER} /app $CURRENT_DIR
-echo "export PORT=\${PORT:-8888}" | tee /app/.profile.d/tsuru.sh >/dev/null
-echo 'export PYTHONPATH=${PYTHONPATH}:/usr/lib/python3/dist-packages:/usr/local/lib/python3/dist-packages' | tee -a /app/.profile.d/tsuru.sh >/dev/null
+sudo mkdir -p /app/.profile.d /home/heroku/.profile.d
+echo "export PORT=\${PORT:-8888}" | sudo tee /app/.profile.d/tsuru.sh /home/heroku/.profile.d/tsuru.sh >/dev/null
+echo 'export PYTHONPATH=${PYTHONPATH}:/usr/lib/python3/dist-packages:/usr/local/lib/python3/dist-packages' | sudo tee -a /app/.profile.d/tsuru.sh /home/heroku/.profile.d/tsuru.sh >/dev/null
+sudo chown -R ${USER}:${USER} /app /home/heroku/.profile.d $CURRENT_DIR
 
 LC_ALL=C perl -lne '/^(.*?):/ && print "$1: /start $1"' /app/Procfile | sudo tee /Procfile >/dev/null
