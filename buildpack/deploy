@@ -20,7 +20,7 @@ cd $CURRENT_DIR
 sudo /bin/sh -c "rm -rf /app && mkdir /app && cp -a . /app"
 sudo -E ${SOURCE_DIR}/buildpack/build
 sudo chown -R ${USER}:${USER} /app
-echo "export PORT=8888" | tee /app/.profile.d/tsuru.sh >/dev/null
-echo 'export PYTHONPATH=${PYTHONPATH}:/usr/lib/python2.7/dist-packages:/usr/local/lib/python2.7/dist-packages' | tee -a /app/.profile.d/tsuru.sh >/dev/null
+echo "export PORT=\${PORT:-8888}" | tee /app/.profile.d/tsuru.sh >/dev/null
+echo 'export PYTHONPATH=${PYTHONPATH}:/usr/lib/python3/dist-packages:/usr/local/lib/python3/dist-packages' | tee -a /app/.profile.d/tsuru.sh >/dev/null
 
 LC_ALL=C perl -lne '/^(.*?):/ && print "$1: /start $1"' /app/Procfile | sudo tee /Procfile >/dev/null

@@ -6,7 +6,7 @@
 
 setup() {
     rm -rf /home/application/current && mkdir /home/application/current
-    chown ubuntu /home/application/current
+    chown ubuntu /home/application/current || chown heroku /home/application/current
     export CURRENT_DIR=/home/application/current
 }
 
