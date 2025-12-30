@@ -19,7 +19,7 @@ echo "BUILDPACK: $BUILDPACK_URL"
 cd $CURRENT_DIR
 sudo /bin/sh -c "rm -rf /app && mkdir /app && cp -a . /app"
 sudo -E ${SOURCE_DIR}/buildpack/build
-sudo chown -R ${USER}:${USER} /app
+sudo chown -R ${USER}:${USER} /app $CURRENT_DIR
 echo "export PORT=\${PORT:-8888}" | tee /app/.profile.d/tsuru.sh >/dev/null
 echo 'export PYTHONPATH=${PYTHONPATH}:/usr/lib/python3/dist-packages:/usr/local/lib/python3/dist-packages' | tee -a /app/.profile.d/tsuru.sh >/dev/null
 
