@@ -35,14 +35,11 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - ballerina
-        - buildpack
         - go
         - java
         - lua
         - nodejs
         - perl
-        - php
         - python
         - ruby
         - scratch
@@ -104,14 +101,11 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - ballerina
-        - buildpack
         - go
         - java
         - lua
         - nodejs
         - perl
-        - php
         - python
         - ruby
         - scratch
