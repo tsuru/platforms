@@ -52,14 +52,13 @@ if [[ ${version_to_install} == "" ]]; then
   version_source="latest version"
 fi
 
-
 echo "Installing Go ${version_to_install} (${version_source})"
 
 rm -rf ${GO_INSTALL_DIR}
 version_dir=${GO_INSTALL_DIR}_${version_to_install}
 rm -rf ${version_dir}
 mkdir -p ${version_dir}
-download_url=${GO_DOWNLOAD_URL}/${version_to_install}.linux-${ARCH}.tar.gz
+download_url=${GO_DOWNLOAD_URL}/go${version_to_install}.linux-${ARCH}.tar.gz
 
 if ! (curl -m 120 -sS --retry 3 -L "$download_url" | tar xz -C ${version_dir}); then
   echo "ERROR: Unable to download Go from ${download_url}."
