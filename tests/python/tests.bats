@@ -437,3 +437,35 @@ EOF
 
     rm ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/poetry.lock ${CURRENT_DIR}/requirements.txt
 }
+
+@test "poetry.lock python version takes precedence over PYTHON_VERSION" {
+    # pyproject.toml specifies python = "^3.10", so using 3.9 should fail
+    # or poetry should take precedence and use 3.10 instead
+    export PYTHON_VERSION=3.9.15
+    cp pyproject.toml poetry.lock ${CURRENT_DIR}/
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    # Poetry should use Python 3.10 from poetry.lock, not 3.9.15 from env var
+    [[ "$output" == *"poetry.lock detected"* ]]
+    [[ "$output" == *"Using python version: 3.10"* ]]
+    [[ "$output" == *"(poetry.lock)"* ]]
+
+    pushd ${CURRENT_DIR}
+    run python --version
+    popd
+
+    assert_success
+    [[ "$output" == *"3.10"* ]]
+
+    pushd ${CURRENT_DIR}
+    run pip freeze
+    popd
+
+    assert_success
+    [[ "$output" == *"msgpack"* ]]
+
+    rm ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/poetry.lock
+    unset PYTHON_VERSION
+}

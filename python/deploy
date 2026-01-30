@@ -42,16 +42,36 @@ if [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
     PIPFILE_PYTHON_VERSION=$(jq -r '._meta.requires.python_full_version // ._meta.requires.python_version // empty' "${CURRENT_DIR}/Pipfile.lock" 2>/dev/null || echo "")
 fi
 
-# Set version based on priority: Pipfile.lock > PYTHON_VERSION env var > .python-version file > default
-# Pipfile.lock has highest priority because pipenv will fail if versions don't match
-# Warn if both Pipfile.lock and PYTHON_VERSION are set and specify different versions
+# Check if poetry.lock specifies a Python version
+POETRY_PYTHON_VERSION=""
+if [ -f "${CURRENT_DIR}/poetry.lock" ]; then
+    POETRY_PYTHON_VERSION=$(awk '/^\[metadata\]/ {in_metadata=1} in_metadata && /^python-versions/ {print; exit}' "${CURRENT_DIR}/poetry.lock" | sed 's/python-versions = "\(.*\)"/\1/' 2>/dev/null || echo "")
+
+    if [ -n "${POETRY_PYTHON_VERSION}" ]; then
+        # Handle various version specifiers: ^3.10, >=3.9, ~3.10, 3.10.*, etc.
+        # Extract the version number, removing constraint operators
+        POETRY_PYTHON_VERSION=$(echo "${POETRY_PYTHON_VERSION}" | sed -E 's/[\^~>=<]//g' | sed -E 's/\*$//' | sed -E 's/,.*$//' | xargs)
+    fi
+fi
+
+# Set version based on priority: Pipfile.lock > poetry.lock > PYTHON_VERSION env var > .python-version file > default
+# Pipfile.lock and poetry.lock have highest priority because they will fail if versions don't match
+# Warn if both lockfile and PYTHON_VERSION are set and specify different versions
 if [ -n "${PIPFILE_PYTHON_VERSION}" ] && [ -n "${PYTHON_VERSION}" ] && [ "${PIPFILE_PYTHON_VERSION}" != "${PYTHON_VERSION}" ]; then
     >&2 echo "WARNING: PYTHON_VERSION environment variable (${PYTHON_VERSION}) differs from Pipfile.lock python_version (${PIPFILE_PYTHON_VERSION})."
     >&2 echo "         Pipfile.lock takes precedence. Update Pipfile.lock or unset PYTHON_VERSION to silence this warning."
 fi
+if [ -n "${POETRY_PYTHON_VERSION}" ] && [ -n "${PYTHON_VERSION}" ] && ! [[ "${PYTHON_VERSION}" =~ ^${POETRY_PYTHON_VERSION} ]]; then
+    >&2 echo "WARNING: PYTHON_VERSION environment variable (${PYTHON_VERSION}) differs from poetry.lock python_version (${POETRY_PYTHON_VERSION})."
+    >&2 echo "         poetry.lock takes precedence. Update poetry.lock or unset PYTHON_VERSION to silence this warning."
+fi
+
 if [ -n "${PIPFILE_PYTHON_VERSION}" ]; then
     PYTHON_VERSION="${PIPFILE_PYTHON_VERSION}"
     VERSION_ORIGIN="Pipfile.lock"
+elif [ -n "${POETRY_PYTHON_VERSION}" ]; then
+    PYTHON_VERSION="${POETRY_PYTHON_VERSION}"
+    VERSION_ORIGIN="poetry.lock"
 elif [ -n "${PYTHON_VERSION}" ]; then
     VERSION_ORIGIN="PYTHON_VERSION environment variable"
 elif [ -f "${CURRENT_DIR}/.python-version" ]; then
