@@ -469,3 +469,25 @@ EOF
     rm ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/poetry.lock
     unset PYTHON_VERSION
 }
+
+@test "install from poetry.lock with custom repository" {
+    unset PYTHON_VERSION
+    export POETRY_REPOSITORIES_ARTIFACTORY_URL=https://pypi.org/simple
+    cp pyproject.toml poetry.lock ${CURRENT_DIR}/
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    [[ "$output" == *"poetry.lock detected"* ]]
+    [[ "$output" == *"Configuring Poetry repository: artifactory -> https://pypi.org/simple"* ]]
+
+    pushd ${CURRENT_DIR}
+    run pip freeze
+    popd
+
+    assert_success
+    [[ "$output" == *"msgpack"* ]]
+
+    rm ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/poetry.lock
+    unset POETRY_REPOSITORIES_ARTIFACTORY_URL
+}

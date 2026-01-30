@@ -208,6 +208,22 @@ if [ -f "${CURRENT_DIR}/poetry.lock" ]; then
     fi
     pip install poetry${POETRY_VERSION_SPEC}
     poetry config virtualenvs.create false
+
+    # Configure custom Poetry repositories from environment variables
+    # Format: POETRY_REPOSITORIES_<NAME>_URL=<URL>
+    # Example: POETRY_REPOSITORIES_ARTIFACTORY_URL=https://artifactory.example.com/pypi/simple
+    for var in $(env | grep '^POETRY_REPOSITORIES_.*_URL=' | cut -d= -f1); do
+        # Extract repository name from variable name
+        # POETRY_REPOSITORIES_ARTIFACTORY_URL -> ARTIFACTORY
+        repo_name=$(echo "$var" | sed 's/^POETRY_REPOSITORIES_//' | sed 's/_URL$//' | tr '[:upper:]' '[:lower:]')
+        repo_url="${!var}"
+
+        if [ -n "$repo_url" ]; then
+            echo "Configuring Poetry repository: $repo_name -> $repo_url"
+            poetry source add --priority=primary "$repo_name" "$repo_url"
+        fi
+    done
+
     # Check if lock file needs updating and regenerate if needed
     if ! poetry check --lock 2>/dev/null; then
         echo "Lock file out of sync, regenerating..."
