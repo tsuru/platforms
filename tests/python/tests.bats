@@ -365,3 +365,75 @@ EOF
     [[ "$output" == *"Using pip version <10"* ]]
     unset PYTHON_PIP_VERSION
 }
+
+@test "install from poetry.lock" {
+    unset PYTHON_VERSION
+    cp pyproject.toml poetry.lock ${CURRENT_DIR}/
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    [[ "$output" == *"poetry.lock detected"* ]]
+    [[ "$output" == *"Using latest poetry version"* ]]
+
+    pushd ${CURRENT_DIR}
+    run python --version
+    popd
+
+    assert_success
+    [[ "$output" == *"3."* ]]
+
+    pushd ${CURRENT_DIR}
+    run pip freeze
+    popd
+
+    assert_success
+    [[ "$output" == *"msgpack"* ]]
+    rm ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/poetry.lock
+}
+
+@test "install from poetry.lock with custom poetry version" {
+    unset PYTHON_VERSION
+    export PYTHON_POETRY_VERSION=1.8.0
+    cp pyproject.toml poetry.lock ${CURRENT_DIR}/
+
+    run /var/lib/tsuru/deploy
+    assert_success
+    [[ "$output" == *"Using poetry version ==1.8.0"* ]]
+
+    run poetry --version
+    assert_success
+    [[ "$output" == *"1.8.0"* ]]
+
+    pushd ${CURRENT_DIR}
+    run pip freeze
+    popd
+
+    assert_success
+    [[ "$output" == *"msgpack"* ]]
+
+    rm ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/poetry.lock
+    unset PYTHON_POETRY_VERSION
+}
+
+@test "poetry.lock takes precedence over requirements.txt" {
+    unset PYTHON_VERSION
+    cp pyproject.toml poetry.lock ${CURRENT_DIR}/
+    echo "alf==0.7.0" > ${CURRENT_DIR}/requirements.txt
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    [[ "$output" == *"poetry.lock detected"* ]]
+    [[ "$output" != *"requirements.txt detected"* ]]
+
+    pushd ${CURRENT_DIR}
+    run pip freeze
+    popd
+
+    assert_success
+    [[ "$output" == *"msgpack"* ]]
+    [[ "$output" != *"alf"* ]]
+
+    rm ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/poetry.lock ${CURRENT_DIR}/requirements.txt
+}

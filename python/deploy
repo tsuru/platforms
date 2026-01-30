@@ -171,9 +171,30 @@ if [[ ${INSTALL_PYTHON} == 1 ]]; then
     install_python
 fi
 
-# install project deps with pipenv or pip
+# install project deps with poetry, pipenv or pip
 pushd "$CURRENT_DIR"
-if [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
+if [ -f "${CURRENT_DIR}/poetry.lock" ]; then
+    echo "poetry.lock detected, using 'poetry install' to install dependencies"
+
+    POETRY_VERSION_SPEC=""
+    if [[ "${PYTHON_POETRY_VERSION}" != "" ]]; then
+        POETRY_VERSION_SPEC="${PYTHON_POETRY_VERSION}"
+        if [[ "$PYTHON_POETRY_VERSION" =~ ^[0-9] ]]; then
+            POETRY_VERSION_SPEC="==${PYTHON_POETRY_VERSION}"
+        fi
+        echo "Using poetry version ${POETRY_VERSION_SPEC}"
+    else
+        echo "Using latest poetry version"
+    fi
+    pip install poetry${POETRY_VERSION_SPEC}
+    poetry config virtualenvs.create false
+    # Check if lock file needs updating and regenerate if needed
+    if ! poetry check --lock 2>/dev/null; then
+        echo "Lock file out of sync, regenerating..."
+        poetry lock --no-interaction
+    fi
+    poetry install --no-interaction --no-ansi --no-root
+elif [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
     echo "Pipfile.lock detected, using 'pipenv install --system --deploy' to install dependencies"
 
     PIPENV_VERSION_SPEC=""

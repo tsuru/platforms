@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "test-app"
+version = "0.1.0"
+description = "Test application for Poetry support"
+authors = ["Test Author <test@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+msgpack = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
