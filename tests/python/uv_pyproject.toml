@@ -1,0 +1,8 @@
+[project]
+name = "test-app"
+version = "0.1.0"
+description = "Test application for uv support"
+requires-python = ">=3.10"
+dependencies = [
+    "msgpack>=1.0.0",
+]

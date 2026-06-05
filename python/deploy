@@ -54,8 +54,20 @@ if [ -f "${CURRENT_DIR}/poetry.lock" ]; then
     fi
 fi
 
-# Set version based on priority: Pipfile.lock > poetry.lock > PYTHON_VERSION env var > .python-version file > default
-# Pipfile.lock and poetry.lock have highest priority because they will fail if versions don't match
+# Check if uv.lock specifies a Python version
+UV_PYTHON_VERSION=""
+if [ -f "${CURRENT_DIR}/uv.lock" ]; then
+    UV_PYTHON_VERSION=$(awk '/^requires-python/ {print; exit}' "${CURRENT_DIR}/uv.lock" | sed 's/requires-python = "\(.*\)"/\1/' 2>/dev/null || echo "")
+
+    if [ -n "${UV_PYTHON_VERSION}" ]; then
+        # Handle various version specifiers: >=3.10, ~=3.10, ==3.10.*, etc.
+        # Extract the version number, removing constraint operators
+        UV_PYTHON_VERSION=$(echo "${UV_PYTHON_VERSION}" | sed -E 's/[\^~>=<!=]//g' | sed -E 's/\*$//' | sed -E 's/,.*$//' | xargs)
+    fi
+fi
+
+# Set version based on priority: Pipfile.lock > poetry.lock > uv.lock > PYTHON_VERSION env var > .python-version file > default
+# Lockfiles have highest priority because they will fail if versions don't match
 # Warn if both lockfile and PYTHON_VERSION are set and specify different versions
 if [ -n "${PIPFILE_PYTHON_VERSION}" ] && [ -n "${PYTHON_VERSION}" ] && [ "${PIPFILE_PYTHON_VERSION}" != "${PYTHON_VERSION}" ]; then
     >&2 echo "WARNING: PYTHON_VERSION environment variable (${PYTHON_VERSION}) differs from Pipfile.lock python_version (${PIPFILE_PYTHON_VERSION})."
@@ -65,6 +77,10 @@ if [ -n "${POETRY_PYTHON_VERSION}" ] && [ -n "${PYTHON_VERSION}" ] && ! [[ "${PY
     >&2 echo "WARNING: PYTHON_VERSION environment variable (${PYTHON_VERSION}) differs from poetry.lock python_version (${POETRY_PYTHON_VERSION})."
     >&2 echo "         poetry.lock takes precedence. Update poetry.lock or unset PYTHON_VERSION to silence this warning."
 fi
+if [ -n "${UV_PYTHON_VERSION}" ] && [ -n "${PYTHON_VERSION}" ] && ! [[ "${PYTHON_VERSION}" =~ ^${UV_PYTHON_VERSION} ]]; then
+    >&2 echo "WARNING: PYTHON_VERSION environment variable (${PYTHON_VERSION}) differs from uv.lock requires-python (${UV_PYTHON_VERSION})."
+    >&2 echo "         uv.lock takes precedence. Update uv.lock or unset PYTHON_VERSION to silence this warning."
+fi
 
 if [ -n "${PIPFILE_PYTHON_VERSION}" ]; then
     PYTHON_VERSION="${PIPFILE_PYTHON_VERSION}"
@@ -72,6 +88,9 @@ if [ -n "${PIPFILE_PYTHON_VERSION}" ]; then
 elif [ -n "${POETRY_PYTHON_VERSION}" ]; then
     PYTHON_VERSION="${POETRY_PYTHON_VERSION}"
     VERSION_ORIGIN="poetry.lock"
+elif [ -n "${UV_PYTHON_VERSION}" ]; then
+    PYTHON_VERSION="${UV_PYTHON_VERSION}"
+    VERSION_ORIGIN="uv.lock"
 elif [ -n "${PYTHON_VERSION}" ]; then
     VERSION_ORIGIN="PYTHON_VERSION environment variable"
 elif [ -f "${CURRENT_DIR}/.python-version" ]; then
@@ -230,6 +249,25 @@ if [ -f "${CURRENT_DIR}/poetry.lock" ]; then
         poetry lock --no-interaction
     fi
     poetry install --no-interaction --no-ansi --no-root
+elif [ -f "${CURRENT_DIR}/uv.lock" ]; then
+    echo "uv.lock detected, using 'uv sync' to install dependencies"
+
+    UV_VERSION_SPEC=""
+    if [[ "${PYTHON_UV_VERSION}" != "" ]]; then
+        UV_VERSION_SPEC="${PYTHON_UV_VERSION}"
+        if [[ "$PYTHON_UV_VERSION" =~ ^[0-9] ]]; then
+            UV_VERSION_SPEC="==${PYTHON_UV_VERSION}"
+        fi
+        echo "Using uv version ${UV_VERSION_SPEC}"
+    else
+        echo "Using latest uv version"
+    fi
+    pip install uv${UV_VERSION_SPEC}
+
+    # Configure custom UV index from environment variables
+    # UV_INDEX_URL and UV_EXTRA_INDEX_URL are natively supported by uv
+
+    uv sync --no-dev --frozen --no-install-project --python-preference only-system
 elif [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
     echo "Pipfile.lock detected, using 'pipenv install --system --deploy' to install dependencies"
 

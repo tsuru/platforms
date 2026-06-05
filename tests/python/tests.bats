@@ -470,6 +470,125 @@ EOF
     unset PYTHON_VERSION
 }
 
+@test "install from uv.lock" {
+    unset PYTHON_VERSION
+    cp uv_pyproject.toml ${CURRENT_DIR}/pyproject.toml
+    cp uv.lock ${CURRENT_DIR}/
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    [[ "$output" == *"uv.lock detected"* ]]
+    [[ "$output" == *"Using latest uv version"* ]]
+
+    pushd ${CURRENT_DIR}
+    run python --version
+    popd
+
+    assert_success
+    [[ "$output" == *"3."* ]]
+
+    pushd ${CURRENT_DIR}
+    run uv pip freeze --python .venv/bin/python
+    popd
+
+    assert_success
+    [[ "$output" == *"msgpack"* ]]
+    rm -rf ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/uv.lock ${CURRENT_DIR}/.venv
+}
+
+@test "install from uv.lock with custom uv version" {
+    unset PYTHON_VERSION
+    export PYTHON_UV_VERSION=0.7.0
+    cp uv_pyproject.toml ${CURRENT_DIR}/pyproject.toml
+    cp uv.lock ${CURRENT_DIR}/
+
+    run /var/lib/tsuru/deploy
+    assert_success
+    [[ "$output" == *"Using uv version ==0.7.0"* ]]
+
+    run uv version
+    assert_success
+    [[ "$output" == *"0.7.0"* ]]
+
+    pushd ${CURRENT_DIR}
+    run uv pip freeze --python .venv/bin/python
+    popd
+
+    assert_success
+    [[ "$output" == *"msgpack"* ]]
+
+    rm -rf ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/uv.lock ${CURRENT_DIR}/.venv
+    unset PYTHON_UV_VERSION
+}
+
+@test "uv.lock takes precedence over requirements.txt" {
+    unset PYTHON_VERSION
+    cp uv_pyproject.toml ${CURRENT_DIR}/pyproject.toml
+    cp uv.lock ${CURRENT_DIR}/
+    echo "alf==0.7.0" > ${CURRENT_DIR}/requirements.txt
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    [[ "$output" == *"uv.lock detected"* ]]
+    [[ "$output" != *"requirements.txt detected"* ]]
+
+    pushd ${CURRENT_DIR}
+    run uv pip freeze --python .venv/bin/python
+    popd
+
+    assert_success
+    [[ "$output" == *"msgpack"* ]]
+    [[ "$output" != *"alf"* ]]
+
+    rm -rf ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/uv.lock ${CURRENT_DIR}/requirements.txt ${CURRENT_DIR}/.venv
+}
+
+@test "poetry.lock takes precedence over uv.lock" {
+    unset PYTHON_VERSION
+    cp pyproject.toml poetry.lock ${CURRENT_DIR}/
+    cp uv.lock ${CURRENT_DIR}/
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    [[ "$output" == *"poetry.lock detected"* ]]
+    [[ "$output" != *"uv.lock detected"* ]]
+
+    rm -rf ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/poetry.lock ${CURRENT_DIR}/uv.lock
+}
+
+@test "uv.lock python version takes precedence over PYTHON_VERSION" {
+    export PYTHON_VERSION=3.9.15
+    cp uv_pyproject.toml ${CURRENT_DIR}/pyproject.toml
+    cp uv.lock ${CURRENT_DIR}/
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    [[ "$output" == *"uv.lock detected"* ]]
+    [[ "$output" == *"Using python version: 3.10"* ]]
+    [[ "$output" == *"(uv.lock)"* ]]
+
+    pushd ${CURRENT_DIR}
+    run python --version
+    popd
+
+    assert_success
+    [[ "$output" == *"3.10"* ]]
+
+    pushd ${CURRENT_DIR}
+    run uv pip freeze --python .venv/bin/python
+    popd
+
+    assert_success
+    [[ "$output" == *"msgpack"* ]]
+
+    rm -rf ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/uv.lock ${CURRENT_DIR}/.venv
+    unset PYTHON_VERSION
+}
+
 @test "install from poetry.lock with custom repository" {
     unset PYTHON_VERSION
     export POETRY_REPOSITORIES_ARTIFACTORY_URL=https://pypi.org/simple
