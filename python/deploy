@@ -268,6 +268,21 @@ elif [ -f "${CURRENT_DIR}/uv.lock" ]; then
     # UV_INDEX_URL and UV_EXTRA_INDEX_URL are natively supported by uv
 
     uv sync --no-dev --no-install-project --python-preference only-system
+
+    # uv installs dependencies into a virtualenv (default: .venv in the project
+    # dir, or $UV_PROJECT_ENVIRONMENT). Prepend its bin dir to PATH so the
+    # installed packages and console scripts are available at runtime.
+    VENV_PATH="${UV_PROJECT_ENVIRONMENT:-${CURRENT_DIR}/.venv}"
+    if [ -d "${VENV_PATH}/bin" ]; then
+        echo "Adding uv virtualenv to PATH: ${VENV_PATH}/bin"
+        # deploy runs as the (non-root) application user, so the user profile is
+        # written directly while the system profile needs sudo (see buildpack/deploy).
+        echo "export PATH=${VENV_PATH}/bin:\${PATH}" | tee -a ${HOME}/.profile >/dev/null
+        echo "export PATH=${VENV_PATH}/bin:\${PATH}" | sudo tee -a /etc/profile >/dev/null
+    else
+        echo "WARNING: uv virtualenv not found at ${VENV_PATH}, PATH not updated"
+    fi
+
 elif [ -f "${CURRENT_DIR}/Pipfile.lock" ]; then
     echo "Pipfile.lock detected, using 'pipenv install --system --deploy' to install dependencies"
 

@@ -497,6 +497,68 @@ EOF
     rm -rf ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/uv.lock ${CURRENT_DIR}/.venv
 }
 
+@test "uv.lock adds virtualenv bin to PATH profile" {
+    unset PYTHON_VERSION
+    cp uv_pyproject.toml ${CURRENT_DIR}/pyproject.toml
+    cp uv.lock ${CURRENT_DIR}/
+
+    # Start from clean profile files so we can assert exactly what gets appended
+    # (/etc/profile is root-owned, deploy writes to it via sudo)
+    rm -f ${HOME}/.profile
+    sudo rm -f /etc/profile
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    [[ "$output" == *"uv.lock detected"* ]]
+    [[ "$output" == *"Adding uv virtualenv to PATH: ${CURRENT_DIR}/.venv/bin"* ]]
+
+    # The venv bin dir must be exported in both the user and system profiles
+    run grep -F "export PATH=${CURRENT_DIR}/.venv/bin:\${PATH}" ${HOME}/.profile
+    assert_success
+    run grep -F "export PATH=${CURRENT_DIR}/.venv/bin:\${PATH}" /etc/profile
+    assert_success
+
+    # A fresh login shell that sources the profile must expose the venv binaries
+    run bash -lc 'command -v python'
+    assert_success
+    [[ "$output" == *"${CURRENT_DIR}/.venv/bin/python"* ]]
+
+    rm -rf ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/uv.lock ${CURRENT_DIR}/.venv
+    rm -f ${HOME}/.profile
+    sudo rm -f /etc/profile
+}
+
+@test "uv.lock respects UV_PROJECT_ENVIRONMENT for PATH profile" {
+    unset PYTHON_VERSION
+    export UV_PROJECT_ENVIRONMENT=${CURRENT_DIR}/custom-venv
+    cp uv_pyproject.toml ${CURRENT_DIR}/pyproject.toml
+    cp uv.lock ${CURRENT_DIR}/
+
+    rm -f ${HOME}/.profile
+    sudo rm -f /etc/profile
+
+    run /var/lib/tsuru/deploy
+    assert_success
+
+    [[ "$output" == *"uv.lock detected"* ]]
+    [[ "$output" == *"Adding uv virtualenv to PATH: ${CURRENT_DIR}/custom-venv/bin"* ]]
+
+    run grep -F "export PATH=${CURRENT_DIR}/custom-venv/bin:\${PATH}" ${HOME}/.profile
+    assert_success
+
+    pushd ${CURRENT_DIR}
+    run uv pip freeze --python custom-venv/bin/python
+    popd
+    assert_success
+    [[ "$output" == *"msgpack"* ]]
+
+    rm -rf ${CURRENT_DIR}/pyproject.toml ${CURRENT_DIR}/uv.lock ${CURRENT_DIR}/custom-venv
+    rm -f ${HOME}/.profile
+    sudo rm -f /etc/profile
+    unset UV_PROJECT_ENVIRONMENT
+}
+
 @test "install from uv.lock with custom uv version" {
     unset PYTHON_VERSION
     export PYTHON_UV_VERSION=0.7.0
