@@ -267,7 +267,7 @@ elif [ -f "${CURRENT_DIR}/uv.lock" ]; then
     # Configure custom UV index from environment variables
     # UV_INDEX_URL and UV_EXTRA_INDEX_URL are natively supported by uv
 
-    uv sync --no-dev --no-install-project --python-preference only-system
+    uv sync --no-dev --python-preference only-system
 
     # uv installs dependencies into a virtualenv (default: .venv in the project
     # dir, or $UV_PROJECT_ENVIRONMENT). Prepend its bin dir to PATH so the
